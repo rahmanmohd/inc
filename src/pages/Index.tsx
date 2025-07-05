@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import WeeklyShowcase from "@/components/WeeklyShowcase";
 import ProgramOverview from "@/components/ProgramOverview";
 import CohortInfo from "@/components/CohortInfo";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -46,20 +47,20 @@ const Index = () => {
             <div className="space-y-3">
               <h4 className="font-semibold">Resources</h4>
               <div className="space-y-2 text-sm">
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Mentorship</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Funding Guide</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Cloud Credits</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Partnership</div>
+                <Link to="/resources" className="block text-muted-foreground hover:text-primary cursor-pointer">Resources</Link>
+                <Link to="/partnership" className="block text-muted-foreground hover:text-primary cursor-pointer">Partnership</Link>
+                <div className="text-muted-foreground hover:text-primary cursor-pointer">Sponsorship</div>
+                <div className="text-muted-foreground hover:text-primary cursor-pointer">Alumni Network</div>
               </div>
             </div>
             
             <div className="space-y-3">
               <h4 className="font-semibold">Connect</h4>
               <div className="space-y-2 text-sm">
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">About Us</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Sponsorship</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Contact</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Alumni Network</div>
+                <Link to="/about" className="block text-muted-foreground hover:text-primary cursor-pointer">About Us</Link>
+                <Link to="/contact" className="block text-muted-foreground hover:text-primary cursor-pointer">Contact</Link>
+                <div className="text-muted-foreground hover:text-primary cursor-pointer">Mentorship</div>
+                <div className="text-muted-foreground hover:text-primary cursor-pointer">Funding Guide</div>
               </div>
             </div>
           </div>

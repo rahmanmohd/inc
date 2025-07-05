@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
+import ApplicationDialog from "./ApplicationDialog";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,11 +10,8 @@ const Navigation = () => {
   const navItems = [
     { name: "Hackathon", href: "/hackathon" },
     { name: "Incubation", href: "/incubation" },
-    { name: "About", href: "/about" },
     { name: "MVP Lab", href: "/mvp-lab" },
-    { name: "INClab", href: "/inclab" },
-    { name: "Resources", href: "/resources" },
-    { name: "Partnership", href: "/partnership" },
+    { name: "INC Lab", href: "/inclab" },
   ];
 
   return (
@@ -42,9 +40,7 @@ const Navigation = () => {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
-            <Button variant="hero" size="sm">
-              Apply Now
-            </Button>
+            <ApplicationDialog triggerText="Apply Now" variant="hero" />
           </div>
 
           {/* Mobile Menu Button */}
@@ -70,9 +66,7 @@ const Navigation = () => {
                   {item.name}
                 </Link>
               ))}
-              <Button variant="hero" size="sm" className="mt-4 w-fit">
-                Apply Now
-              </Button>
+              <ApplicationDialog triggerText="Apply Now" variant="hero" />
             </div>
           </div>
         )}
