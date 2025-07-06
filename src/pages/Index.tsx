@@ -37,10 +37,10 @@ const Index = () => {
             <div className="space-y-3">
               <h4 className="font-semibold">Programs</h4>
               <div className="space-y-2 text-sm">
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">MVP Lab</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Incubation</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Hackathon Track</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">INClab</div>
+                <Link to="/mvp-lab" className="block text-muted-foreground hover:text-primary cursor-pointer">MVP Lab</Link>
+                <Link to="/incubation" className="block text-muted-foreground hover:text-primary cursor-pointer">Incubation</Link>
+                <Link to="/hackathon" className="block text-muted-foreground hover:text-primary cursor-pointer">Hackathon Track</Link>
+                <Link to="/inclab" className="block text-muted-foreground hover:text-primary cursor-pointer">INClab</Link>
               </div>
             </div>
             
@@ -49,8 +49,8 @@ const Index = () => {
               <div className="space-y-2 text-sm">
                 <Link to="/resources" className="block text-muted-foreground hover:text-primary cursor-pointer">Resources</Link>
                 <Link to="/partnership" className="block text-muted-foreground hover:text-primary cursor-pointer">Partnership</Link>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Sponsorship</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Alumni Network</div>
+                <Link to="/deals" className="block text-muted-foreground hover:text-primary cursor-pointer">Deals & Offers</Link>
+                <Link to="/startup-directory" className="block text-muted-foreground hover:text-primary cursor-pointer">Startup Directory</Link>
               </div>
             </div>
             
@@ -59,8 +59,18 @@ const Index = () => {
               <div className="space-y-2 text-sm">
                 <Link to="/about" className="block text-muted-foreground hover:text-primary cursor-pointer">About Us</Link>
                 <Link to="/contact" className="block text-muted-foreground hover:text-primary cursor-pointer">Contact</Link>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Mentorship</div>
-                <div className="text-muted-foreground hover:text-primary cursor-pointer">Funding Guide</div>
+                <Link to="/meet-cofounder" className="block text-muted-foreground hover:text-primary cursor-pointer">Meet Co-founder</Link>
+                <Link to="/investor-centre" className="block text-muted-foreground hover:text-primary cursor-pointer">Investor Centre</Link>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <h4 className="font-semibold">Community</h4>
+              <div className="space-y-2 text-sm">
+                <Link to="/blogs" className="block text-muted-foreground hover:text-primary cursor-pointer">Blogs</Link>
+                <Link to="/news" className="block text-muted-foreground hover:text-primary cursor-pointer">News</Link>
+                <Link to="/privacy-policy" className="block text-muted-foreground hover:text-primary cursor-pointer">Privacy Policy</Link>
+                <Link to="/terms-conditions" className="block text-muted-foreground hover:text-primary cursor-pointer">Terms & Conditions</Link>
               </div>
             </div>
           </div>

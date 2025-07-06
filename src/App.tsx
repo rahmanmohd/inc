@@ -13,6 +13,16 @@ import Partnership from "./pages/Partnership";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import StartupDashboard from "./pages/StartupDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import StartupDirectory from "./pages/StartupDirectory";
+import Deals from "./pages/Deals";
+import Blogs from "./pages/Blogs";
+import News from "./pages/News";
+import MeetCofounder from "./pages/MeetCofounder";
+import InvestorCentre from "./pages/InvestorCentre";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +42,16 @@ const App = () => (
           <Route path="/partnership" element={<Partnership />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/startup-dashboard" element={<StartupDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/startup-directory" element={<StartupDirectory />} />
+          <Route path="/deals" element={<Deals />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/meet-cofounder" element={<MeetCofounder />} />
+          <Route path="/investor-centre" element={<InvestorCentre />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-conditions" element={<TermsConditions />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
