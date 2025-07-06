@@ -5,9 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertCircle, TrendingUp, Users, DollarSign, FileText, Plus } from "lucide-react";
+import CofounderPostDialog from "@/components/CofounderPostDialog";
+import InvestmentApplicationDialog from "@/components/InvestmentApplicationDialog";
+import { useNavigate } from "react-router-dom";
 
 const StartupDashboard = () => {
+  const navigate = useNavigate();
   const applicationStatus = {
     stage: "Under Review",
     progress: 65,
@@ -129,15 +134,19 @@ const StartupDashboard = () => {
                   <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button className="w-full justify-start">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Post Co-founder Requirement
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <DollarSign className="mr-2 h-4 w-4" />
-                    Apply for Investment
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <CofounderPostDialog>
+                    <Button className="w-full justify-start">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Post Co-founder Requirement
+                    </Button>
+                  </CofounderPostDialog>
+                  <InvestmentApplicationDialog>
+                    <Button variant="outline" className="w-full justify-start">
+                      <DollarSign className="mr-2 h-4 w-4" />
+                      Apply for Investment
+                    </Button>
+                  </InvestmentApplicationDialog>
+                  <Button variant="outline" className="w-full justify-start" onClick={() => navigate('/deals')}>
                     <TrendingUp className="mr-2 h-4 w-4" />
                     Browse Active Deals
                   </Button>
@@ -199,10 +208,12 @@ const StartupDashboard = () => {
           <TabsContent value="investment" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Investment Applications</h2>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                New Application
-              </Button>
+              <InvestmentApplicationDialog>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Application
+                </Button>
+              </InvestmentApplicationDialog>
             </div>
             <Card>
               <CardContent className="p-0">
@@ -241,7 +252,7 @@ const StartupDashboard = () => {
           <TabsContent value="deals" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Available Deals</h2>
-              <Button variant="outline">Browse All Deals</Button>
+              <Button variant="outline" onClick={() => navigate('/deals')}>Browse All Deals</Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {deals.map((deal) => (
@@ -269,10 +280,12 @@ const StartupDashboard = () => {
           <TabsContent value="cofounder" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Co-founder Requirements</h2>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Post New Requirement
-              </Button>
+              <CofounderPostDialog>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Post New Requirement
+                </Button>
+              </CofounderPostDialog>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>

@@ -5,9 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Briefcase, Star, Search, Users, Plus, ExternalLink } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { MapPin, Briefcase, Star, Search, Users, Plus, ExternalLink, Mail, Linkedin } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const MeetCofounder = () => {
+  const { toast } = useToast();
+  const [connectMessage, setConnectMessage] = useState("");
   const featuredProfiles = [
     {
       id: 1,
@@ -343,11 +349,45 @@ const MeetCofounder = () => {
                       </div>
 
                       <div className="flex space-x-2">
-                        <Button className="flex-1" size="sm">
-                          Connect
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <ExternalLink className="h-4 w-4" />
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button className="flex-1" size="sm">
+                              Connect
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Connect with {profile.name}</DialogTitle>
+                              <DialogDescription>
+                                Send a personalized message to connect with this co-founder
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4">
+                              <div>
+                                <label className="text-sm font-medium">Message</label>
+                                <Textarea 
+                                  placeholder="Hi! I'm interested in connecting to discuss potential collaboration..."
+                                  value={connectMessage}
+                                  onChange={(e) => setConnectMessage(e.target.value)}
+                                  className="mt-1"
+                                />
+                              </div>
+                            </div>
+                            <DialogFooter>
+                              <Button onClick={() => {
+                                toast({
+                                  title: "Connection Request Sent",
+                                  description: `Your message has been sent to ${profile.name}`,
+                                });
+                                setConnectMessage("");
+                              }}>
+                                Send Message
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                        <Button variant="outline" size="sm" onClick={() => window.open(`https://${profile.linkedin}`, '_blank')}>
+                          <Linkedin className="h-4 w-4" />
                         </Button>
                       </div>
                     </CardContent>

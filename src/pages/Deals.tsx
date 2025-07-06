@@ -4,9 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Clock, Tag, Zap, Cloud, Mail, CreditCard, Users, Star } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const Deals = () => {
+  const { toast } = useToast();
+  const [selectedDeal, setSelectedDeal] = useState<any>(null);
   const featuredDeals = [
     {
       id: 1,
@@ -129,7 +134,16 @@ const Deals = () => {
             <Badge variant="outline" className="text-xs">{deal.discount}</Badge>
           </div>
         )}
-        <Button className="w-full">
+        <Button className="w-full" onClick={() => {
+          if (isDetailed) {
+            toast({
+              title: "Deal Claimed Successfully!",
+              description: `You have successfully claimed ${deal.title || deal.company + ' Deal'}`,
+            });
+          } else {
+            setSelectedDeal(deal);
+          }
+        }}>
           {isDetailed ? "Claim Deal" : "View Details"}
         </Button>
       </CardContent>
@@ -297,6 +311,55 @@ const Deals = () => {
             View All Deals
           </Button>
         </section>
+
+        {/* Deal Details Dialog */}
+        <Dialog open={!!selectedDeal} onOpenChange={() => setSelectedDeal(null)}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-3">
+                <span className="text-2xl">{selectedDeal?.logo}</span>
+                <span>{selectedDeal?.title || selectedDeal?.company + ' Deal'}</span>
+              </DialogTitle>
+              <DialogDescription>
+                Exclusive deal for Inc Combinator members
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Company:</span>
+                <span className="font-medium">{selectedDeal?.company}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Offer:</span>
+                <span className="font-medium">{selectedDeal?.offer}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Discount:</span>
+                <Badge variant="secondary">{selectedDeal?.discount}</Badge>
+              </div>
+              <div className="border-t pt-4">
+                <p className="text-sm text-muted-foreground mb-4">
+                  This is an exclusive deal available only to Inc Combinator members. Click claim to activate this offer.
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setSelectedDeal(null)}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                toast({
+                  title: "Deal Claimed Successfully!",
+                  description: `You have successfully claimed ${selectedDeal?.title || selectedDeal?.company + ' Deal'}`,
+                });
+                setSelectedDeal(null);
+              }}>
+                Claim Deal
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
       </main>
     </div>
   );

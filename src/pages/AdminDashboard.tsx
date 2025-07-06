@@ -5,9 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Building2, Users, TrendingUp, DollarSign, FileText, Star, Search, Plus, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Building2, Users, TrendingUp, DollarSign, FileText, Star, Search, Plus, Eye, Edit, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const AdminDashboard = () => {
+  const { toast } = useToast();
+  const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [applicationStatus, setApplicationStatus] = useState("");
   const stats = {
     totalStartups: 1247,
     activeApplications: 89,
@@ -212,7 +219,18 @@ const AdminDashboard = () => {
                             <Button variant="outline" size="sm">
                               <Eye className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm">Edit</Button>
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => {
+                              toast({
+                                title: "Startup Deleted",
+                                description: "Startup has been removed from the system.",
+                                variant: "destructive"
+                              });
+                            }}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -265,7 +283,53 @@ const AdminDashboard = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex space-x-2">
-                            <Button variant="outline" size="sm">Review</Button>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => setSelectedApplication(app)}
+                                >
+                                  Review
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Review Application - {app.startup}</DialogTitle>
+                                  <DialogDescription>
+                                    Update application status and add review notes
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                  <div>
+                                    <label className="text-sm font-medium">Status</label>
+                                    <Select value={applicationStatus} onValueChange={setApplicationStatus}>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select status" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="approved">Approved</SelectItem>
+                                        <SelectItem value="rejected">Rejected</SelectItem>
+                                        <SelectItem value="under-review">Under Review</SelectItem>
+                                        <SelectItem value="pending">Pending</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </div>
+                                <DialogFooter>
+                                  <Button 
+                                    onClick={() => {
+                                      toast({
+                                        title: "Application Updated",
+                                        description: "Application status has been updated successfully.",
+                                      });
+                                    }}
+                                  >
+                                    Update Status
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
                             <Button variant="outline" size="sm">Contact</Button>
                           </div>
                         </TableCell>
@@ -370,7 +434,12 @@ const AdminDashboard = () => {
                 <CardContent>
                   <div className="text-3xl font-bold text-primary mb-2">24</div>
                   <p className="text-sm text-muted-foreground">Published this month</p>
-                  <Button className="w-full mt-4" variant="outline">Manage Blogs</Button>
+                  <Button className="w-full mt-4" variant="outline" onClick={() => {
+                    toast({
+                      title: "Blog Management",
+                      description: "Opening blog management interface...",
+                    });
+                  }}>Manage Blogs</Button>
                 </CardContent>
               </Card>
               <Card>
@@ -380,7 +449,12 @@ const AdminDashboard = () => {
                 <CardContent>
                   <div className="text-3xl font-bold text-primary mb-2">18</div>
                   <p className="text-sm text-muted-foreground">Latest updates</p>
-                  <Button className="w-full mt-4" variant="outline">Manage News</Button>
+                  <Button className="w-full mt-4" variant="outline" onClick={() => {
+                    toast({
+                      title: "News Management",
+                      description: "Opening news management interface...",
+                    });
+                  }}>Manage News</Button>
                 </CardContent>
               </Card>
               <Card>

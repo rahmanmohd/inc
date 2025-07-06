@@ -5,9 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building2, DollarSign, TrendingUp, Users, Search, Filter, MapPin, ExternalLink, Star } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Building2, DollarSign, TrendingUp, Users, Search, Filter, MapPin, ExternalLink, Star, Mail, Linkedin, Globe } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const InvestorCentre = () => {
+  const { toast } = useToast();
+  const [pitchMessage, setPitchMessage] = useState("");
+  const [selectedInvestor, setSelectedInvestor] = useState<any>(null);
   const featuredInvestors = [
     {
       id: 1,
