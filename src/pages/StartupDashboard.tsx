@@ -1,16 +1,30 @@
 import Navigation from "@/components/Navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import StartupOverview from "@/components/dashboard/StartupOverview";
 import ApplicationStatus from "@/components/dashboard/ApplicationStatus";
 import InvestmentTable from "@/components/dashboard/InvestmentTable";
+import CofounderPostDialog from "@/components/CofounderPostDialog";
 
 const StartupDashboard = () => {
+  const navigate = useNavigate();
+  
   const applicationStatus = {
     stage: "Under Review",
     progress: 65,
     submittedDate: "Dec 15, 2024",
     nextReview: "Jan 5, 2025"
   };
+
+  const deals = [
+    { id: 1, title: "AWS Credits", value: "₹50,000", status: "Active", expires: "Jan 15, 2025" },
+    { id: 2, title: "Google Cloud Credits", value: "₹30,000", status: "Active", expires: "Feb 10, 2025" },
+    { id: 3, title: "Notion Pro", value: "₹12,000", status: "Claimed", expires: "Dec 31, 2024" }
+  ];
 
   return (
     <div className="min-h-screen bg-background">

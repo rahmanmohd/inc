@@ -23,6 +23,8 @@ import MeetCofounder from "./pages/MeetCofounder";
 import InvestorCentre from "./pages/InvestorCentre";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
+import BlogDetail from "./pages/BlogDetail";
+import RequirementsDetail from "./pages/RequirementsDetail";
 
 const queryClient = new QueryClient();
 
