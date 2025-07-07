@@ -1,20 +1,16 @@
 import Navigation from "@/components/Navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, Users, TrendingUp, DollarSign, FileText, Star, Search, Plus, Eye, Edit, Trash2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import AdminOverview from "@/components/dashboard/AdminOverview";
+import StartupManagement from "@/components/dashboard/StartupManagement";
+import ApplicationManagement from "@/components/dashboard/ApplicationManagement";
+import InvestorManagement from "@/components/dashboard/InvestorManagement";
 
 const AdminDashboard = () => {
   const { toast } = useToast();
-  const [selectedApplication, setSelectedApplication] = useState<any>(null);
-  const [applicationStatus, setApplicationStatus] = useState("");
   const stats = {
     totalStartups: 1247,
     activeApplications: 89,
@@ -64,326 +60,23 @@ const AdminDashboard = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Startups</CardTitle>
-                  <Building2 className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-primary">{stats.totalStartups}</div>
-                  <p className="text-xs text-muted-foreground">+{stats.monthlyGrowth}% from last month</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Active Applications</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-primary">{stats.activeApplications}</div>
-                  <p className="text-xs text-muted-foreground">Pending review</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Investors</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-primary">{stats.totalInvestors}</div>
-                  <p className="text-xs text-muted-foreground">Verified partners</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Active Deals</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-primary">{stats.totalDeals}</div>
-                  <p className="text-xs text-muted-foreground">Live partnerships</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Community</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-primary">5.2K</div>
-                  <p className="text-xs text-muted-foreground">Active members</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Applications</CardTitle>
-                  <CardDescription>Latest startup applications for review</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentApplications.map((app) => (
-                      <div key={app.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div>
-                          <h4 className="font-medium">{app.startup}</h4>
-                          <p className="text-sm text-muted-foreground">{app.founder} • {app.stage}</p>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant={app.status === "Approved" ? "default" : app.status === "Under Review" ? "secondary" : "outline"}>
-                            {app.status}
-                          </Badge>
-                          <p className="text-xs text-muted-foreground mt-1">{app.date}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Top Performing Startups</CardTitle>
-                  <CardDescription>Based on growth metrics and milestones</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {topStartups.map((startup, index) => (
-                      <div key={startup.id} className="flex items-center space-x-4">
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-bold text-primary">#{index + 1}</span>
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium">{startup.name}</h4>
-                          <p className="text-sm text-muted-foreground">{startup.sector} • {startup.valuation}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium text-green-600">{startup.growth}</p>
-                          <Badge variant="outline">{startup.status}</Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <AdminOverview 
+              stats={stats} 
+              recentApplications={recentApplications} 
+              topStartups={topStartups} 
+            />
           </TabsContent>
 
           <TabsContent value="startups" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Startup Directory</h2>
-              <div className="flex space-x-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Search startups..." className="pl-10" />
-                </div>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Startup
-                </Button>
-              </div>
-            </div>
-            <Card>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Startup Name</TableHead>
-                      <TableHead>Founder</TableHead>
-                      <TableHead>Sector</TableHead>
-                      <TableHead>Stage</TableHead>
-                      <TableHead>Valuation</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {topStartups.map((startup) => (
-                      <TableRow key={startup.id}>
-                        <TableCell className="font-medium">{startup.name}</TableCell>
-                        <TableCell>John Doe</TableCell>
-                        <TableCell>{startup.sector}</TableCell>
-                        <TableCell>{startup.status}</TableCell>
-                        <TableCell>{startup.valuation}</TableCell>
-                        <TableCell>
-                          <Badge variant="default">Active</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Button variant="outline" size="sm">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="outline" size="sm" onClick={() => {
-                              toast({
-                                title: "Startup Deleted",
-                                description: "Startup has been removed from the system.",
-                                variant: "destructive"
-                              });
-                            }}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <StartupManagement startups={topStartups} />
           </TabsContent>
 
           <TabsContent value="applications" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Application Management</h2>
-              <div className="flex space-x-2">
-                <Button variant="outline">Export</Button>
-                <Button variant="outline">Filter</Button>
-              </div>
-            </div>
-            <Card>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Startup</TableHead>
-                      <TableHead>Founder</TableHead>
-                      <TableHead>Stage</TableHead>
-                      <TableHead>Applied Date</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Score</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentApplications.map((app) => (
-                      <TableRow key={app.id}>
-                        <TableCell className="font-medium">{app.startup}</TableCell>
-                        <TableCell>{app.founder}</TableCell>
-                        <TableCell>{app.stage}</TableCell>
-                        <TableCell>{app.date}</TableCell>
-                        <TableCell>
-                          <Badge variant={app.status === "Approved" ? "default" : app.status === "Under Review" ? "secondary" : "outline"}>
-                            {app.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-1">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span>4.2</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => setSelectedApplication(app)}
-                                >
-                                  Review
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Review Application - {app.startup}</DialogTitle>
-                                  <DialogDescription>
-                                    Update application status and add review notes
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="space-y-4">
-                                  <div>
-                                    <label className="text-sm font-medium">Status</label>
-                                    <Select value={applicationStatus} onValueChange={setApplicationStatus}>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select status" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="approved">Approved</SelectItem>
-                                        <SelectItem value="rejected">Rejected</SelectItem>
-                                        <SelectItem value="under-review">Under Review</SelectItem>
-                                        <SelectItem value="pending">Pending</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <Button 
-                                    onClick={() => {
-                                      toast({
-                                        title: "Application Updated",
-                                        description: "Application status has been updated successfully.",
-                                      });
-                                    }}
-                                  >
-                                    Update Status
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                            <Button variant="outline" size="sm">Contact</Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <ApplicationManagement applications={recentApplications} />
           </TabsContent>
 
           <TabsContent value="investors" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Investor Management</h2>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Investor
-              </Button>
-            </div>
-            <Card>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Investor Name</TableHead>
-                      <TableHead>Check Size</TableHead>
-                      <TableHead>Portfolio</TableHead>
-                      <TableHead>Investment Stage</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {investors.map((investor) => (
-                      <TableRow key={investor.id}>
-                        <TableCell className="font-medium">{investor.name}</TableCell>
-                        <TableCell>{investor.checkSize}</TableCell>
-                        <TableCell>{investor.portfolio} companies</TableCell>
-                        <TableCell>{investor.stage}</TableCell>
-                        <TableCell>
-                          <Badge variant="default">{investor.status}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Button variant="outline" size="sm">View</Button>
-                            <Button variant="outline" size="sm">Edit</Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <InvestorManagement investors={investors} />
           </TabsContent>
 
           <TabsContent value="deals" className="space-y-6">
