@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,11 @@ const Navigation = () => {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
-            <ApplicationDialog triggerText="Apply Now" variant="hero" />
+            <ApplicationDialog>
+              <Button variant="hero" size="lg">
+                Apply Now
+              </Button>
+            </ApplicationDialog>
           </div>
 
           {/* Mobile Menu Button */}
@@ -66,7 +71,11 @@ const Navigation = () => {
                   {item.name}
                 </Link>
               ))}
-              <ApplicationDialog triggerText="Apply Now" variant="hero" />
+              <ApplicationDialog>
+                <Button variant="hero" size="lg">
+                  Apply Now
+                </Button>
+              </ApplicationDialog>
             </div>
           </div>
         )}
