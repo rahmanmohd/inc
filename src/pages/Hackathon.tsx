@@ -1,268 +1,366 @@
+
 import Navigation from "@/components/Navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Calendar, Users, ArrowDown } from "lucide-react";
-import ApplicationDialog from "@/components/ApplicationDialog";
+import { Calendar, Clock, MapPin, Trophy, Users, Code, Zap, Target } from "lucide-react";
+import HackathonRegistrationForm from "@/components/HackathonRegistrationForm";
 
 const Hackathon = () => {
   const upcomingHackathons = [
     {
-      title: "AgriTech Innovation Challenge",
-      date: "March 15-17, 2024",
-      theme: "Solving Rural Agriculture Problems",
-      prizes: "₹10L Total Prize Pool",
-      participants: "500+ Expected",
-      status: "Registration Open"
+      id: 1,
+      title: "AI Innovation Challenge 2025",
+      date: "Feb 15-17, 2025",
+      location: "Bangalore, India",
+      theme: "Artificial Intelligence & Machine Learning",
+      prizePool: "₹10 Lakhs",
+      participants: "500+",
+      status: "Registration Open",
+      description: "Build AI solutions for real-world problems in healthcare, education, and sustainability.",
+      registrationDeadline: "Feb 10, 2025"
     },
     {
-      title: "FinTech Disruption Hackathon", 
-      date: "April 20-22, 2024",
-      theme: "Financial Inclusion for Bharat",
-      prizes: "₹15L Total Prize Pool",
-      participants: "750+ Expected",
-      status: "Coming Soon"
+      id: 2,
+      title: "FinTech Revolution Hackathon",
+      date: "Mar 22-24, 2025",
+      location: "Mumbai, India",
+      theme: "Financial Technology",
+      prizePool: "₹8 Lakhs",
+      participants: "400+",
+      status: "Coming Soon",
+      description: "Create innovative fintech solutions for banking, payments, and financial inclusion.",
+      registrationDeadline: "Mar 15, 2025"
     },
     {
-      title: "HealthTech for All",
-      date: "May 10-12, 2024",
-      theme: "Accessible Healthcare Solutions", 
-      prizes: "₹12L Total Prize Pool",
-      participants: "600+ Expected",
-      status: "Save the Date"
+      id: 3,
+      title: "Green Tech Challenge",
+      date: "Apr 5-7, 2025",
+      location: "Hyderabad, India",
+      theme: "Sustainability & Clean Technology",
+      prizePool: "₹12 Lakhs",
+      participants: "600+",
+      status: "Coming Soon",
+      description: "Develop solutions for environmental challenges and sustainable development.",
+      registrationDeadline: "Mar 30, 2025"
     }
   ];
 
   const tracks = [
     {
-      name: "AgriTech Track",
-      description: "Revolutionary solutions for Indian agriculture",
-      prize: "₹3L + Incubation Opportunity"
+      name: "AI/ML Track",
+      icon: "🤖",
+      description: "Build intelligent solutions using artificial intelligence and machine learning",
+      technologies: ["Python", "TensorFlow", "PyTorch", "OpenAI APIs"]
     },
     {
-      name: "FinTech Track",
-      description: "Financial inclusion and digital payments",
-      prize: "₹3L + Banking Partnership"
+      name: "Web Development",
+      icon: "🌐",
+      description: "Create innovative web applications and platforms",
+      technologies: ["React", "Node.js", "MongoDB", "AWS"]
     },
     {
-      name: "HealthTech Track",
-      description: "Accessible healthcare for rural India",
-      prize: "₹3L + Hospital Network Access"
+      name: "Mobile Apps",
+      icon: "📱",
+      description: "Develop mobile applications for iOS and Android",
+      technologies: ["React Native", "Flutter", "Swift", "Kotlin"]
     },
     {
-      name: "EdTech Track",
-      description: "Education technology in vernacular languages",
-      prize: "₹2L + School Partnerships"
+      name: "Blockchain/Web3",
+      icon: "⛓️",
+      description: "Build decentralized applications and blockchain solutions",
+      technologies: ["Solidity", "Ethereum", "Web3.js", "IPFS"]
+    },
+    {
+      name: "IoT & Hardware",
+      icon: "🔧",
+      description: "Create IoT devices and hardware-based solutions",
+      technologies: ["Arduino", "Raspberry Pi", "ESP32", "Sensors"]
+    },
+    {
+      name: "Open Innovation",
+      icon: "💡",
+      description: "Think outside the box with creative and unique solutions",
+      technologies: ["Any technology stack"]
+    }
+  ];
+
+  const prizes = [
+    {
+      position: "1st Place",
+      amount: "₹5,00,000",
+      benefits: ["Cash Prize", "Incubation Program", "Mentorship", "AWS Credits"]
+    },
+    {
+      position: "2nd Place",
+      amount: "₹3,00,000",
+      benefits: ["Cash Prize", "Mentorship Program", "Co-working Space", "GitHub Credits"]
+    },
+    {
+      position: "3rd Place",
+      amount: "₹2,00,000",
+      benefits: ["Cash Prize", "Online Courses", "Startup Resources", "Networking"]
+    }
+  ];
+
+  const pastWinners = [
+    {
+      year: "2024",
+      winner: "HealthAI",
+      project: "AI-powered diagnostic assistant for rural healthcare",
+      prize: "₹5,00,000"
+    },
+    {
+      year: "2023",
+      winner: "EcoTrack",
+      project: "IoT-based waste management system for smart cities",
+      prize: "₹4,00,000"
+    },
+    {
+      year: "2022",
+      winner: "FinanceBot",
+      project: "AI chatbot for financial literacy and investment guidance",
+      prize: "₹3,50,000"
     }
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
-      {/* Hero Section */}
-      <section className="pt-20 pb-16 bg-hero-gradient relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/95"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center space-y-8 animate-fade-in">
-            <div className="space-y-4">
-              <Badge variant="secondary" className="bg-primary/10 text-primary text-lg px-4 py-2">
-                🚀 Build. Compete. Transform.
-              </Badge>
-              <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-                Hackathons That{" "}
-                <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent animate-glow-pulse">
-                  Create Unicorns
-                </span>
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                Join India's most intense 48-hour innovation battles. Where crazy ideas 
-                become scalable startups and winners get fast-tracked to Inc Combinator.
-              </p>
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-4 justify-center items-center pt-4">
-              <ApplicationDialog
-                type="hackathon"
-                title="Register for Next Hackathon"
-                description="Join India's most competitive hackathon and turn your idea into a winning startup"
-              >
-                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                  Register for Next Hackathon
-                </Button>
-              </ApplicationDialog>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                View Past Winners
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 max-w-4xl mx-auto">
-              <Card className="p-6 bg-card-gradient border-border">
-                <div className="text-center space-y-2">
-                  <div className="text-3xl font-bold text-primary">25+</div>
-                  <div className="text-muted-foreground">Hackathons Conducted</div>
-                </div>
-              </Card>
-              <Card className="p-6 bg-card-gradient border-border">
-                <div className="text-center space-y-2">
-                  <div className="text-3xl font-bold text-primary">5000+</div>
-                  <div className="text-muted-foreground">Participants</div>
-                </div>
-              </Card>
-              <Card className="p-6 bg-card-gradient border-border">
-                <div className="text-center space-y-2">
-                  <div className="text-3xl font-bold text-primary">50+</div>
-                  <div className="text-muted-foreground">Winning Teams Funded</div>
-                </div>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Upcoming Hackathons */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">
-              Upcoming{" "}
-              <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
-                Hackathons
-              </span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              48 hours to build the future. Multiple tracks. Massive prizes. Direct path to funding.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-            {upcomingHackathons.map((hackathon, index) => (
-              <Card key={index} className="p-8 bg-card-gradient border-border hover:shadow-orange-glow transition-all duration-300">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary">
-                      {hackathon.status}
-                    </Badge>
-                    <div className="flex items-center space-x-2 text-muted-foreground">
-                      <Calendar className="w-4 h-4" />
-                      <span className="text-sm">{hackathon.date}</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h3 className="text-2xl font-bold">{hackathon.title}</h3>
-                    <p className="text-muted-foreground">{hackathon.theme}</p>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Prize Pool:</span>
-                      <span className="font-semibold text-primary">{hackathon.prizes}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Expected:</span>
-                      <span className="font-semibold">{hackathon.participants}</span>
-                    </div>
-                  </div>
-
-                  <ApplicationDialog
-                    type="hackathon"
-                    title={`Register for ${hackathon.title}`}
-                    description={`Join the ${hackathon.title} and compete for ${hackathon.prizes}`}
-                  >
-                    <Button 
-                      variant={hackathon.status === "Registration Open" ? "hero" : "outline"} 
-                      className="w-full"
-                    >
-                      {hackathon.status === "Registration Open" ? "Register Now" : "Get Notified"}
-                    </Button>
-                  </ApplicationDialog>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Competition Tracks */}
-      <section className="py-20 bg-muted/5">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Competition Tracks</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Multiple specialized tracks focusing on India's biggest challenges
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            {tracks.map((track, index) => (
-              <Card key={index} className="p-8 bg-card-gradient border-border hover:shadow-orange-glow transition-all duration-300">
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-primary">{track.name}</h3>
-                  <p className="text-muted-foreground">{track.description}</p>
-                  <div className="pt-4 border-t border-border">
-                    <div className="text-lg font-semibold">{track.prize}</div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Frequently Asked Questions</h2>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <Accordion type="single" collapsible className="space-y-4">
-              <AccordionItem value="item-1" className="bg-card-gradient border border-border rounded-lg px-6">
-                <AccordionTrigger className="text-left">Who can participate in Inc Combinator hackathons?</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  Anyone with a passion for solving India's problems can participate. We welcome students, working professionals, entrepreneurs, and international participants. Teams of 2-4 members are ideal.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-2" className="bg-card-gradient border border-border rounded-lg px-6">
-                <AccordionTrigger className="text-left">What happens to winning teams?</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  Winners get fast-tracked to Inc Combinator's incubation program, receive immediate funding consideration, access to our mentor network, and potential partnerships with industry leaders.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-3" className="bg-card-gradient border border-border rounded-lg px-6">
-                <AccordionTrigger className="text-left">What support is provided during the hackathon?</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  We provide mentorship from industry experts, technical support, cloud credits, APIs access, workspace, meals, and 24/7 assistance during the 48-hour period.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-4" className="bg-card-gradient border border-border rounded-lg px-6">
-                <AccordionTrigger className="text-left">How are projects evaluated?</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  Projects are judged on innovation, market potential, technical execution, scalability, and social impact. Our panel includes successful entrepreneurs, VCs, and industry experts.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-
-          <div className="text-center pt-16">
-            <ApplicationDialog
-              type="hackathon"
-              title="Register for Next Hackathon"
-              description="Join the next hackathon and build the future in 48 hours"
-            >
-              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+      <main className="container mx-auto px-4 pt-20 pb-12">
+        {/* Hero Section */}
+        <section className="text-center mb-16">
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-6">
+            Inc Combinator Hackathons
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8">
+            Join India's most exciting hackathons where innovation meets opportunity. Code, compete, and create solutions that matter.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <HackathonRegistrationForm>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
                 Register for Next Hackathon
               </Button>
-            </ApplicationDialog>
+            </HackathonRegistrationForm>
+            <Button variant="outline" size="lg">
+              View Past Events
+            </Button>
           </div>
+        </section>
+
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Participants</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">5,000+</div>
+              <p className="text-xs text-muted-foreground">Across all events</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Prize Money</CardTitle>
+              <Trophy className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">₹50L+</div>
+              <p className="text-xs text-muted-foreground">Total distributed</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Projects Built</CardTitle>
+              <Code className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">1,200+</div>
+              <p className="text-xs text-muted-foreground">Innovative solutions</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+              <Target className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">25%</div>
+              <p className="text-xs text-muted-foreground">Become startups</p>
+            </CardContent>
+          </Card>
         </div>
-      </section>
+
+        {/* Upcoming Hackathons */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Upcoming Hackathons</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {upcomingHackathons.map((hackathon) => (
+              <Card key={hackathon.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Badge variant={hackathon.status === "Registration Open" ? "default" : "secondary"}>
+                      {hackathon.status}
+                    </Badge>
+                    <div className="text-2xl">🏆</div>
+                  </div>
+                  <CardTitle className="text-xl">{hackathon.title}</CardTitle>
+                  <CardDescription className="text-sm font-medium text-primary">
+                    {hackathon.theme}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">{hackathon.description}</p>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span>{hackathon.date}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <span>{hackathon.location}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Trophy className="h-4 w-4 text-muted-foreground" />
+                      <span>Prize Pool: {hackathon.prizePool}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span>{hackathon.participants} participants expected</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span>Register by: {hackathon.registrationDeadline}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 space-y-2">
+                    {hackathon.status === "Registration Open" ? (
+                      <HackathonRegistrationForm>
+                        <Button className="w-full">
+                          Register Now
+                        </Button>
+                      </HackathonRegistrationForm>
+                    ) : (
+                      <Button className="w-full" disabled>
+                        Registration Opens Soon
+                      </Button>
+                    )}
+                    <Button variant="outline" className="w-full">
+                      Learn More
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Competition Tracks */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Competition Tracks</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tracks.map((track, index) => (
+              <Card key={index} className="hover:shadow-md transition-all duration-300">
+                <CardHeader>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-2xl">{track.icon}</div>
+                    <CardTitle className="text-lg">{track.name}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">{track.description}</p>
+                  <div>
+                    <p className="text-sm font-medium mb-2">Popular Technologies:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {track.technologies.map((tech) => (
+                        <Badge key={tech} variant="secondary" className="text-xs">
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Prizes */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Prizes & Rewards</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {prizes.map((prize, index) => (
+              <Card key={index} className={`hover:shadow-lg transition-all duration-300 ${index === 0 ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900' : ''}`}>
+                <CardHeader className="text-center">
+                  <div className="text-4xl mb-2">
+                    {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+                  </div>
+                  <CardTitle className="text-xl">{prize.position}</CardTitle>
+                  <CardDescription className="text-2xl font-bold text-primary">
+                    {prize.amount}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {prize.benefits.map((benefit, idx) => (
+                      <div key={idx} className="flex items-center space-x-2">
+                        <Zap className="h-4 w-4 text-primary" />
+                        <span className="text-sm">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Past Winners */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Past Winners</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {pastWinners.map((winner, index) => (
+              <Card key={index} className="hover:shadow-md transition-all duration-300">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">{winner.winner}</CardTitle>
+                    <Badge variant="outline">{winner.year}</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-muted-foreground">{winner.project}</p>
+                  <div className="flex items-center space-x-2">
+                    <Trophy className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-primary">{winner.prize}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Call to Action */}
+        <section className="text-center py-16 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-3xl">
+          <h2 className="text-3xl font-bold mb-4">Ready to Code Your Way to Success?</h2>
+          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Join thousands of developers, designers, and innovators in creating solutions that can change the world. 
+            Register now and be part of India's premier hackathon experience.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <HackathonRegistrationForm>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+                Register Now
+              </Button>
+            </HackathonRegistrationForm>
+            <Button variant="outline" size="lg">
+              Learn More
+            </Button>
+          </div>
+        </section>
+      </main>
     </div>
   );
 };
