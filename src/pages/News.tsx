@@ -1,3 +1,4 @@
+
 import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, TrendingUp, DollarSign, Building2, Search, ExternalLink } from "lucide-react";
+import NewsDetail from "@/components/NewsDetail";
 
 const News = () => {
   const breakingNews = {
@@ -174,10 +176,12 @@ const News = () => {
                 <Badge variant="outline">{breakingNews.category}</Badge>
                 <span className="text-sm text-muted-foreground">{breakingNews.source}</span>
               </div>
-              <Button size="sm">
-                Read Full Story
-                <ExternalLink className="ml-2 h-3 w-3" />
-              </Button>
+              <NewsDetail news={breakingNews}>
+                <Button size="sm">
+                  Read Full Story
+                  <ExternalLink className="ml-2 h-3 w-3" />
+                </Button>
+              </NewsDetail>
             </div>
           </CardContent>
         </Card>
@@ -200,14 +204,16 @@ const News = () => {
                   <CardDescription>{story.excerpt}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                     <span>{story.source}</span>
                     <div className="flex items-center space-x-1">
                       <Clock className="h-3 w-3" />
                       <span>{story.time}</span>
                     </div>
                   </div>
-                  <Button className="w-full mt-4" variant="outline">Read More</Button>
+                  <NewsDetail news={story}>
+                    <Button className="w-full" variant="outline">Read More</Button>
+                  </NewsDetail>
                 </CardContent>
               </Card>
             ))}
