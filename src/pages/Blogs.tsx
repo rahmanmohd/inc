@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, User, Clock, Search, Tag, TrendingUp } from "lucide-react";
+import BlogDetail from "@/components/BlogDetail";
 
 const Blogs = () => {
   const featuredPost = {
@@ -197,7 +198,9 @@ const Blogs = () => {
                   </Badge>
                 ))}
               </div>
-              <Button size="lg">Read Article</Button>
+              <BlogDetail blog={featuredPost}>
+                <Button size="lg">Read Article</Button>
+              </BlogDetail>
             </div>
           </div>
         </Card>
@@ -253,7 +256,9 @@ const Blogs = () => {
                     </Badge>
                   ))}
                 </div>
-                <Button className="w-full" variant="outline">Read More</Button>
+                <BlogDetail blog={post}>
+                  <Button className="w-full" variant="outline">Read More</Button>
+                </BlogDetail>
               </CardContent>
             </Card>
           ))}

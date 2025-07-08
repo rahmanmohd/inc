@@ -3,36 +3,38 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, Calendar, ArrowDown } from "lucide-react";
+import ApplicationDialog from "@/components/ApplicationDialog";
+import { Link } from "react-router-dom";
 
 const INCLab = () => {
   const applicationProcess = [
     {
       step: "1",
-      title: "Submit Application",
+      title: "Submit Application", 
       description: "Complete our comprehensive application form",
       timeline: "5 minutes",
       requirements: [
         "Startup details & pitch deck",
         "Team information",
-        "Market analysis", 
+        "Market analysis",
         "2-minute video pitch"
       ]
     },
     {
-      step: "2", 
+      step: "2",
       title: "Initial Review",
       description: "Our team evaluates applications",
       timeline: "1-2 weeks",
       requirements: [
         "Market potential assessment",
-        "Team strength evaluation",
+        "Team strength evaluation", 
         "Scalability analysis",
         "Innovation factor review"
       ]
     },
     {
       step: "3",
-      title: "Interview Round", 
+      title: "Interview Round",
       description: "Deep-dive discussion with founders",
       timeline: "1 week",
       requirements: [
@@ -46,7 +48,7 @@ const INCLab = () => {
       step: "4",
       title: "Final Selection",
       description: "Welcome to Inc Combinator family",
-      timeline: "1-2 weeks", 
+      timeline: "1-2 weeks",
       requirements: [
         "Legal documentation",
         "Program onboarding",
@@ -60,21 +62,21 @@ const INCLab = () => {
     {
       name: "FinFlow",
       founder: "Aditi Sharma",
-      category: "FinTech", 
+      category: "FinTech",
       description: "Digital lending platform for MSMEs",
       stage: "Seed",
       traction: "₹50L monthly GMV"
     },
     {
       name: "AgriSmart",
-      founder: "Rajesh Patel", 
+      founder: "Rajesh Patel",
       category: "AgriTech",
       description: "IoT-based crop monitoring system",
       stage: "Pre-Seed",
       traction: "1000+ farmers onboarded"
     },
     {
-      name: "EduBridge", 
+      name: "EduBridge",
       founder: "Priya Singh",
       category: "EdTech",
       description: "Skill-based learning platform",
@@ -84,7 +86,7 @@ const INCLab = () => {
     {
       name: "HealthLink",
       founder: "Dr. Arjun Kumar",
-      category: "HealthTech", 
+      category: "HealthTech",
       description: "Telemedicine for rural areas",
       stage: "Pre-Seed",
       traction: "10K+ consultations"
@@ -94,14 +96,14 @@ const INCLab = () => {
       founder: "Vikash Gupta",
       category: "Logistics",
       description: "Last-mile delivery optimization",
-      stage: "Seed", 
+      stage: "Seed",
       traction: "100+ enterprise clients"
     },
     {
       name: "GreenEnergy",
       founder: "Sneha Reddy",
       category: "CleanTech",
-      description: "Solar financing platform", 
+      description: "Solar financing platform",
       stage: "Pre-Seed",
       traction: "₹10Cr+ facilitated loans"
     }
@@ -119,7 +121,7 @@ const INCLab = () => {
       icon: "🛠️"
     },
     {
-      title: "Cloud Credits", 
+      title: "Cloud Credits",
       description: "₹25L+ in AWS, GCP, and Azure credits",
       icon: "☁️"
     },
@@ -166,12 +168,20 @@ const INCLab = () => {
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 justify-center items-center pt-4">
-              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                Start Application
-              </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                View Requirements
-              </Button>
+              <ApplicationDialog
+                type="inclab"
+                title="Apply to INCLab"
+                description="Start your application to join India's most selective startup accelerator"
+              >
+                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                  Start Application
+                </Button>
+              </ApplicationDialog>
+              <Link to="/requirements">
+                <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+                  View Requirements
+                </Button>
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-8 max-w-5xl mx-auto">
@@ -253,9 +263,15 @@ const INCLab = () => {
                   <div className="text-4xl font-bold text-primary">15</div>
                   <div className="text-muted-foreground">Spots Available</div>
                 </div>
-                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                  Apply Now
-                </Button>
+                <ApplicationDialog
+                  type="inclab"
+                  title="Apply to INCLab"
+                  description="Join the most selective startup accelerator in India"
+                >
+                  <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                    Apply Now
+                  </Button>
+                </ApplicationDialog>
                 <p className="text-sm text-muted-foreground">
                   Application takes ~5 minutes
                 </p>
@@ -320,9 +336,15 @@ const INCLab = () => {
             <p className="text-muted-foreground mb-4">
               Join these exceptional founders in building India's next unicorns
             </p>
-            <Button variant="hero" size="lg">
-              Apply for Next Cohort
-            </Button>
+            <ApplicationDialog
+              type="inclab"
+              title="Apply to Next Cohort"
+              description="Join our next cohort of exceptional startups"
+            >
+              <Button variant="hero" size="lg">
+                Apply for Next Cohort
+              </Button>
+            </ApplicationDialog>
           </div>
         </div>
       </section>
@@ -416,9 +438,15 @@ const INCLab = () => {
                 <p className="text-muted-foreground">
                   Investment, credits, mentorship, and resources combined
                 </p>
-                <Button variant="hero" size="lg" className="mt-4">
-                  Start Your Application
-                </Button>
+                <ApplicationDialog
+                  type="inclab"
+                  title="Start Your INCLab Application"
+                  description="Begin your journey with India's premier startup accelerator"
+                >
+                  <Button variant="hero" size="lg" className="mt-4">
+                    Start Your Application
+                  </Button>
+                </ApplicationDialog>
               </div>
             </Card>
           </div>

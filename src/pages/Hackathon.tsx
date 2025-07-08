@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Calendar, Users, ArrowDown } from "lucide-react";
+import ApplicationDialog from "@/components/ApplicationDialog";
 
 const Hackathon = () => {
   const upcomingHackathons = [
@@ -16,7 +17,7 @@ const Hackathon = () => {
       status: "Registration Open"
     },
     {
-      title: "FinTech Disruption Hackathon",
+      title: "FinTech Disruption Hackathon", 
       date: "April 20-22, 2024",
       theme: "Financial Inclusion for Bharat",
       prizes: "₹15L Total Prize Pool",
@@ -26,7 +27,7 @@ const Hackathon = () => {
     {
       title: "HealthTech for All",
       date: "May 10-12, 2024",
-      theme: "Accessible Healthcare Solutions",
+      theme: "Accessible Healthcare Solutions", 
       prizes: "₹12L Total Prize Pool",
       participants: "600+ Expected",
       status: "Save the Date"
@@ -40,7 +41,7 @@ const Hackathon = () => {
       prize: "₹3L + Incubation Opportunity"
     },
     {
-      name: "FinTech Track", 
+      name: "FinTech Track",
       description: "Financial inclusion and digital payments",
       prize: "₹3L + Banking Partnership"
     },
@@ -82,9 +83,15 @@ const Hackathon = () => {
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 justify-center items-center pt-4">
-              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                Register for Next Hackathon
-              </Button>
+              <ApplicationDialog
+                type="hackathon"
+                title="Register for Next Hackathon"
+                description="Join India's most competitive hackathon and turn your idea into a winning startup"
+              >
+                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                  Register for Next Hackathon
+                </Button>
+              </ApplicationDialog>
               <Button variant="outline" size="lg" className="text-lg px-8 py-6">
                 View Past Winners
               </Button>
@@ -159,12 +166,18 @@ const Hackathon = () => {
                     </div>
                   </div>
 
-                  <Button 
-                    variant={hackathon.status === "Registration Open" ? "hero" : "outline"} 
-                    className="w-full"
+                  <ApplicationDialog
+                    type="hackathon"
+                    title={`Register for ${hackathon.title}`}
+                    description={`Join the ${hackathon.title} and compete for ${hackathon.prizes}`}
                   >
-                    {hackathon.status === "Registration Open" ? "Register Now" : "Get Notified"}
-                  </Button>
+                    <Button 
+                      variant={hackathon.status === "Registration Open" ? "hero" : "outline"} 
+                      className="w-full"
+                    >
+                      {hackathon.status === "Registration Open" ? "Register Now" : "Get Notified"}
+                    </Button>
+                  </ApplicationDialog>
                 </div>
               </Card>
             ))}
@@ -238,9 +251,15 @@ const Hackathon = () => {
           </div>
 
           <div className="text-center pt-16">
-            <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-              Register for Next Hackathon
-            </Button>
+            <ApplicationDialog
+              type="hackathon"
+              title="Register for Next Hackathon"
+              description="Join the next hackathon and build the future in 48 hours"
+            >
+              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                Register for Next Hackathon
+              </Button>
+            </ApplicationDialog>
           </div>
         </div>
       </section>

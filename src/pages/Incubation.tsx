@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Users, Calendar, ArrowDown } from "lucide-react";
+import ApplicationDialog from "@/components/ApplicationDialog";
 
 const Incubation = () => {
   const incubationPlans = [
@@ -104,9 +105,15 @@ const Incubation = () => {
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 justify-center items-center pt-4">
-              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                Apply for Incubation
-              </Button>
+              <ApplicationDialog
+                type="incubation"
+                title="Apply for Incubation Program"
+                description="Join our intensive incubation program to transform your startup into a market leader"
+              >
+                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                  Apply for Incubation
+                </Button>
+              </ApplicationDialog>
               <Button variant="outline" size="lg" className="text-lg px-8 py-6">
                 Meet Our Portfolio
               </Button>
@@ -192,9 +199,15 @@ const Incubation = () => {
                     </ul>
                   </div>
 
-                  <Button variant={index === 1 ? "hero" : "outline"} className="w-full">
-                    Apply Now
-                  </Button>
+                  <ApplicationDialog
+                    type="incubation"
+                    title={`Apply for ${plan.name}`}
+                    description={`Join our ${plan.name} program tailored for ${plan.ideal.toLowerCase()}`}
+                  >
+                    <Button variant={index === 1 ? "hero" : "outline"} className="w-full">
+                      Apply Now
+                    </Button>
+                  </ApplicationDialog>
                 </div>
               </Card>
             ))}
@@ -308,9 +321,15 @@ const Incubation = () => {
           </div>
 
           <div className="text-center pt-16">
-            <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-              Start Your Application
-            </Button>
+            <ApplicationDialog
+              type="incubation"
+              title="Apply for Incubation Program"
+              description="Start your journey with Inc Combinator's incubation program"
+            >
+              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                Start Your Application
+              </Button>
+            </ApplicationDialog>
           </div>
         </div>
       </section>
