@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -9,7 +10,23 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
-const ApplicationDialog = ({ triggerText = "Apply Now", variant = "hero" as const }) => {
+interface ApplicationDialogProps {
+  children: React.ReactNode;
+  type?: string;
+  title?: string;
+  description?: string;
+  triggerText?: string;
+  variant?: "hero" | "default" | "outline";
+}
+
+const ApplicationDialog = ({ 
+  children, 
+  type = "general", 
+  title = "Inc Combinator Application", 
+  description = "Apply to join our program",
+  triggerText = "Apply Now",
+  variant = "hero" 
+}: ApplicationDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState({
@@ -40,7 +57,7 @@ const ApplicationDialog = ({ triggerText = "Apply Now", variant = "hero" as cons
     keyMetrics: "",
     
     // Program Specific
-    programType: "",
+    programType: type,
     whyIncCombinator: "",
     goals: "",
     challenges: "",
@@ -52,7 +69,7 @@ const ApplicationDialog = ({ triggerText = "Apply Now", variant = "hero" as cons
     agreements: false
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.agreements) {
@@ -75,23 +92,22 @@ const ApplicationDialog = ({ triggerText = "Apply Now", variant = "hero" as cons
     setIsOpen(false);
   };
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} size="lg">
-          {triggerText}
-        </Button>
+        {children}
       </DialogTrigger>
       
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
-            Inc Combinator Application
+            {title}
           </DialogTitle>
+          <p className="text-center text-muted-foreground">{description}</p>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -305,20 +321,6 @@ const ApplicationDialog = ({ triggerText = "Apply Now", variant = "hero" as cons
             <h3 className="text-xl font-semibold mb-4 text-primary">Program Details</h3>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="programType">Program Type *</Label>
-                <Select onValueChange={(value) => handleInputChange("programType", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select program" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="mvp-lab">MVP Lab</SelectItem>
-                    <SelectItem value="incubation">Incubation Program</SelectItem>
-                    <SelectItem value="hackathon">Hackathon Track</SelectItem>
-                    <SelectItem value="inclab">INC Lab</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
                 <Label htmlFor="whyIncCombinator">Why Inc Combinator? *</Label>
                 <Textarea
                   id="whyIncCombinator"
@@ -380,7 +382,7 @@ const ApplicationDialog = ({ triggerText = "Apply Now", variant = "hero" as cons
             <Checkbox
               id="agreements"
               checked={formData.agreements}
-              onCheckedChange={(checked) => handleInputChange("agreements", checked)}
+              onCheckedChange={(checked) => handleInputChange("agreements", checked as boolean)}
             />
             <Label htmlFor="agreements" className="text-sm leading-5">
               I agree to the Terms & Conditions and confirm that all information provided is accurate. 
