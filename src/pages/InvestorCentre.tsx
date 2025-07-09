@@ -10,11 +10,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Building2, DollarSign, TrendingUp, Users, Search, Filter, MapPin, ExternalLink, Star, Mail, Linkedin, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import PitchSubmissionDialog from "@/components/PitchSubmissionDialog";
+import ConsultationDialog from "@/components/ConsultationDialog";
+import Footer from "@/components/Footer";
 
 const InvestorCentre = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [pitchMessage, setPitchMessage] = useState("");
   const [selectedInvestor, setSelectedInvestor] = useState<any>(null);
+  
   const featuredInvestors = [
     {
       id: 1,
@@ -164,6 +170,26 @@ const InvestorCentre = () => {
   const investorTypes = ["All Types", "Venture Capital", "Angel Investor", "Private Equity", "Corporate VC"];
   const sectors = ["All Sectors", "FinTech", "HealthTech", "EdTech", "SaaS", "E-commerce", "Consumer"];
 
+  const handleGetIntroduction = (investor: any) => {
+    console.log("Getting introduction for:", investor.name);
+    toast({
+      title: "Introduction Request Sent!",
+      description: `We'll facilitate an introduction with ${investor.name} within 48 hours.`,
+    });
+  };
+
+  const handleViewProfile = (investorId: number) => {
+    navigate(`/investor-profile/${investorId}`);
+  };
+
+  const handleConnectWithInvestor = (investor: any) => {
+    console.log("Connecting with investor:", investor.name);
+    toast({
+      title: "Connection Request Sent!",
+      description: `Your profile has been shared with ${investor.name}. They'll review and respond soon.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -177,10 +203,12 @@ const InvestorCentre = () => {
             Connect with India's top investors, VCs, and angels. Find the right funding partner for your startup's growth journey.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-              Submit Your Pitch
-            </Button>
-            <Button variant="outline" size="lg">
+            <PitchSubmissionDialog>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+                Submit Your Pitch
+              </Button>
+            </PitchSubmissionDialog>
+            <Button variant="outline" size="lg" onClick={() => window.scrollTo({ top: 400, behavior: 'smooth' })}>
               Browse Investors
             </Button>
           </div>
@@ -357,10 +385,18 @@ const InvestorCentre = () => {
                       </div>
 
                       <div className="flex space-x-2">
-                        <Button className="flex-1" size="sm">
+                        <Button 
+                          className="flex-1" 
+                          size="sm"
+                          onClick={() => handleGetIntroduction(investor)}
+                        >
                           Get Introduction
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleViewProfile(investor.id)}
+                        >
                           <ExternalLink className="h-4 w-4" />
                         </Button>
                       </div>
@@ -400,8 +436,19 @@ const InvestorCentre = () => {
                         <div className="text-right">
                           <p className="text-sm text-muted-foreground">{investor.portfolio} companies</p>
                           <div className="flex space-x-1 mt-2">
-                            <Button size="sm" variant="outline">View</Button>
-                            <Button size="sm">Connect</Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleViewProfile(investor.id)}
+                            >
+                              View
+                            </Button>
+                            <Button 
+                              size="sm"
+                              onClick={() => handleConnectWithInvestor(investor)}
+                            >
+                              Connect
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -460,7 +507,12 @@ const InvestorCentre = () => {
                       </div>
                     </div>
 
-                    <Button className="w-full">Request Introduction</Button>
+                    <Button 
+                      className="w-full"
+                      onClick={() => handleGetIntroduction(angel)}
+                    >
+                      Request Introduction
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -660,15 +712,20 @@ const InvestorCentre = () => {
             Join Inc Combinator and get access to our exclusive network of investors, mentors, and funding opportunities.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-              Apply to Inc Combinator
-            </Button>
-            <Button variant="outline" size="lg">
-              Schedule Consultation
-            </Button>
+            <PitchSubmissionDialog>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+                Apply to Inc Combinator
+              </Button>
+            </PitchSubmissionDialog>
+            <ConsultationDialog>
+              <Button variant="outline" size="lg">
+                Schedule Consultation
+              </Button>
+            </ConsultationDialog>
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 };

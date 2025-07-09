@@ -1,10 +1,10 @@
-
 import Navigation from "@/components/Navigation";
+import IncubationApplicationForm from "@/components/IncubationApplicationForm";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, Users, TrendingUp, Lightbulb, Target, Award, Building } from "lucide-react";
-import IncubationApplicationForm from "@/components/IncubationApplicationForm";
 
 const Incubation = () => {
   const programs = [
@@ -353,6 +353,7 @@ const Incubation = () => {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 };

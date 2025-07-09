@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -452,6 +453,8 @@ const INCLab = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

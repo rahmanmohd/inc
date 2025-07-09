@@ -1,10 +1,10 @@
-
 import Navigation from "@/components/Navigation";
+import HackathonRegistrationForm from "@/components/HackathonRegistrationForm";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Trophy, Users, Code, Zap, Target } from "lucide-react";
-import HackathonRegistrationForm from "@/components/HackathonRegistrationForm";
 
 const Hackathon = () => {
   const upcomingHackathons = [
@@ -361,6 +361,7 @@ const Hackathon = () => {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 };
