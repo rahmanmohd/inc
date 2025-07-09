@@ -1,6 +1,8 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 const WeeklyShowcase = () => {
   const featuredStartups = [
@@ -82,18 +84,22 @@ const WeeklyShowcase = () => {
                   </div>
                 </div>
 
-                <Button variant="ghost" className="w-full mt-4 group-hover:bg-primary/10">
-                  Learn More
-                </Button>
+                <Link to={`/startup-profile/${startup.id}`}>
+                  <Button variant="ghost" className="w-full mt-4 group-hover:bg-primary/10">
+                    Learn More
+                  </Button>
+                </Link>
               </div>
             </Card>
           ))}
         </div>
 
         <div className="text-center">
-          <Button variant="outline" size="lg">
-            View All Featured Startups
-          </Button>
+          <Link to="/featured-startups">
+            <Button variant="outline" size="lg">
+              View All Featured Startups
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

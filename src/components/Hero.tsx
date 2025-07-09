@@ -1,7 +1,10 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowDown } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-image.jpg";
+import ApplicationDialog from "@/components/ApplicationDialog";
 
 const Hero = () => {
   return (
@@ -34,12 +37,16 @@ const Hero = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col md:flex-row gap-4 justify-center items-center pt-8">
-          <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-            Apply to INClab
-          </Button>
-          <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-            View Current Cohort
-          </Button>
+          <ApplicationDialog program="INClab">
+            <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+              Apply to INClab
+            </Button>
+          </ApplicationDialog>
+          <Link to="/current-cohort">
+            <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+              View Current Cohort
+            </Button>
+          </Link>
         </div>
 
         {/* Quick Stats */}

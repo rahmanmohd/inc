@@ -1,7 +1,10 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "lucide-react";
+import { Link } from "react-router-dom";
+import ApplicationDialog from "@/components/ApplicationDialog";
 
 const CohortInfo = () => {
   const currentCohort = {
@@ -15,6 +18,7 @@ const CohortInfo = () => {
 
   const top10Startups = [
     {
+      id: 1,
       name: "NeoFinance",
       founder: "Rahul Sharma",
       category: "FinTech",
@@ -22,6 +26,7 @@ const CohortInfo = () => {
       status: "Selected"
     },
     {
+      id: 2,
       name: "GreenEnergy Solutions",
       founder: "Priya Patel",
       category: "CleanTech",
@@ -29,6 +34,7 @@ const CohortInfo = () => {
       status: "Selected"
     },
     {
+      id: 3,
       name: "LogiChain",
       founder: "Arjun Singh",
       category: "Logistics",
@@ -36,6 +42,7 @@ const CohortInfo = () => {
       status: "Under Review"
     },
     {
+      id: 4,
       name: "MedAssist",
       founder: "Dr. Sneha Reddy",
       category: "HealthTech",
@@ -43,6 +50,7 @@ const CohortInfo = () => {
       status: "Selected"
     },
     {
+      id: 5,
       name: "SkillBridge",
       founder: "Vikash Kumar",
       category: "EdTech",
@@ -101,9 +109,11 @@ const CohortInfo = () => {
                 <div className="text-4xl font-bold text-primary">₹50L</div>
                 <div className="text-muted-foreground">Investment + Credits</div>
               </div>
-              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                Apply to Current Cohort
-              </Button>
+              <ApplicationDialog program="Q1 2024 Cohort">
+                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                  Apply to Current Cohort
+                </Button>
+              </ApplicationDialog>
             </div>
           </div>
         </Card>
@@ -155,18 +165,22 @@ const CohortInfo = () => {
                     {startup.description}
                   </p>
 
-                  <Button variant="ghost" className="w-full text-sm group-hover:bg-primary/10">
-                    View Profile
-                  </Button>
+                  <Link to={`/startup-profile/${startup.id}`}>
+                    <Button variant="ghost" className="w-full text-sm group-hover:bg-primary/10">
+                      View Profile
+                    </Button>
+                  </Link>
                 </div>
               </Card>
             ))}
           </div>
 
           <div className="text-center pt-8">
-            <Button variant="outline" size="lg">
-              View All Applications
-            </Button>
+            <Link to="/all-applications">
+              <Button variant="outline" size="lg">
+                View All Applications
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

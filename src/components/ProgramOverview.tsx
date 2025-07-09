@@ -1,6 +1,9 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
+import ApplicationDialog from "@/components/ApplicationDialog";
 
 const ProgramOverview = () => {
   const programs = [
@@ -93,9 +96,11 @@ const ProgramOverview = () => {
                     <div className="text-lg font-semibold text-primary">
                       {program.investment}
                     </div>
-                    <Button variant="hero" className="w-full">
-                      Apply Now
-                    </Button>
+                    <ApplicationDialog program={program.title}>
+                      <Button variant="hero" className="w-full">
+                        Apply Now
+                      </Button>
+                    </ApplicationDialog>
                   </div>
                 </div>
               </div>
@@ -120,12 +125,16 @@ const ProgramOverview = () => {
               is simple: great ideas need great execution support.
             </p>
             <div className="flex flex-col md:flex-row gap-4 justify-center pt-4">
-              <Button variant="outline" size="lg">
-                Learn About Our Philosophy
-              </Button>
-              <Button variant="hero" size="lg">
-                Start Your Application
-              </Button>
+              <Link to="/philosophy">
+                <Button variant="outline" size="lg">
+                  Learn About Our Philosophy
+                </Button>
+              </Link>
+              <ApplicationDialog program="Inc Combinator">
+                <Button variant="hero" size="lg">
+                  Start Your Application
+                </Button>
+              </ApplicationDialog>
             </div>
           </div>
         </Card>
