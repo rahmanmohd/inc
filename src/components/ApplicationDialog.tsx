@@ -11,9 +11,18 @@ import { useToast } from "@/hooks/use-toast";
 interface ApplicationDialogProps {
   children: React.ReactNode;
   program?: string;
+  type?: string;
+  title?: string;
+  description?: string;
 }
 
-const ApplicationDialog = ({ children, program = "INClab" }: ApplicationDialogProps) => {
+const ApplicationDialog = ({ 
+  children, 
+  program = "INClab",
+  type,
+  title,
+  description
+}: ApplicationDialogProps) => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -26,6 +35,9 @@ const ApplicationDialog = ({ children, program = "INClab" }: ApplicationDialogPr
     setOpen(false);
   };
 
+  // Use custom title if provided, otherwise default
+  const dialogTitle = title || `Apply to ${program}`;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -33,7 +45,7 @@ const ApplicationDialog = ({ children, program = "INClab" }: ApplicationDialogPr
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Apply to {program}</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6">
