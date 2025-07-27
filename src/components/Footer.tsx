@@ -37,7 +37,7 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Quick Links</h3>
             <div className="space-y-2">
-              <a href="/about-us" className="block text-sm text-muted-foreground hover:text-primary transition-colors">About Us</a>
+              <a href="/about" className="block text-sm text-muted-foreground hover:text-primary transition-colors">About Us</a>
               <a href="/incubation" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Incubation</a>
               <a href="/hackathon" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Hackathons</a>
               <a href="/investor-centre" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Investor Centre</a>
@@ -51,7 +51,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold">Programs</h3>
             <div className="space-y-2">
               <a href="/mvp-lab" className="block text-sm text-muted-foreground hover:text-primary transition-colors">MVP Lab</a>
-              <a href="/inc-lab" className="block text-sm text-muted-foreground hover:text-primary transition-colors">INC Lab</a>
+              <a href="/inclab" className="block text-sm text-muted-foreground hover:text-primary transition-colors">INC Lab</a>
               <a href="/meet-cofounder" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Meet Co-founder</a>
               <a href="/resources" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Resources</a>
               <a href="/blogs" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Blogs</a>
