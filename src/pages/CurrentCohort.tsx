@@ -201,9 +201,11 @@ const CurrentCohort = () => {
                       Apply for Next Cohort
                     </Button>
                   </ApplicationDialog>
-                  <Button variant="outline" size="lg">
-                    Program Details
-                  </Button>
+                  <Link to="/program-details">
+                    <Button variant="outline" size="lg">
+                      Program Details
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </Card>

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Hackathon from "./pages/Hackathon";
+import HackathonDetail from "./pages/HackathonDetail";
 import Incubation from "./pages/Incubation";
 import MVPLab from "./pages/MVPLab";
 import INCLab from "./pages/INCLab";
@@ -17,11 +17,13 @@ import NotFound from "./pages/NotFound";
 import StartupDashboard from "./pages/StartupDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import StartupDirectory from "./pages/StartupDirectory";
+import StartupProfile from "./pages/StartupProfile";
 import Deals from "./pages/Deals";
 import Blogs from "./pages/Blogs";
 import News from "./pages/News";
 import MeetCofounder from "./pages/MeetCofounder";
 import InvestorCentre from "./pages/InvestorCentre";
+import InvestorProfile from "./pages/InvestorProfile";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import BlogDetail from "./pages/BlogDetail";
@@ -30,6 +32,8 @@ import CurrentCohort from "./pages/CurrentCohort";
 import FeaturedStartups from "./pages/FeaturedStartups";
 import Philosophy from "./pages/Philosophy";
 import AllApplications from "./pages/AllApplications";
+import ProgramDetails from "./pages/ProgramDetails";
+import ConsultationBooking from "./pages/ConsultationBooking";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +46,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/hackathon" element={<Hackathon />} />
+          <Route path="/hackathon/:id" element={<HackathonDetail />} />
           <Route path="/incubation" element={<Incubation />} />
           <Route path="/mvp-lab" element={<MVPLab />} />
           <Route path="/inclab" element={<INCLab />} />
@@ -54,17 +59,22 @@ const App = () => (
           <Route path="/blog/:id" element={<BlogDetail />} />
           <Route path="/requirements" element={<RequirementsDetail />} />
           <Route path="/startup-directory" element={<StartupDirectory />} />
+          <Route path="/startup-profile/:id" element={<StartupProfile />} />
           <Route path="/deals" element={<Deals />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/news" element={<News />} />
           <Route path="/meet-cofounder" element={<MeetCofounder />} />
           <Route path="/investor-centre" element={<InvestorCentre />} />
+          <Route path="/investor-profile/:id" element={<InvestorProfile />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-conditions" element={<TermsConditions />} />
           <Route path="/current-cohort" element={<CurrentCohort />} />
           <Route path="/featured-startups" element={<FeaturedStartups />} />
           <Route path="/philosophy" element={<Philosophy />} />
           <Route path="/all-applications" element={<AllApplications />} />
+          <Route path="/program-details" element={<ProgramDetails />} />
+          <Route path="/consultation-booking" element={<ConsultationBooking />} />
+          <Route path="/hackathon-detail/:id" element={<HackathonDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,155 +1,184 @@
 
-import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { ReactNode, useState } from "react";
+
+const consultationSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email"),
+  phone: z.string().min(10, "Please enter a valid phone number"),
+  company: z.string().min(2, "Company name is required"),
+  consultationType: z.string().min(1, "Please select consultation type"),
+  message: z.string().min(10, "Please provide more details"),
+});
 
 interface ConsultationDialogProps {
-  children: React.ReactNode;
+  children: ReactNode;
+  title?: string;
+  description?: string;
 }
 
-const ConsultationDialog = ({ children }: ConsultationDialogProps) => {
-  const { toast } = useToast();
+const ConsultationDialog = ({ children, title = "Schedule Consultation", description = "Book a consultation with our experts" }: ConsultationDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-    consultationType: "",
-    preferredTime: "",
-    message: ""
-  });
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Consultation request:", formData);
-    toast({
-      title: "Consultation Scheduled!",
-      description: "We'll contact you within 24 hours to confirm your consultation slot.",
-    });
-    setIsOpen(false);
-    setFormData({
+  const { toast } = useToast();
+  
+  const form = useForm<z.infer<typeof consultationSchema>>({
+    resolver: zodResolver(consultationSchema),
+    defaultValues: {
       name: "",
       email: "",
       phone: "",
       company: "",
       consultationType: "",
-      preferredTime: "",
-      message: ""
+      message: "",
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof consultationSchema>) => {
+    console.log("Consultation request:", values);
+    toast({
+      title: "Consultation Scheduled!",
+      description: "We'll contact you within 24 hours to confirm your consultation.",
     });
+    form.reset();
+    setIsOpen(false);
   };
+
+  const consultationTypes = [
+    { value: "startup-evaluation", label: "Startup Evaluation" },
+    { value: "business-model", label: "Business Model Review" },
+    { value: "funding-strategy", label: "Funding Strategy" },
+    { value: "product-development", label: "Product Development" },
+    { value: "market-validation", label: "Market Validation" },
+    { value: "general", label: "General Consultation" },
+  ];
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Schedule Consultation</DialogTitle>
-          <DialogDescription>
-            Book a consultation with our experts to discuss your startup journey and funding options.
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="name">Full Name *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Your full name"
-                required
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="john@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-            <div>
-              <Label htmlFor="email">Email *</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                placeholder="your@email.com"
-                required
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+91 9876543210" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="company"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your Startup" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-            <div>
-              <Label htmlFor="phone">Phone Number *</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
-                placeholder="+91 XXXXX XXXXX"
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="company">Company/Startup</Label>
-              <Input
-                id="company"
-                value={formData.company}
-                onChange={(e) => handleInputChange("company", e.target.value)}
-                placeholder="Your company name"
-              />
-            </div>
-            <div>
-              <Label htmlFor="consultationType">Consultation Type *</Label>
-              <Select onValueChange={(value) => handleInputChange("consultationType", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select consultation type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="funding">Funding Strategy</SelectItem>
-                  <SelectItem value="pitch">Pitch Preparation</SelectItem>
-                  <SelectItem value="business-model">Business Model</SelectItem>
-                  <SelectItem value="go-to-market">Go-to-Market Strategy</SelectItem>
-                  <SelectItem value="general">General Guidance</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="preferredTime">Preferred Time *</Label>
-              <Select onValueChange={(value) => handleInputChange("preferredTime", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select preferred time" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="morning">Morning (9 AM - 12 PM)</SelectItem>
-                  <SelectItem value="afternoon">Afternoon (12 PM - 5 PM)</SelectItem>
-                  <SelectItem value="evening">Evening (5 PM - 8 PM)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="message">Message</Label>
-            <Textarea
-              id="message"
-              value={formData.message}
-              onChange={(e) => handleInputChange("message", e.target.value)}
-              placeholder="Tell us about your specific needs and questions..."
-              rows={4}
+
+            <FormField
+              control={form.control}
+              name="consultationType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Consultation Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select consultation type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {consultationTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" className="bg-gradient-to-r from-primary to-orange-400">
+
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Message</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Tell us about your startup and what you'd like to discuss..."
+                      className="min-h-[80px]"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full">
               Schedule Consultation
             </Button>
-          </DialogFooter>
-        </form>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
