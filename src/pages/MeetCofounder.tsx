@@ -1,584 +1,435 @@
+
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { MapPin, Briefcase, Star, Search, Users, Plus, ExternalLink, Mail, Linkedin } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, MapPin, Briefcase, Users, TrendingUp, Star, Plus, MessageCircle, UserPlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import CofounderPostDialog from "@/components/CofounderPostDialog";
 
 const MeetCofounder = () => {
-  const { toast } = useToast();
-  const [connectMessage, setConnectMessage] = useState("");
-  
-  const featuredProfiles = [
+  const cofounderProfiles = [
     {
       id: 1,
       name: "Priya Sharma",
-      role: "Tech Co-founder",
-      expertise: "AI/ML, Backend Development",
-      experience: "8 years",
+      role: "Technical Co-founder",
+      skills: ["Full Stack", "AI/ML", "Cloud Architecture"],
       location: "Bangalore",
-      company: "Ex-Google",
-      bio: "Former ML engineer at Google, looking to build the next big thing in HealthTech. Passionate about using AI to solve healthcare challenges in India.",
-      skills: ["Python", "TensorFlow", "AWS", "Microservices"],
+      experience: "8 years",
       lookingFor: "Business Co-founder",
-      availability: "Immediately Available",
-      linkedin: "linkedin.com/in/priyasharma",
-      rating: 4.9,
-      avatar: "👩‍💻"
+      industries: ["FinTech", "HealthTech"],
+      description: "Experienced tech leader looking for business co-founder to build next-gen healthcare solutions.",
+      image: "👩‍💻",
+      verified: true
     },
     {
       id: 2,
-      name: "Rahul Verma",
+      name: "Rajesh Kumar",
       role: "Business Co-founder",
-      expertise: "Strategy, Operations, Fundraising",
-      experience: "6 years",
+      skills: ["Strategy", "Sales", "Marketing"],
       location: "Mumbai",
-      company: "Ex-McKinsey",
-      bio: "Former consultant at McKinsey with expertise in scaling businesses. Successfully raised $2M+ for previous ventures. Interested in FinTech and EdTech.",
-      skills: ["Business Strategy", "Fundraising", "Operations", "Market Analysis"],
+      experience: "12 years",
       lookingFor: "Technical Co-founder",
-      availability: "Available part-time",
-      linkedin: "linkedin.com/in/rahulverma",
-      rating: 4.8,
-      avatar: "👨‍💼"
+      industries: ["E-commerce", "SaaS"],
+      description: "Former McKinsey consultant with deep domain expertise in scaling B2B businesses.",
+      image: "👨‍💼",
+      verified: true
     },
     {
       id: 3,
-      name: "Anita Singh",
+      name: "Anita Patel",
       role: "Product Co-founder",
-      expertise: "Product Management, UX Design",
-      experience: "5 years",
+      skills: ["Product Strategy", "UI/UX", "Data Analytics"],
       location: "Delhi",
-      company: "Ex-Flipkart",
-      bio: "Product lead at Flipkart who shipped features used by 100M+ users. Expertise in product strategy, user research, and design thinking.",
-      skills: ["Product Strategy", "UX Design", "User Research", "Data Analytics"],
-      lookingFor: "Tech Co-founder",
-      availability: "Immediately Available",
-      linkedin: "linkedin.com/in/anitasingh",
-      rating: 4.7,
-      avatar: "👩‍🎨"
-    }
-  ];
-
-  const allProfiles = [
+      experience: "6 years",
+      lookingFor: "Technical Co-founder",
+      industries: ["EdTech", "Consumer"],
+      description: "Product leader from Google looking to revolutionize online education in India.",
+      image: "👩‍💼",
+      verified: true
+    },
     {
       id: 4,
-      name: "Vikram Patel",
-      role: "CTO",
-      expertise: "Full-stack Development",
-      experience: "7 years",
-      location: "Pune",
-      company: "Ex-Amazon",
-      skills: ["React", "Node.js", "MongoDB", "Docker"],
-      lookingFor: "Business Co-founder",
-      avatar: "👨‍💻"
-    },
-    {
-      id: 5,
-      name: "Sneha Reddy",
-      role: "CMO",
-      expertise: "Digital Marketing, Growth",
-      experience: "4 years",
+      name: "Vikram Singh",
+      role: "Technical Co-founder",
+      skills: ["Backend", "DevOps", "Blockchain"],
       location: "Hyderabad",
-      company: "Ex-Zomato",
-      skills: ["Growth Hacking", "SEO", "Social Media", "Content Marketing"],
-      lookingFor: "Tech Co-founder",
-      avatar: "👩‍💼"
-    },
-    {
-      id: 6,
-      name: "Arjun Kumar",
-      role: "CFO",
-      expertise: "Finance, Operations",
-      experience: "6 years",
-      location: "Chennai",
-      company: "Ex-KPMG",
-      skills: ["Financial Planning", "Fundraising", "Operations", "Compliance"],
-      lookingFor: "Product Co-founder",
-      avatar: "👨‍💼"
-    },
-    {
-      id: 7,
-      name: "Kavya Agarwal",
-      role: "CPO",
-      expertise: "Product Strategy, Design",
-      experience: "5 years",
-      location: "Bangalore",
-      company: "Ex-Swiggy",
-      skills: ["Product Management", "UI/UX", "User Testing", "Agile"],
-      lookingFor: "Tech Co-founder",
-      avatar: "👩‍🎨"
-    },
-    {
-      id: 8,
-      name: "Rohit Gupta",
-      role: "CTO",
-      expertise: "DevOps, Cloud Architecture",
-      experience: "9 years",
-      location: "Gurgaon",
-      company: "Ex-Microsoft",
-      skills: ["Kubernetes", "AWS", "DevOps", "System Design"],
+      experience: "10 years",
       lookingFor: "Business Co-founder",
-      avatar: "👨‍💻"
+      industries: ["FinTech", "Blockchain"],
+      description: "Blockchain expert building the future of decentralized finance in India.",
+      image: "👨‍💻",
+      verified: true
     }
   ];
 
-  const startupPosts = [
+  const successStories = [
     {
-      id: 1,
-      startup: "HealthTech Solutions",
-      founder: "Dr. Amit Sharma",
-      stage: "Pre-Seed",
-      sector: "HealthTech",
-      seeking: "Technical Co-founder (CTO)",
-      equity: "15-25%",
-      description: "Building AI-powered diagnostic tools for rural healthcare. Looking for a tech co-founder with ML/AI expertise.",
-      requirements: ["5+ years ML experience", "Healthcare domain knowledge", "Full-stack capabilities"],
-      posted: "2 days ago",
-      applications: 12
+      startup: "TechHealth Solutions",
+      founders: ["Dr. Priya", "Rajesh Kumar"],
+      funding: "₹5Cr raised",
+      story: "Met through our platform in Jan 2023"
     },
     {
-      id: 2,
-      startup: "EduLearn Platform",
-      founder: "Priya Mehta",
-      stage: "MVP",
-      sector: "EdTech",
-      seeking: "Business Co-founder (COO)",
-      equity: "20-30%",
-      description: "Personalized learning platform for K-12 students. Need someone to handle operations and business development.",
-      requirements: ["Education industry experience", "Operations expertise", "Fundraising experience"],
-      posted: "1 week ago",
-      applications: 8
-    },
-    {
-      id: 3,
-      startup: "GreenTech Innovations",
-      founder: "Rajesh Kumar",
-      stage: "Seed",
-      sector: "CleanTech",
-      seeking: "Product Co-founder (CPO)",
-      equity: "10-20%",
-      description: "Renewable energy solutions for residential complexes. Looking for product leader to scale our offerings.",
-      requirements: ["Product management experience", "B2B SaaS background", "Energy sector knowledge"],
-      posted: "3 days ago",
-      applications: 15
+      startup: "EduTech Innovations",
+      founders: ["Anita Singh", "Vikram Patel"],
+      funding: "₹2Cr raised",
+      story: "Perfect match after 3 months of searching"
     }
   ];
-
-  const roles = ["All Roles", "CTO", "CEO", "CPO", "CMO", "CFO", "COO"];
-  const locations = ["All Locations", "Bangalore", "Mumbai", "Delhi", "Pune", "Hyderabad", "Chennai"];
-  const experiences = ["All Experience", "0-2 years", "3-5 years", "6-8 years", "9+ years"];
-
-  const handleConnect = (profileName: string) => {
-    toast({
-      title: "Connection Request Sent",
-      description: `Your message has been sent to ${profileName}`,
-    });
-    setConnectMessage("");
-  };
-
-  const handleViewProfile = (profileId: number) => {
-    // Navigate to detailed profile view
-    console.log(`Viewing profile ${profileId}`);
-    toast({
-      title: "Profile View",
-      description: "Opening detailed profile view",
-    });
-  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="container mx-auto px-4 pt-20 pb-12">
-        {/* Hero Section */}
-        <section className="text-center mb-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-4">
-            Find Your Co-founder
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Connect with like-minded entrepreneurs and build something amazing together. Join India's largest co-founder matching platform.
-          </p>
-          <div className="flex justify-center space-x-4">
-            <CofounderPostDialog>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-                <Plus className="mr-2 h-4 w-4" />
-                Post Your Requirement
+      
+      {/* Hero Section */}
+      <section className="pt-20 pb-16 bg-hero-gradient relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/95"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center space-y-8 animate-fade-in">
+            <Badge variant="secondary" className="bg-primary/10 text-primary text-lg px-4 py-2">
+              🤝 Find Your Co-founder
+            </Badge>
+            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+              Meet Your Perfect{" "}
+              <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent animate-glow-pulse">
+                Co-founder
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+              Connect with like-minded entrepreneurs, find your ideal business partner, 
+              and build something amazing together.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <CofounderPostDialog>
+                <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Post Your Requirement
+                </Button>
+              </CofounderPostDialog>
+              <Button variant="outline" size="lg" onClick={() => window.scrollTo({ top: 600, behavior: 'smooth' })}>
+                <Search className="mr-2 h-4 w-4" />
+                Browse Profiles
               </Button>
-            </CofounderPostDialog>
-            <Button variant="outline" size="lg" onClick={() => document.getElementById('browse-profiles')?.scrollIntoView({ behavior: 'smooth' })}>
-              <Users className="mr-2 h-4 w-4" />
-              Browse Profiles
-            </Button>
+            </div>
           </div>
-        </section>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">2,500+</div>
-              <p className="text-sm text-muted-foreground">Active Co-founders</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">850+</div>
-              <p className="text-sm text-muted-foreground">Successful Matches</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">200+</div>
-              <p className="text-sm text-muted-foreground">Startups Formed</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">₹50Cr+</div>
-              <p className="text-sm text-muted-foreground">Total Funding Raised</p>
-            </CardContent>
-          </Card>
         </div>
+      </section>
 
-        <Tabs defaultValue="browse" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="browse">Browse Co-founders</TabsTrigger>
-            <TabsTrigger value="opportunities">Startup Opportunities</TabsTrigger>
-            <TabsTrigger value="create">Post Requirement</TabsTrigger>
-          </TabsList>
+      {/* Stats Section */}
+      <section className="py-16 bg-muted/5">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <Card className="text-center p-6 bg-card-gradient border-border">
+              <Users className="w-8 h-8 mx-auto mb-4 text-primary" />
+              <div className="text-3xl font-bold text-primary mb-2">2,500+</div>
+              <div className="text-muted-foreground">Active Co-founders</div>
+            </Card>
+            <Card className="text-center p-6 bg-card-gradient border-border">
+              <TrendingUp className="w-8 h-8 mx-auto mb-4 text-primary" />
+              <div className="text-3xl font-bold text-primary mb-2">200+</div>
+              <div className="text-muted-foreground">Successful Matches</div>
+            </Card>
+            <Card className="text-center p-6 bg-card-gradient border-border">
+              <Star className="w-8 h-8 mx-auto mb-4 text-primary" />
+              <div className="text-3xl font-bold text-primary mb-2">₹100Cr+</div>
+              <div className="text-muted-foreground">Funding Raised</div>
+            </Card>
+            <Card className="text-center p-6 bg-card-gradient border-border">
+              <Briefcase className="w-8 h-8 mx-auto mb-4 text-primary" />
+              <div className="text-3xl font-bold text-primary mb-2">95%</div>
+              <div className="text-muted-foreground">Success Rate</div>
+            </Card>
+          </div>
+        </div>
+      </section>
 
-          <TabsContent value="browse" className="space-y-6" id="browse-profiles">
-            {/* Filters */}
-            <Card>
-              <CardContent className="pt-6">
+      {/* Main Content */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <Tabs defaultValue="browse" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto mb-12">
+              <TabsTrigger value="browse">Browse Profiles</TabsTrigger>
+              <TabsTrigger value="post">Post Requirement</TabsTrigger>
+              <TabsTrigger value="success">Success Stories</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="browse" className="space-y-8">
+              {/* Filters */}
+              <Card className="p-6 bg-card-gradient border-border">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Search by name or skills..." className="pl-10" />
+                    <Input placeholder="Search co-founders..." className="pl-10" />
                   </div>
                   <Select>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Role" />
+                      <SelectValue placeholder="Role" />
                     </SelectTrigger>
                     <SelectContent>
-                      {roles.map((role) => (
-                        <SelectItem key={role} value={role.toLowerCase().replace(" ", "-")}>
-                          {role}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="technical">Technical Co-founder</SelectItem>
+                      <SelectItem value="business">Business Co-founder</SelectItem>
+                      <SelectItem value="product">Product Co-founder</SelectItem>
+                      <SelectItem value="marketing">Marketing Co-founder</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Location" />
+                      <SelectValue placeholder="Location" />
                     </SelectTrigger>
                     <SelectContent>
-                      {locations.map((location) => (
-                        <SelectItem key={location} value={location.toLowerCase().replace(" ", "-")}>
-                          {location}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="bangalore">Bangalore</SelectItem>
+                      <SelectItem value="mumbai">Mumbai</SelectItem>
+                      <SelectItem value="delhi">Delhi</SelectItem>
+                      <SelectItem value="hyderabad">Hyderabad</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select>
                     <SelectTrigger>
-                      <SelectValue placeholder="Experience" />
+                      <SelectValue placeholder="Industry" />
                     </SelectTrigger>
                     <SelectContent>
-                      {experiences.map((exp) => (
-                        <SelectItem key={exp} value={exp.toLowerCase().replace(" ", "-")}>
-                          {exp}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="fintech">FinTech</SelectItem>
+                      <SelectItem value="healthtech">HealthTech</SelectItem>
+                      <SelectItem value="edtech">EdTech</SelectItem>
+                      <SelectItem value="ecommerce">E-commerce</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-              </CardContent>
-            </Card>
+              </Card>
 
-            {/* Featured Profiles */}
-            <section>
-              <h2 className="text-2xl font-bold mb-6 flex items-center space-x-2">
-                <Star className="h-6 w-6 text-primary" />
-                <span>Featured Co-founders</span>
-              </h2>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {featuredProfiles.map((profile) => (
-                  <Card key={profile.id} className="hover:shadow-lg transition-all duration-300">
-                    <CardHeader>
+              {/* Co-founder Profiles */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {cofounderProfiles.map((profile) => (
+                  <Card key={profile.id} className="p-6 bg-card-gradient border-border hover:shadow-lg transition-all duration-300">
+                    <div className="space-y-4">
                       <div className="flex items-start space-x-4">
-                        <div className="text-4xl">{profile.avatar}</div>
+                        <div className="text-4xl">{profile.image}</div>
                         <div className="flex-1">
-                          <CardTitle className="text-xl">{profile.name}</CardTitle>
-                          <CardDescription className="font-medium text-primary">{profile.role}</CardDescription>
-                          <div className="flex items-center space-x-2 mt-1">
-                            <div className="flex items-center space-x-1">
-                              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                              <span className="text-sm">{profile.rating}</span>
-                            </div>
-                            <Badge variant="secondary">{profile.availability}</Badge>
+                          <div className="flex items-center space-x-2">
+                            <h3 className="text-xl font-bold">{profile.name}</h3>
+                            {profile.verified && (
+                              <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
+                                Verified
+                              </Badge>
+                            )}
                           </div>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <p className="text-sm text-muted-foreground">{profile.bio}</p>
-                      
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-muted-foreground">Experience</p>
-                          <p className="font-medium">{profile.experience}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Location</p>
-                          <div className="flex items-center space-x-1">
-                            <MapPin className="h-3 w-3" />
-                            <span className="font-medium">{profile.location}</span>
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Previous</p>
-                          <p className="font-medium">{profile.company}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Looking For</p>
-                          <p className="font-medium">{profile.lookingFor}</p>
-                        </div>
-                      </div>
-
-                      <div>
-                        <p className="text-muted-foreground text-sm mb-2">Skills</p>
-                        <div className="flex flex-wrap gap-1">
-                          {profile.skills.slice(0, 3).map((skill) => (
-                            <Badge key={skill} variant="outline" className="text-xs">
-                              {skill}
-                            </Badge>
-                          ))}
-                          {profile.skills.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{profile.skills.length - 3} more
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex space-x-2">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button className="flex-1" size="sm">
-                              Connect
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Connect with {profile.name}</DialogTitle>
-                              <DialogDescription>
-                                Send a personalized message to connect with this co-founder
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                              <div>
-                                <label className="text-sm font-medium">Message</label>
-                                <Textarea 
-                                  placeholder="Hi! I'm interested in connecting to discuss potential collaboration..."
-                                  value={connectMessage}
-                                  onChange={(e) => setConnectMessage(e.target.value)}
-                                  className="mt-1"
-                                />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button onClick={() => handleConnect(profile.name)}>
-                                Send Message
-                              </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                        <Button variant="outline" size="sm" onClick={() => window.open(`https://${profile.linkedin}`, '_blank')}>
-                          <Linkedin className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
-
-            {/* All Profiles */}
-            <section>
-              <h2 className="text-2xl font-bold mb-6">All Co-founders</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {allProfiles.map((profile) => (
-                  <Card key={profile.id} className="hover:shadow-md transition-all duration-300">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center space-x-4">
-                        <div className="text-3xl">{profile.avatar}</div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-lg">{profile.name}</h3>
                           <p className="text-primary font-medium">{profile.role}</p>
-                          <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
-                            <span>{profile.experience}</span>
+                          <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-2">
                             <div className="flex items-center space-x-1">
                               <MapPin className="h-3 w-3" />
                               <span>{profile.location}</span>
                             </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1">{profile.company}</p>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="outline" className="mb-2">{profile.lookingFor}</Badge>
-                          <div className="flex space-x-1">
-                            <Button size="sm" variant="outline" onClick={() => handleViewProfile(profile.id)}>
-                              View
-                            </Button>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button size="sm">Connect</Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Connect with {profile.name}</DialogTitle>
-                                  <DialogDescription>
-                                    Send a personalized message to connect with this co-founder
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="space-y-4">
-                                  <div>
-                                    <label className="text-sm font-medium">Message</label>
-                                    <Textarea 
-                                      placeholder="Hi! I'm interested in connecting to discuss potential collaboration..."
-                                      value={connectMessage}
-                                      onChange={(e) => setConnectMessage(e.target.value)}
-                                      className="mt-1"
-                                    />
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <Button onClick={() => handleConnect(profile.name)}>
-                                    Send Message
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
+                            <div className="flex items-center space-x-1">
+                              <Briefcase className="h-3 w-3" />
+                              <span>{profile.experience}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </CardContent>
+
+                      <p className="text-muted-foreground">{profile.description}</p>
+
+                      <div className="space-y-2">
+                        <div>
+                          <span className="text-sm font-medium">Skills:</span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {profile.skills.map((skill) => (
+                              <Badge key={skill} variant="outline" className="text-xs">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-sm font-medium">Industries:</span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {profile.industries.map((industry) => (
+                              <Badge key={industry} variant="secondary" className="text-xs">
+                                {industry}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex space-x-2">
+                        <Button className="flex-1">
+                          <MessageCircle className="mr-2 h-4 w-4" />
+                          Connect
+                        </Button>
+                        <Button variant="outline">
+                          <UserPlus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
                   </Card>
                 ))}
               </div>
-              <div className="text-center mt-8">
-                <Button variant="outline" size="lg" onClick={() => toast({ title: "Loading...", description: "More profiles are being loaded" })}>
-                  Load More Profiles
-                </Button>
-              </div>
-            </section>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="opportunities" className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">Startup Co-founder Opportunities</h2>
-            <div className="space-y-6">
-              {startupPosts.map((post) => (
-                <Card key={post.id} className="hover:shadow-lg transition-all duration-300">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-xl">{post.startup}</CardTitle>
-                        <CardDescription className="text-lg font-medium text-primary">
-                          Seeking: {post.seeking}
-                        </CardDescription>
-                        <div className="flex items-center space-x-4 mt-2">
-                          <Badge variant="outline">{post.stage}</Badge>
-                          <Badge variant="secondary">{post.sector}</Badge>
-                          <span className="text-sm text-muted-foreground">by {post.founder}</span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-primary text-lg">{post.equity}</p>
-                        <p className="text-sm text-muted-foreground">Equity Offered</p>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p className="text-muted-foreground">{post.description}</p>
-                    
-                    <div>
-                      <p className="font-medium mb-2">Requirements:</p>
-                      <ul className="text-sm text-muted-foreground space-y-1">
-                        {post.requirements.map((req, index) => (
-                          <li key={index} className="flex items-center space-x-2">
-                            <div className="w-1 h-1 bg-primary rounded-full"></div>
-                            <span>{req}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <span>Posted {post.posted}</span>
-                        <span>{post.applications} applications</span>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">Learn More</Button>
-                        <Button size="sm">Apply Now</Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="create" className="space-y-6">
-            <CofounderPostDialog>
-              <Card className="cursor-pointer hover:shadow-lg transition-all duration-300">
-                <CardHeader>
-                  <CardTitle>Post Your Co-founder Requirement</CardTitle>
-                  <CardDescription>
-                    Tell us what kind of co-founder you're looking for and we'll help you find the perfect match.
+            <TabsContent value="post" className="space-y-8">
+              <Card className="p-8 bg-card-gradient border-border max-w-4xl mx-auto">
+                <CardHeader className="text-center">
+                  <CardTitle className="text-3xl">Post Your Co-founder Requirement</CardTitle>
+                  <CardDescription className="text-lg">
+                    Tell us what you're looking for and we'll help you find the perfect match
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Button size="lg" className="w-full bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Requirement Post
-                  </Button>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Your Role</label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="technical">Technical Co-founder</SelectItem>
+                          <SelectItem value="business">Business Co-founder</SelectItem>
+                          <SelectItem value="product">Product Co-founder</SelectItem>
+                          <SelectItem value="marketing">Marketing Co-founder</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Looking For</label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Co-founder type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="technical">Technical Co-founder</SelectItem>
+                          <SelectItem value="business">Business Co-founder</SelectItem>
+                          <SelectItem value="product">Product Co-founder</SelectItem>
+                          <SelectItem value="marketing">Marketing Co-founder</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Startup Idea</label>
+                    <textarea 
+                      className="w-full p-3 border rounded-md resize-none h-24"
+                      placeholder="Describe your startup idea..."
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Industry</label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select industry" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fintech">FinTech</SelectItem>
+                          <SelectItem value="healthtech">HealthTech</SelectItem>
+                          <SelectItem value="edtech">EdTech</SelectItem>
+                          <SelectItem value="ecommerce">E-commerce</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Location</label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select location" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bangalore">Bangalore</SelectItem>
+                          <SelectItem value="mumbai">Mumbai</SelectItem>
+                          <SelectItem value="delhi">Delhi</SelectItem>
+                          <SelectItem value="hyderabad">Hyderabad</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <CofounderPostDialog>
+                    <Button size="lg" className="w-full bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+                      Post Requirement
+                    </Button>
+                  </CofounderPostDialog>
                 </CardContent>
               </Card>
-            </CofounderPostDialog>
-          </TabsContent>
-        </Tabs>
+            </TabsContent>
 
-        {/* CTA Section */}
-        <section className="text-center py-16 mt-16 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-3xl">
-          <h2 className="text-3xl font-bold mb-4">Ready to Find Your Co-founder?</h2>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of entrepreneurs who have found their perfect co-founder match through our platform.
-          </p>
-          <div className="flex justify-center space-x-4">
-            <CofounderPostDialog>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-                Get Started Today
+            <TabsContent value="success" className="space-y-8">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold mb-4">Success Stories</h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  Real entrepreneurs who found their perfect co-founder match through our platform
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {successStories.map((story, index) => (
+                  <Card key={index} className="p-6 bg-card-gradient border-border">
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="text-4xl">🚀</div>
+                        <div>
+                          <h3 className="text-xl font-bold">{story.startup}</h3>
+                          <p className="text-muted-foreground">{story.founders.join(" & ")}</p>
+                        </div>
+                      </div>
+                      <p className="text-muted-foreground">{story.story}</p>
+                      <div className="flex items-center justify-between">
+                        <Badge variant="secondary" className="bg-green-100 text-green-800">
+                          {story.funding}
+                        </Badge>
+                        <Button variant="outline" size="sm">
+                          Read Full Story
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="text-center">
+                <Button size="lg" asChild>
+                  <Link to="/success-stories">
+                    View All Success Stories
+                  </Link>
+                </Button>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-primary/10 to-orange-400/10">
+        <div className="container mx-auto px-4 text-center">
+          <div className="space-y-8">
+            <h2 className="text-4xl font-bold">Get Started Today</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Join thousands of entrepreneurs who have found their perfect co-founder match
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <CofounderPostDialog>
+                <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+                  Find Your Co-founder
+                </Button>
+              </CofounderPostDialog>
+              <Button variant="outline" size="lg" asChild>
+                <Link to="/success-stories">
+                  Success Stories
+                </Link>
               </Button>
-            </CofounderPostDialog>
-            <Button variant="outline" size="lg" asChild>
-              <Link to="/success-stories">
-                Success Stories
-              </Link>
-            </Button>
+            </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );

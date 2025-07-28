@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -37,12 +38,12 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Quick Links</h3>
             <div className="space-y-2">
-              <a href="/about" className="block text-sm text-muted-foreground hover:text-primary transition-colors">About Us</a>
-              <a href="/incubation" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Incubation</a>
-              <a href="/hackathon" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Hackathons</a>
-              <a href="/investor-centre" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Investor Centre</a>
-              <a href="/startup-directory" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Startup Directory</a>
-              <a href="/news" className="block text-sm text-muted-foreground hover:text-primary transition-colors">News</a>
+              <Link to="/about" className="block text-sm text-muted-foreground hover:text-primary transition-colors">About Us</Link>
+              <Link to="/incubation" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Incubation</Link>
+              <Link to="/hackathon" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Hackathons</Link>
+              <Link to="/investor-centre" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Investor Centre</Link>
+              <Link to="/startup-directory" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Startup Directory</Link>
+              <Link to="/contact" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Contact</Link>
             </div>
           </div>
 
@@ -50,12 +51,12 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Programs</h3>
             <div className="space-y-2">
-              <a href="/mvp-lab" className="block text-sm text-muted-foreground hover:text-primary transition-colors">MVP Lab</a>
-              <a href="/inclab" className="block text-sm text-muted-foreground hover:text-primary transition-colors">INC Lab</a>
-              <a href="/meet-cofounder" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Meet Co-founder</a>
-              <a href="/resources" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Resources</a>
-              <a href="/blogs" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Blogs</a>
-              <a href="/partnership" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Partnership</a>
+              <Link to="/mvp-lab" className="block text-sm text-muted-foreground hover:text-primary transition-colors">MVP Lab</Link>
+              <Link to="/inc-lab" className="block text-sm text-muted-foreground hover:text-primary transition-colors">INC Lab</Link>
+              <Link to="/meet-cofounder" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Meet Co-founder</Link>
+              <Link to="/resources" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Resources</Link>
+              <Link to="/success-stories" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Success Stories</Link>
+              <Link to="/become-mentor" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Become Mentor</Link>
             </div>
           </div>
 
@@ -94,12 +95,12 @@ const Footer = () => {
             © 2024 Inc Combinator. All rights reserved.
           </p>
           <div className="flex space-x-4">
-            <a href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Privacy Policy
-            </a>
-            <a href="/terms-conditions" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            </Link>
+            <Link to="/terms-conditions" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Terms & Conditions
-            </a>
+            </Link>
           </div>
         </div>
       </div>
