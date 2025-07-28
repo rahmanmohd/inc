@@ -1,165 +1,165 @@
-
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Filter, MapPin, TrendingUp, Users, ExternalLink, Star } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Building2, Users, TrendingUp, MapPin, Search, Filter } from "lucide-react";
 
 const StartupDirectory = () => {
   const startups = [
     {
       id: 1,
-      name: "HealthTech Solutions",
-      description: "AI-powered diagnostic platform for rural healthcare",
-      industry: "HealthTech",
+      name: "AI Healthcare Solutions",
+      description: "Revolutionizing healthcare with AI-powered diagnostics and personalized treatment plans.",
+      sector: "HealthTech",
       stage: "Series A",
       location: "Bangalore",
-      funding: "₹5 Crores",
+      founded: "2022",
       employees: "25-50",
-      founders: ["Dr. Priya Sharma", "Rajesh Kumar"],
+      website: "aihealthcare.com",
       logo: "🏥",
-      verified: true,
-      featured: true
+      tags: ["AI", "Healthcare", "Diagnostics"]
     },
     {
       id: 2,
-      name: "EduLearn Platform",
-      description: "Personalized learning platform for K-12 students",
-      industry: "EdTech",
+      name: "GreenTech Innovations",
+      description: "Sustainable technology solutions for renewable energy and waste management.",
+      sector: "CleanTech",
       stage: "Seed",
       location: "Mumbai",
-      funding: "₹2 Crores",
+      founded: "2021",
       employees: "11-25",
-      founders: ["Anita Singh", "Vikram Patel"],
-      logo: "📚",
-      verified: true,
-      featured: false
+      website: "greentech.in",
+      logo: "🌱",
+      tags: ["CleanTech", "Renewable Energy", "Sustainability"]
     },
     {
       id: 3,
-      name: "GreenEnergy Systems",
-      description: "Solar energy solutions for urban households",
-      industry: "CleanTech",
-      stage: "Series B",
+      name: "EdTech Platform",
+      description: "Personalized learning platform using adaptive AI for K-12 education.",
+      sector: "Education",
+      stage: "Pre-Seed",
       location: "Delhi",
-      funding: "₹15 Crores",
-      employees: "51-100",
-      founders: ["Amit Gupta", "Kavya Reddy"],
-      logo: "☀️",
-      verified: true,
-      featured: true
+      founded: "2023",
+      employees: "5-10",
+      website: "edtechplatform.com",
+      logo: "📚",
+      tags: ["EdTech", "AI", "K-12"]
     },
     {
       id: 4,
-      name: "FinPay Solutions",
-      description: "Digital payment platform for small businesses",
-      industry: "FinTech",
-      stage: "Series A",
-      location: "Pune",
-      funding: "₹8 Crores",
-      employees: "26-50",
-      founders: ["Rohit Sharma", "Neha Agarwal"],
-      logo: "💳",
-      verified: true,
-      featured: false
+      name: "FinTech Solutions",
+      description: "Digital banking solutions for rural and underbanked populations.",
+      sector: "FinTech",
+      stage: "Series B",
+      location: "Hyderabad",
+      founded: "2020",
+      employees: "51-100",
+      website: "fintechsolutions.in",
+      logo: "💰",
+      tags: ["FinTech", "Digital Banking", "Rural"]
     },
     {
       id: 5,
-      name: "AgriTech Innovations",
-      description: "Smart farming solutions using IoT and AI",
-      industry: "AgriTech",
+      name: "AgriTech Connect",
+      description: "Connecting farmers directly with consumers through our marketplace platform.",
+      sector: "AgriTech",
       stage: "Seed",
-      location: "Hyderabad",
-      funding: "₹3 Crores",
+      location: "Pune",
+      founded: "2022",
       employees: "11-25",
-      founders: ["Suresh Reddy", "Lakshmi Devi"],
+      website: "agritechconnect.com",
       logo: "🌾",
-      verified: true,
-      featured: false
+      tags: ["AgriTech", "Marketplace", "Farmers"]
     },
     {
       id: 6,
-      name: "LogiTrack Systems",
-      description: "Supply chain optimization for e-commerce",
-      industry: "Logistics",
+      name: "Logistics AI",
+      description: "AI-powered supply chain optimization and last-mile delivery solutions.",
+      sector: "Logistics",
       stage: "Series A",
       location: "Chennai",
-      funding: "₹6 Crores",
+      founded: "2021",
       employees: "26-50",
-      founders: ["Karthik Nair", "Priya Menon"],
-      logo: "📦",
-      verified: true,
-      featured: true
+      website: "logisticsai.com",
+      logo: "🚚",
+      tags: ["Logistics", "AI", "Supply Chain"]
     }
   ];
 
-  const industries = ["All Industries", "FinTech", "HealthTech", "EdTech", "CleanTech", "AgriTech", "Logistics"];
-  const stages = ["All Stages", "Pre-Seed", "Seed", "Series A", "Series B", "Series C", "Growth"];
-  const locations = ["All Locations", "Bangalore", "Mumbai", "Delhi", "Pune", "Hyderabad", "Chennai"];
+  const sectors = ["All Sectors", "HealthTech", "FinTech", "EdTech", "CleanTech", "AgriTech", "Logistics"];
+  const stages = ["All Stages", "Pre-Seed", "Seed", "Series A", "Series B", "Series C"];
+  const locations = ["All Locations", "Bangalore", "Mumbai", "Delhi", "Hyderabad", "Pune", "Chennai"];
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
-      {/* Hero Section */}
-      <section className="pt-20 pb-16 bg-hero-gradient relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/95"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center space-y-8 animate-fade-in">
-            <Badge variant="secondary" className="bg-primary/10 text-primary text-lg px-4 py-2">
-              🚀 Startup Directory
-            </Badge>
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-              Discover{" "}
-              <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent animate-glow-pulse">
-                Innovation
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-              Explore India's most promising startups, connect with founders, 
-              and discover investment opportunities in our curated directory.
-            </p>
-          </div>
-        </div>
-      </section>
+      <main className="container mx-auto px-4 pt-20 pb-12">
+        {/* Hero Section */}
+        <section className="text-center mb-12">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-4">
+            Startup Directory
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Discover India's most promising startups backed by Inc Combinator. Connect with innovative founders building solutions for India's biggest challenges.
+          </p>
+        </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-muted/5">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <Card className="text-center p-6 bg-card-gradient border-border">
-              <TrendingUp className="w-8 h-8 mx-auto mb-4 text-primary" />
-              <div className="text-3xl font-bold text-primary mb-2">500+</div>
-              <div className="text-muted-foreground">Active Startups</div>
-            </Card>
-            <Card className="text-center p-6 bg-card-gradient border-border">
-              <Users className="w-8 h-8 mx-auto mb-4 text-primary" />
-              <div className="text-3xl font-bold text-primary mb-2">₹500Cr+</div>
-              <div className="text-muted-foreground">Total Funding</div>
-            </Card>
-            <Card className="text-center p-6 bg-card-gradient border-border">
-              <Star className="w-8 h-8 mx-auto mb-4 text-primary" />
-              <div className="text-3xl font-bold text-primary mb-2">150+</div>
-              <div className="text-muted-foreground">Success Stories</div>
-            </Card>
-            <Card className="text-center p-6 bg-card-gradient border-border">
-              <MapPin className="w-8 h-8 mx-auto mb-4 text-primary" />
-              <div className="text-3xl font-bold text-primary mb-2">25+</div>
-              <div className="text-muted-foreground">Cities</div>
-            </Card>
-          </div>
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Startups</CardTitle>
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">1,247</div>
+              <p className="text-xs text-muted-foreground">Across 15+ sectors</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Founders</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">2,156</div>
+              <p className="text-xs text-muted-foreground">Building the future</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Funding</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">₹850Cr</div>
+              <p className="text-xs text-muted-foreground">Raised collectively</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Cities</CardTitle>
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">25+</div>
+              <p className="text-xs text-muted-foreground">Across India</p>
+            </CardContent>
+          </Card>
         </div>
-      </section>
 
-      {/* Filters */}
-      <section className="py-8 bg-background">
-        <div className="container mx-auto px-4">
-          <Card className="p-6 bg-card-gradient border-border">
+        {/* Filters Section */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Filter className="h-5 w-5" />
+              <span>Filter Startups</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -167,19 +167,19 @@ const StartupDirectory = () => {
               </div>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder="Industry" />
+                  <SelectValue placeholder="Select Sector" />
                 </SelectTrigger>
                 <SelectContent>
-                  {industries.map((industry) => (
-                    <SelectItem key={industry} value={industry.toLowerCase().replace(" ", "-")}>
-                      {industry}
+                  {sectors.map((sector) => (
+                    <SelectItem key={sector} value={sector.toLowerCase().replace(" ", "-")}>
+                      {sector}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder="Stage" />
+                  <SelectValue placeholder="Select Stage" />
                 </SelectTrigger>
                 <SelectContent>
                   {stages.map((stage) => (
@@ -191,7 +191,7 @@ const StartupDirectory = () => {
               </Select>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder="Location" />
+                  <SelectValue placeholder="Select Location" />
                 </SelectTrigger>
                 <SelectContent>
                   {locations.map((location) => (
@@ -202,178 +202,86 @@ const StartupDirectory = () => {
                 </SelectContent>
               </Select>
             </div>
-          </Card>
-        </div>
-      </section>
+          </CardContent>
+        </Card>
 
-      {/* Featured Startups */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold mb-4 flex items-center">
-              <Star className="w-6 h-6 mr-2 text-primary" />
-              Featured Startups
-            </h2>
-            <p className="text-muted-foreground">Hand-picked startups making waves in their respective industries</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {startups.filter(startup => startup.featured).map((startup) => (
-              <Card key={startup.id} className="p-6 bg-card-gradient border-border hover:shadow-lg transition-all duration-300">
-                <div className="space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-3xl">{startup.logo}</div>
-                      <div>
-                        <h3 className="text-xl font-bold">{startup.name}</h3>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="outline" className="text-xs">{startup.industry}</Badge>
-                          {startup.verified && (
-                            <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
-                              Verified
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                  </div>
-
-                  <p className="text-muted-foreground text-sm">{startup.description}</p>
-
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+        {/* Startups Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {startups.map((startup) => (
+            <Card key={startup.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-3xl">{startup.logo}</div>
                     <div>
-                      <span className="text-muted-foreground">Stage:</span>
-                      <p className="font-medium">{startup.stage}</p>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Funding:</span>
-                      <p className="font-medium text-primary">{startup.funding}</p>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Location:</span>
-                      <p className="font-medium">{startup.location}</p>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Team:</span>
-                      <p className="font-medium">{startup.employees}</p>
+                      <CardTitle className="text-lg">{startup.name}</CardTitle>
+                      <CardDescription className="text-sm">{startup.website}</CardDescription>
                     </div>
                   </div>
+                  <Badge variant="outline">{startup.stage}</Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">{startup.description}</p>
+                
+                <div className="flex flex-wrap gap-2">
+                  {startup.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
 
+                <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-muted-foreground text-sm">Founders:</span>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {startup.founders.map((founder) => (
-                        <Badge key={founder} variant="secondary" className="text-xs">
-                          {founder}
-                        </Badge>
-                      ))}
-                    </div>
+                    <p className="text-muted-foreground">Sector</p>
+                    <p className="font-medium">{startup.sector}</p>
                   </div>
-
-                  <div className="flex space-x-2">
-                    <Button className="flex-1" asChild>
-                      <Link to={`/startup-profile/${startup.id}`}>
-                        View Profile
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <ExternalLink className="h-4 w-4" />
-                    </Button>
+                  <div>
+                    <p className="text-muted-foreground">Location</p>
+                    <p className="font-medium">{startup.location}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Founded</p>
+                    <p className="font-medium">{startup.founded}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Team Size</p>
+                    <p className="font-medium">{startup.employees}</p>
                   </div>
                 </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* All Startups */}
-      <section className="py-12 bg-muted/5">
-        <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold mb-4">All Startups</h2>
-            <p className="text-muted-foreground">Browse through our complete directory of innovative startups</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {startups.map((startup) => (
-              <Card key={startup.id} className="p-6 bg-card-gradient border-border hover:shadow-md transition-all duration-300">
-                <div className="flex items-center space-x-4">
-                  <div className="text-3xl">{startup.logo}</div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <h3 className="text-lg font-bold">{startup.name}</h3>
-                      {startup.verified && (
-                        <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
-                          Verified
-                        </Badge>
-                      )}
-                      {startup.featured && (
-                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                      )}
-                    </div>
-                    <p className="text-muted-foreground text-sm mb-3">{startup.description}</p>
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                      <span>{startup.industry}</span>
-                      <span>•</span>
-                      <span>{startup.stage}</span>
-                      <span>•</span>
-                      <span>{startup.location}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <Badge variant="outline" className="text-xs">{startup.funding}</Badge>
-                      <Badge variant="outline" className="text-xs">{startup.employees}</Badge>
-                    </div>
-                  </div>
-                  <div className="flex flex-col space-y-2">
-                    <Button size="sm" asChild>
-                      <Link to={`/startup-profile/${startup.id}`}>
-                        View
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Connect
-                    </Button>
-                  </div>
+                <div className="flex space-x-2 pt-4">
+                  <Button className="flex-1" size="sm">
+                    View Profile
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    Connect
+                  </Button>
                 </div>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Button variant="outline" size="lg">
-              Load More Startups
-            </Button>
-          </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary/10 to-orange-400/10">
-        <div className="container mx-auto px-4 text-center">
-          <div className="space-y-8">
-            <h2 className="text-4xl font-bold">Ready to Join the Directory?</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Get your startup featured in our directory and connect with investors, 
-              mentors, and potential partners.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow" asChild>
-                <Link to="/incubation">
-                  Join Inc Combinator
-                </Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link to="/contact">
-                  Get Listed
-                </Link>
-              </Button>
-            </div>
-          </div>
+        {/* Load More */}
+        <div className="text-center mt-12">
+          <Button variant="outline" size="lg">
+            Load More Startups
+          </Button>
         </div>
-      </section>
 
+        {/* CTA Section */}
+        <section className="text-center py-16 mt-16 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-3xl">
+          <h2 className="text-3xl font-bold mb-4">Want to be Featured?</h2>
+          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Join Inc Combinator and get your startup featured in our directory. Connect with investors, mentors, and fellow entrepreneurs.
+          </p>
+          <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+            Apply to Inc Combinator
+          </Button>
+        </section>
+      </main>
       <Footer />
     </div>
   );
