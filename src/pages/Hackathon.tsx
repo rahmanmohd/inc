@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Trophy, Users, Code, Zap, Target } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const Hackathon = () => {
   const upcomingHackathons = [
@@ -249,11 +248,9 @@ const Hackathon = () => {
                         Registration Opens Soon
                       </Button>
                     )}
-                    <Link to={`/hackathon-detail/${hackathon.id}`}>
-                      <Button variant="outline" className="w-full">
-                        Learn More
-                      </Button>
-                    </Link>
+                    <Button variant="outline" className="w-full">
+                      Learn More
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -358,11 +355,9 @@ const Hackathon = () => {
                 Register Now
               </Button>
             </HackathonRegistrationForm>
-            <Link to="/program-details">
-              <Button variant="outline" size="lg">
-                Learn More
-              </Button>
-            </Link>
+            <Button variant="outline" size="lg">
+              Learn More
+            </Button>
           </div>
         </section>
       </main>

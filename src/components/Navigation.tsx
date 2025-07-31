@@ -4,12 +4,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import ApplicationDialog from "./ApplicationDialog";
-import AuthButton from "./AuthButton";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userType, setUserType] = useState("");
 
   const navItems = [
     { name: "Hackathon", href: "/hackathon" },
@@ -17,11 +14,6 @@ const Navigation = () => {
     { name: "MVP Lab", href: "/mvp-lab" },
     { name: "INC Lab", href: "/inclab" },
   ];
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUserType("");
-  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -54,11 +46,6 @@ const Navigation = () => {
                 Apply Now
               </Button>
             </ApplicationDialog>
-            <AuthButton
-              isAuthenticated={isAuthenticated}
-              userType={userType}
-              onLogout={handleLogout}
-            />
           </div>
 
           {/* Mobile Menu Button */}
@@ -89,11 +76,6 @@ const Navigation = () => {
                   Apply Now
                 </Button>
               </ApplicationDialog>
-              <AuthButton
-                isAuthenticated={isAuthenticated}
-                userType={userType}
-                onLogout={handleLogout}
-              />
             </div>
           </div>
         )}
