@@ -3,8 +3,8 @@ import Footer from "@/components/Footer";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CofounderPostDialog } from "@/components/CofounderPostDialog";
-import { ApplicationDialog } from "@/components/ApplicationDialog";
+import CofounderPostDialog from "@/components/CofounderPostDialog";
+import ApplicationDialog from "@/components/ApplicationDialog";
 import { useNavigate } from "react-router-dom";
 
 const MeetCofounder = () => {
