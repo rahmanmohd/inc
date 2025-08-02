@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,6 +30,7 @@ import FeaturedStartups from "./pages/FeaturedStartups";
 import Philosophy from "./pages/Philosophy";
 import AllApplications from "./pages/AllApplications";
 import SuccessStories from "./pages/SuccessStories";
+import StartupProfile from "./pages/StartupProfile";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +66,7 @@ const App = () => (
           <Route path="/featured-startups" element={<FeaturedStartups />} />
           <Route path="/philosophy" element={<Philosophy />} />
           <Route path="/all-applications" element={<AllApplications />} />
+          <Route path="/startup-profile" element={<StartupProfile />} />
           <Route path="/success-stories" element={<SuccessStories />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

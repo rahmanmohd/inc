@@ -1,68 +1,60 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Target, Users, Lightbulb, Award, Globe } from "lucide-react";
+import { ApplicationDialog } from "@/components/ApplicationDialog";
+import { useNavigate } from "react-router-dom";
 
 const AboutUs = () => {
-  const values = [
+  const navigate = useNavigate();
+
+  const teamMembers = [
     {
-      icon: Lightbulb,
-      title: "Innovation First",
-      description: "We believe in crazy ideas that can transform millions of lives"
+      name: "Priya Sharma",
+      role: "CEO & Founder",
+      bio: "Priya is a serial entrepreneur with a passion for building innovative solutions. She has over 15 years of experience in the tech industry.",
+      image: "/placeholder.svg"
     },
     {
-      icon: Users,
-      title: "Founder-Centric",
-      description: "Everything we do is designed to empower and support founders"
+      name: "Rajesh Kumar",
+      role: "CTO & Co-founder",
+      bio: "Rajesh is a seasoned technology leader with expertise in AI, machine learning, and cloud computing. He leads the technical vision and execution.",
+      image: "/placeholder.svg"
     },
     {
-      icon: Heart,
-      title: "Impact Driven",
-      description: "Building solutions for India's biggest challenges and opportunities"
+      name: "Anita Singh",
+      role: "Head of Incubation",
+      bio: "Anita is an experienced incubator manager with a track record of helping startups succeed. She oversees the incubation program and provides mentorship.",
+      image: "/placeholder.svg"
     },
     {
-      icon: Globe,
-      title: "Scale Mindset",
-      description: "Thinking big, building for massive scale and global impact"
+      name: "Vikram Patel",
+      role: "Head of Partnerships",
+      bio: "Vikram is responsible for building strategic partnerships with investors, mentors, and industry experts. He has a strong network in the startup ecosystem.",
+      image: "/placeholder.svg"
     }
   ];
 
-  const team = [
+  const advisoryBoard = [
     {
-      name: "Rajesh Sharma",
-      role: "Founder & CEO",
-      background: "Ex-Flipkart, 15+ years in startups",
-      emoji: "👨‍💼"
+      name: "Dr. Arvind Gupta",
+      title: "Professor, IIT Bombay",
+      expertise: "Technology & Innovation",
+      image: "/placeholder.svg"
     },
     {
-      name: "Priya Patel",
-      role: "Head of Programs",
-      background: "Ex-Google, Startup ecosystem expert",
-      emoji: "👩‍💻"
+      name: "Meera Reddy",
+      title: "Partner, Sequoia Capital",
+      expertise: "Venture Capital & Investments",
+      image: "/placeholder.svg"
     },
     {
-      name: "Amit Kumar",
-      role: "Investment Director",
-      background: "Ex-Sequoia, 100+ startup investments",
-      emoji: "👨‍💻"
-    },
-    {
-      name: "Dr. Sunita Rao",
-      role: "Mentor Network Head",
-      background: "Ex-TCS CTO, Tech innovation leader",
-      emoji: "👩‍🔬"
+      name: "Sunil Kumar",
+      title: "CEO, Tech Mahindra",
+      expertise: "Business Strategy & Leadership",
+      image: "/placeholder.svg"
     }
-  ];
-
-  const milestones = [
-    { year: "2022", event: "Inc Combinator Founded", description: "Started with a vision to transform Indian startup ecosystem" },
-    { year: "2022", event: "First Cohort", description: "25 startups graduated from our inaugural program" },
-    { year: "2023", event: "₹50Cr+ Funded", description: "Our startups raised significant funding rounds" },
-    { year: "2023", event: "Corporate Partnerships", description: "Strategic partnerships with major Indian corporates" },
-    { year: "2024", event: "Pan-India Expansion", description: "Programs launched across 10+ Indian cities" },
-    { year: "2024", event: "International Recognition", description: "Featured as top accelerator by global startup publications" }
   ];
 
   return (
@@ -73,21 +65,37 @@ const AboutUs = () => {
       <section className="pt-20 pb-16 bg-hero-gradient relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/95"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center space-y-8 animate-fade-in">
+          <div className="text-center space-y-8">
             <div className="space-y-4">
               <Badge variant="secondary" className="bg-primary/10 text-primary text-lg px-4 py-2">
-                🇮🇳 Made in India, For India
+                About Us
               </Badge>
               <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-                About{" "}
-                <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent animate-glow-pulse">
-                  Inc Combinator
+                Building the Future of{" "}
+                <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
+                  Innovation Together
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                We're on a mission to find and fund India's craziest founders who are building 
-                scalable solutions for the world's largest problems.
+                Inc Combinator is a leading startup incubator dedicated to fostering innovation and 
+                empowering entrepreneurs to build successful businesses.
               </p>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4 justify-center pt-6">
+              <ApplicationDialog>
+                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                  Apply as Founder
+                </Button>
+              </ApplicationDialog>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="text-lg px-8 py-6"
+                onClick={() => navigate('/contact')}
+              >
+                Become a Mentor
+              </Button>
             </div>
           </div>
         </div>
@@ -96,89 +104,54 @@ const AboutUs = () => {
       {/* Mission & Vision */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
-            <Card className="p-8 bg-card-gradient border-border">
-              <div className="space-y-6">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Target className="w-6 h-6 text-primary" />
-                  </div>
-                  <h2 className="text-3xl font-bold">Our Mission</h2>
-                </div>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  To identify, nurture, and scale India's most promising startups that are solving 
-                  real problems for real people. We believe in the power of crazy ideas backed by 
-                  solid execution and relentless focus on customer validation.
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <Card className="bg-card-gradient border-border p-8 hover:shadow-orange-glow transition-all duration-300">
+              <CardHeader>
+                <CardTitle className="text-3xl font-bold">Our Mission</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-lg">
+                  To empower entrepreneurs with the resources, mentorship, and network they need to 
+                  build impactful and scalable businesses.
                 </p>
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
-                    Empower 10,000+ founders by 2030
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
-                    Create 100+ unicorns from India
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
-                    Impact 1 billion+ lives globally
-                  </div>
-                </div>
-              </div>
+              </CardContent>
             </Card>
 
-            <Card className="p-8 bg-card-gradient border-border">
-              <div className="space-y-6">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Award className="w-6 h-6 text-primary" />
-                  </div>
-                  <h2 className="text-3xl font-bold">Our Vision</h2>
-                </div>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  To make India the global startup capital by 2030. We envision an ecosystem where 
-                  every great idea gets the support it needs to become a scalable, sustainable business 
-                  that creates massive value for society.
+            <Card className="bg-card-gradient border-border p-8 hover:shadow-orange-glow transition-all duration-300">
+              <CardHeader>
+                <CardTitle className="text-3xl font-bold">Our Vision</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-lg">
+                  To be the leading startup incubator in India, driving innovation and creating a 
+                  thriving ecosystem for entrepreneurs to succeed.
                 </p>
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
-                    World's largest startup ecosystem
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
-                    Global innovation hub
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
-                    Sustainable wealth creation
-                  </div>
-                </div>
-              </div>
+              </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Our Values */}
+      {/* Team Section */}
       <section className="py-20 bg-muted/5">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Our Values</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              The principles that guide everything we do
+            <h2 className="text-4xl md:text-5xl font-bold">Meet Our Team</h2>
+            <p className="text-xl text-muted-foreground">
+              A dedicated team of experts passionate about helping startups succeed
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            {values.map((value, index) => (
-              <Card key={index} className="p-6 bg-card-gradient border-border text-center hover:shadow-orange-glow transition-all duration-300">
-                <div className="space-y-4">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                    <value.icon className="w-8 h-8 text-primary" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {teamMembers.map((member, index) => (
+              <Card key={index} className="bg-card-gradient border-border p-6 hover:shadow-orange-glow transition-all duration-300">
+                <div className="text-center space-y-4">
+                  <div className="w-24 h-24 rounded-full overflow-hidden mx-auto">
+                    <img src={member.image} alt={member.name} className="object-cover w-full h-full" />
                   </div>
-                  <h3 className="text-xl font-bold">{value.title}</h3>
-                  <p className="text-muted-foreground text-sm">{value.description}</p>
+                  <h3 className="text-xl font-bold">{member.name}</h3>
+                  <p className="text-muted-foreground">{member.role}</p>
+                  <p className="text-sm text-muted-foreground">{member.bio}</p>
                 </div>
               </Card>
             ))}
@@ -186,56 +159,26 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* Our Journey */}
+      {/* Advisory Board */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Our Journey</h2>
+            <h2 className="text-4xl md:text-5xl font-bold">Advisory Board</h2>
             <p className="text-xl text-muted-foreground">
-              Key milestones in building India's startup ecosystem
+              Guidance from industry leaders and experts
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            <div className="space-y-8">
-              {milestones.map((milestone, index) => (
-                <div key={index} className="flex items-start space-x-6">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                      <span className="text-primary-foreground font-bold text-sm">{milestone.year}</span>
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {advisoryBoard.map((advisor, index) => (
+              <Card key={index} className="bg-card-gradient border-border p-6 hover:shadow-orange-glow transition-all duration-300">
+                <div className="text-center space-y-4">
+                  <div className="w-24 h-24 rounded-full overflow-hidden mx-auto">
+                    <img src={advisor.image} alt={advisor.name} className="object-cover w-full h-full" />
                   </div>
-                  <Card className="flex-1 p-6 bg-card-gradient border-border">
-                    <h3 className="text-xl font-bold mb-2">{milestone.event}</h3>
-                    <p className="text-muted-foreground">{milestone.description}</p>
-                  </Card>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Leadership Team */}
-      <section className="py-20 bg-muted/5">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Leadership Team</h2>
-            <p className="text-xl text-muted-foreground">
-              Experienced leaders driving startup success
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            {team.map((member, index) => (
-              <Card key={index} className="p-6 bg-card-gradient border-border text-center hover:shadow-orange-glow transition-all duration-300">
-                <div className="space-y-4">
-                  <div className="text-4xl">{member.emoji}</div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold">{member.name}</h3>
-                    <Badge variant="outline">{member.role}</Badge>
-                    <p className="text-muted-foreground text-sm">{member.background}</p>
-                  </div>
+                  <h3 className="text-xl font-bold">{advisor.name}</h3>
+                  <p className="text-muted-foreground">{advisor.title}</p>
+                  <p className="text-sm text-muted-foreground">{advisor.expertise}</p>
                 </div>
               </Card>
             ))}
@@ -243,22 +186,46 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="py-20">
+      {/* Values Section */}
+      <section className="py-20 bg-muted/5">
         <div className="container mx-auto px-4">
-          <div className="text-center space-y-8 max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold">Join Our Mission</h2>
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold">Our Core Values</h2>
             <p className="text-xl text-muted-foreground">
-              Whether you're a founder, investor, mentor, or supporter - there's a place for you in our ecosystem
+              Guiding principles that drive our actions and decisions
             </p>
-            <div className="flex flex-col md:flex-row gap-4 justify-center pt-4">
-              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                Apply as Founder
-              </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                Become a Mentor
-              </Button>
-            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="bg-card-gradient border-border p-6 hover:shadow-orange-glow transition-all duration-300">
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold">Innovation</h3>
+                <p className="text-muted-foreground">
+                  We foster a culture of creativity and continuous improvement, always seeking new and 
+                  better ways to solve problems.
+                </p>
+              </div>
+            </Card>
+
+            <Card className="bg-card-gradient border-border p-6 hover:shadow-orange-glow transition-all duration-300">
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold">Collaboration</h3>
+                <p className="text-muted-foreground">
+                  We believe in the power of teamwork and collaboration, working together to achieve 
+                  common goals and create a supportive community.
+                </p>
+              </div>
+            </Card>
+
+            <Card className="bg-card-gradient border-border p-6 hover:shadow-orange-glow transition-all duration-300">
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold">Impact</h3>
+                <p className="text-muted-foreground">
+                  We are committed to making a positive impact on society, supporting startups that 
+                  address real-world challenges and create meaningful change.
+                </p>
+              </div>
+            </Card>
           </div>
         </div>
       </section>

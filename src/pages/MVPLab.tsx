@@ -118,12 +118,17 @@ const MVPLab = () => {
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 justify-center items-center pt-4">
-              <ApplicationDialog program="MVP Lab">
+              <ApplicationDialog>
                 <Button variant="hero" size="lg" className="text-lg px-8 py-6">
                   Join MVP Lab
                 </Button>
               </ApplicationDialog>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6" onClick={() => navigate('/success-stories')}>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="text-lg px-8 py-6"
+                onClick={() => navigate('/success-stories')}
+              >
                 View Success Stories
               </Button>
             </div>
@@ -220,7 +225,11 @@ const MVPLab = () => {
                   <h3 className="text-2xl font-bold">{partner.name}</h3>
                   <div className="text-3xl font-bold text-primary">{partner.credits}</div>
                   <p className="text-muted-foreground text-sm">{partner.benefits}</p>
-                  <Button variant="outline" className="w-full" onClick={() => navigate('/resources')}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => navigate('/resources')}
+                  >
                     Learn More
                   </Button>
                 </div>
@@ -270,8 +279,8 @@ const MVPLab = () => {
                   </div>
                   <div className="text-3xl font-bold text-primary">{grant.amount}</div>
                   <p className="text-muted-foreground">{grant.criteria}</p>
-                  <ApplicationDialog program={`Grant: ${grant.name}`}>
-                    <Button variant="outline" className="w-full">
+                  <ApplicationDialog>
+                    <Button className="w-full">
                       Apply Now
                     </Button>
                   </ApplicationDialog>
@@ -300,7 +309,7 @@ const MVPLab = () => {
                 great execution support - and that's exactly what MVP Lab provides."
               </p>
               <div className="flex flex-col md:flex-row gap-4 justify-center pt-6">
-                <ApplicationDialog program="MVP Lab">
+                <ApplicationDialog>
                   <Button variant="hero" size="lg" className="text-lg px-8 py-6">
                     Join MVP Lab Today
                   </Button>
