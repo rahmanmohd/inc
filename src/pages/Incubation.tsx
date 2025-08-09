@@ -1,280 +1,358 @@
 import Navigation from "@/components/Navigation";
+import IncubationApplicationForm from "@/components/IncubationApplicationForm";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Rocket, Lightbulb, Users, FileCode2, Handshake, Award } from "lucide-react";
-import ApplicationDialog from "@/components/ApplicationDialog";
-import ConsultationDialog from "@/components/ConsultationDialog";
-import { useNavigate } from "react-router-dom";
+import { CheckCircle, Clock, Users, TrendingUp, Lightbulb, Target, Award, Building } from "lucide-react";
 
 const Incubation = () => {
-  const navigate = useNavigate();
-
-  const benefits = [
-    { icon: Rocket, title: "Rapid Prototyping", description: "Build and test your MVP in weeks, not months." },
-    { icon: Lightbulb, title: "Expert Mentorship", description: "Guidance from industry leaders and experienced entrepreneurs." },
-    { icon: Users, title: "Extensive Network", description: "Connect with investors, partners, and potential customers." },
-    { icon: FileCode2, title: "Technical Resources", description: "Access to cutting-edge tools, technologies, and infrastructure." },
-    { icon: Handshake, title: "Strategic Partnerships", description: "Collaborate with leading corporations and organizations." },
-    { icon: Award, title: "Funding Opportunities", description: "Access to seed funding, grants, and investor networks." }
+  const programs = [
+    {
+      id: 1,
+      name: "Early Stage Incubation",
+      duration: "6 months",
+      stage: "Idea to MVP",
+      description: "Perfect for early-stage startups looking to validate their idea and build their first product.",
+      benefits: ["Seed funding up to ₹25L", "Weekly mentorship", "Product development support", "Market validation"],
+      nextCohort: "March 2025",
+      applications: "Open"
+    },
+    {
+      id: 2,
+      name: "Growth Acceleration",
+      duration: "12 months",
+      stage: "MVP to Scale",
+      description: "For startups with proven traction ready to scale their business and expand market reach.",
+      benefits: ["Growth funding up to ₹1Cr", "Go-to-market strategy", "Investor connections", "International expansion"],
+      nextCohort: "April 2025",
+      applications: "Open"
+    },
+    {
+      id: 3,
+      name: "Deep Tech Incubation",
+      duration: "18 months",
+      stage: "R&D to Market",
+      description: "Specialized program for deep tech startups working on breakthrough technologies.",
+      benefits: ["R&D funding up to ₹2Cr", "Technical mentorship", "Lab facilities", "Patent support"],
+      nextCohort: "May 2025",
+      applications: "Coming Soon"
+    }
   ];
 
-  const timeline = [
-    { week: "Week 1-4", activity: "Ideation & Validation", description: "Refine your idea, validate market demand, and define your target audience." },
-    { week: "Week 5-8", activity: "MVP Development", description: "Build a functional prototype with expert technical support and resources." },
-    { week: "Week 9-12", activity: "Customer Acquisition", description: "Develop a go-to-market strategy and acquire your first paying customers." },
-    { week: "Week 13-16", activity: "Investor Pitching", description: "Prepare your pitch deck and present your startup to potential investors." }
+  const success_stories = [
+    {
+      name: "HealthTech Pro",
+      sector: "HealthTech",
+      funding: "₹15 Cr Series A",
+      description: "AI-powered diagnostic platform serving 50+ hospitals across India",
+      year: "2023 Cohort"
+    },
+    {
+      name: "EduConnect",
+      sector: "EdTech",
+      funding: "₹8 Cr Seed",
+      description: "Vernacular learning platform with 2M+ active users",
+      year: "2022 Cohort"
+    },
+    {
+      name: "AgroSmart",
+      sector: "AgriTech",
+      funding: "₹12 Cr Series A",
+      description: "IoT-based precision farming solution for 10,000+ farmers",
+      year: "2023 Cohort"
+    }
   ];
 
-  const faq = [
-    { question: "What types of startups are eligible for the Incubation Program?", answer: "We welcome startups from all industries and sectors, with a focus on innovative and scalable solutions." },
-    { question: "What is the duration of the Incubation Program?", answer: "The Incubation Program is a 16-week intensive program designed to accelerate your startup's growth." },
-    { question: "What kind of support and resources are provided during the program?", answer: "You'll receive mentorship, technical resources, networking opportunities, and access to funding." },
-    { question: "How do I apply for the Incubation Program?", answer: "Visit our website and fill out the application form. Our team will review your application and contact you for an interview." }
+  const incubation_benefits = [
+    {
+      icon: <TrendingUp className="h-6 w-6 text-primary" />,
+      title: "Funding Support",
+      description: "Seed funding from ₹25L to ₹2Cr based on program and milestones"
+    },
+    {
+      icon: <Users className="h-6 w-6 text-primary" />,
+      title: "Expert Mentorship",
+      description: "1-on-1 guidance from successful entrepreneurs and industry experts"
+    },
+    {
+      icon: <Building className="h-6 w-6 text-primary" />,
+      title: "Infrastructure",
+      description: "Office space, lab facilities, and access to technical resources"
+    },
+    {
+      icon: <Target className="h-6 w-6 text-primary" />,
+      title: "Market Access",
+      description: "Customer introductions, pilot opportunities, and partnership facilitation"
+    },
+    {
+      icon: <Award className="h-6 w-6 text-primary" />,
+      title: "Legal & Compliance",
+      description: "Legal support, IP protection, and regulatory guidance"
+    },
+    {
+      icon: <Lightbulb className="h-6 w-6 text-primary" />,
+      title: "Product Development",
+      description: "Technical support, design resources, and product strategy guidance"
+    }
+  ];
+
+  const application_process = [
+    {
+      step: "01",
+      title: "Application Submission",
+      description: "Submit detailed application with business plan and pitch deck",
+      timeline: "Week 1"
+    },
+    {
+      step: "02",
+      title: "Initial Screening",
+      description: "Our team reviews applications and shortlists candidates",
+      timeline: "Week 2-3"
+    },
+    {
+      step: "03",
+      title: "Interview Round",
+      description: "Video interviews with founders and technical evaluation",
+      timeline: "Week 4"
+    },
+    {
+      step: "04",
+      title: "Final Pitch",
+      description: "Present your startup to our investment committee",
+      timeline: "Week 5"
+    },
+    {
+      step: "05",
+      title: "Selection & Onboarding",
+      description: "Successful startups are welcomed into the program",
+      timeline: "Week 6"
+    }
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-
-      {/* Hero Section */}
-      <section className="pt-20 pb-16 bg-hero-gradient relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/95"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center space-y-8">
-            <div className="space-y-4">
-              <Badge variant="secondary" className="bg-primary/10 text-primary text-lg px-4 py-2">
-                🚀 Incubation Program
-              </Badge>
-              <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-                Transform Your{" "}
-                <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
-                  Startup Idea
-                </span>{" "}
-                into a Thriving Business
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                Our 16-week incubation program provides the mentorship, resources, and network you need to launch and scale your startup.
-              </p>
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-4 justify-center pt-6">
-              <ApplicationDialog>
-                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                  Apply Now
-                </Button>
-              </ApplicationDialog>
-              <ConsultationDialog>
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                  Schedule Consultation
-                </Button>
-              </ConsultationDialog>
-            </div>
+      <main className="container mx-auto px-4 pt-20 pb-12">
+        {/* Hero Section */}
+        <section className="text-center mb-16">
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-6">
+            Startup Incubation Program
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8">
+            Transform your innovative idea into a thriving business. Join our comprehensive incubation program 
+            designed to accelerate your startup journey from concept to market success.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <IncubationApplicationForm>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+                Apply for Incubation
+              </Button>
+            </IncubationApplicationForm>
+            <Button variant="outline" size="lg">
+              Program Details
+            </Button>
           </div>
+        </section>
+
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Startups Incubated</CardTitle>
+              <Building className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">150+</div>
+              <p className="text-xs text-muted-foreground">Across all cohorts</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Funding</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">₹250Cr</div>
+              <p className="text-xs text-muted-foreground">Raised by alumni</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+              <Award className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">85%</div>
+              <p className="text-xs text-muted-foreground">Still operating</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Jobs Created</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">2,500+</div>
+              <p className="text-xs text-muted-foreground">Direct employment</p>
+            </CardContent>
+          </Card>
         </div>
-      </section>
 
-      {/* Benefits Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Key Benefits</h2>
-            <p className="text-xl text-muted-foreground">
-              What you'll gain from our comprehensive incubation program
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {benefits.map((benefit, index) => (
-              <Card key={index} className="bg-card-gradient border-border hover:shadow-orange-glow transition-all duration-300">
+        {/* Incubation Programs */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Incubation Programs</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {programs.map((program) => (
+              <Card key={program.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <CardHeader>
-                  <div className="flex items-center space-x-4">
-                    <benefit.icon className="w-6 h-6 text-primary" />
-                    <CardTitle className="text-lg font-bold">{benefit.title}</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <Badge variant={program.applications === "Open" ? "default" : "secondary"}>
+                      {program.applications}
+                    </Badge>
+                    <div className="text-2xl">🚀</div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-muted-foreground">
-                    {benefit.description}
+                  <CardTitle className="text-xl">{program.name}</CardTitle>
+                  <CardDescription className="flex items-center space-x-4 text-sm">
+                    <span className="flex items-center space-x-1">
+                      <Clock className="h-3 w-3" />
+                      <span>{program.duration}</span>
+                    </span>
+                    <Badge variant="outline" className="text-xs">{program.stage}</Badge>
                   </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">{program.description}</p>
+                  
+                  <div>
+                    <p className="text-sm font-medium mb-2">Key Benefits:</p>
+                    <div className="space-y-1">
+                      {program.benefits.map((benefit, index) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <CheckCircle className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
+                          <span className="text-xs text-muted-foreground">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="text-sm text-muted-foreground">
+                    <p><strong>Next Cohort:</strong> {program.nextCohort}</p>
+                  </div>
+
+                  <div className="pt-4 space-y-2">
+                    {program.applications === "Open" ? (
+                      <IncubationApplicationForm>
+                        <Button className="w-full">
+                          Apply Now
+                        </Button>
+                      </IncubationApplicationForm>
+                    ) : (
+                      <Button className="w-full" disabled>
+                        Applications Opening Soon
+                      </Button>
+                    )}
+                    <Button variant="outline" className="w-full">
+                      Learn More
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Timeline Section */}
-      <section className="py-20 bg-muted/5">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Program Timeline</h2>
-            <p className="text-xl text-muted-foreground">
-              A structured path to startup success
-            </p>
-          </div>
-
-          <div className="space-y-8">
-            {timeline.map((step, index) => (
-              <Card key={index} className="bg-background border-border p-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="md:col-span-1 font-bold text-primary text-lg">{step.week}</div>
-                  <div className="md:col-span-3 space-y-2">
-                    <h3 className="text-xl font-semibold">{step.activity}</h3>
-                    <p className="text-muted-foreground">{step.description}</p>
+        {/* Benefits */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">What You Get</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {incubation_benefits.map((benefit, index) => (
+              <Card key={index} className="hover:shadow-md transition-all duration-300">
+                <CardHeader>
+                  <div className="flex items-center space-x-3">
+                    {benefit.icon}
+                    <CardTitle className="text-lg">{benefit.title}</CardTitle>
                   </div>
-                </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                </CardContent>
               </Card>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Success Stories Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Success Stories</h2>
-            <p className="text-xl text-muted-foreground">
-              Meet the entrepreneurs who transformed their ideas into successful businesses
-            </p>
+        {/* Success Stories */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Success Stories</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {success_stories.map((story, index) => (
+              <Card key={index} className="hover:shadow-lg transition-all duration-300">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">{story.name}</CardTitle>
+                    <Badge variant="outline">{story.year}</Badge>
+                  </div>
+                  <CardDescription className="font-medium text-primary">
+                    {story.sector}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-muted-foreground">{story.description}</p>
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4 text-green-600" />
+                    <span className="font-medium text-green-600">{story.funding}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="bg-card-gradient border-border hover:shadow-orange-glow transition-all duration-300">
-              <CardHeader>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-primary font-bold">HT</span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">HealthTech Innovations</CardTitle>
-                    <CardDescription>AI-powered healthcare</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground">Revolutionizing healthcare accessibility in rural India through AI.</p>
-                <div className="flex justify-between text-sm">
-                  <span className="text-primary font-medium">₹15Cr Funding</span>
-                  <span className="text-muted-foreground">2023</span>
-                </div>
-                <Button variant="outline" size="sm" className="w-full">Learn More</Button>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card-gradient border-border hover:shadow-orange-glow transition-all duration-300">
-              <CardHeader>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-primary font-bold">EF</span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">EduLearn Platform</CardTitle>
-                    <CardDescription>Personalized learning</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground">Personalized learning platform for K-12 students.</p>
-                <div className="flex justify-between text-sm">
-                  <span className="text-primary font-medium">₹8Cr Funding</span>
-                  <span className="text-muted-foreground">2022</span>
-                </div>
-                <Button variant="outline" size="sm" className="w-full">Learn More</Button>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card-gradient border-border hover:shadow-orange-glow transition-all duration-300">
-              <CardHeader>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-primary font-bold">GT</span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">GreenTech Solutions</CardTitle>
-                    <CardDescription>Solar energy management</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground">Solar energy management system for residential complexes.</p>
-                <div className="flex justify-between text-sm">
-                  <span className="text-primary font-medium">₹25Cr Funding</span>
-                  <span className="text-muted-foreground">2023</span>
-                </div>
-                <Button variant="outline" size="sm" className="w-full">Learn More</Button>
-              </CardContent>
-            </Card>
+        {/* Application Process */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Application Process</h2>
+          <div className="max-w-4xl mx-auto">
+            <div className="space-y-6">
+              {application_process.map((step, index) => (
+                <Card key={index} className="hover:shadow-md transition-all duration-300">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
+                        {step.step}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
+                        <p className="text-muted-foreground mb-2">{step.description}</p>
+                        <Badge variant="outline">{step.timeline}</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
+        </section>
 
-          <div className="text-center mt-12">
-            <Button 
-              variant="outline" 
-              size="lg"
-              onClick={() => navigate('/current-cohort')}
-            >
-              Program Details
+        {/* Call to Action */}
+        <section className="text-center py-16 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-3xl">
+          <h2 className="text-3xl font-bold mb-4">Ready to Scale Your Startup?</h2>
+          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Join our comprehensive incubation program and transform your startup with expert guidance, 
+            funding support, and access to a thriving ecosystem of entrepreneurs and investors.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <IncubationApplicationForm>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+                Apply Now
+              </Button>
+            </IncubationApplicationForm>
+            <Button variant="outline" size="lg">
+              Schedule Consultation
             </Button>
           </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-20 bg-muted/5">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Frequently Asked Questions</h2>
-            <p className="text-xl text-muted-foreground">
-              Everything you need to know about the Incubation Program
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            {faq.map((item, index) => (
-              <Card key={index} className="bg-background border-border p-6">
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">{item.question}</h3>
-                  <p className="text-muted-foreground">{item.answer}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <Card className="p-12 bg-card-gradient border-border text-center">
-            <div className="space-y-6">
-              <h2 className="text-4xl md:text-5xl font-bold">
-                Ready to Take Your{" "}
-                <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
-                  Startup to the Next Level?
-                </span>
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Join our Incubation Program and gain the tools, resources, and network you need to succeed.
-              </p>
-              <div className="flex flex-col md:flex-row gap-4 justify-center pt-6">
-                <ApplicationDialog>
-                  <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                    Apply Now
-                  </Button>
-                </ApplicationDialog>
-                <ConsultationDialog>
-                  <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                    Schedule a Consultation
-                  </Button>
-                </ConsultationDialog>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </section>
-
+        </section>
+      </main>
       <Footer />
     </div>
   );
