@@ -1,4 +1,3 @@
-
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Cloud, Users, Code, TrendingUp, Globe, Download, ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const Resources = () => {
   const resourceCategories = [
@@ -14,30 +12,30 @@ const Resources = () => {
       title: "Startup Toolkit",
       icon: BookOpen,
       resources: [
-        { name: "Business Plan Template", type: "PDF", description: "Comprehensive template for Indian startups", link: "/resources/business-plan" },
-        { name: "Financial Model Template", type: "Excel", description: "Revenue projections & funding calculator", link: "/resources/financial-model" },
-        { name: "Pitch Deck Template", type: "PPT", description: "Investor-ready presentation template", link: "/resources/pitch-deck" },
-        { name: "Legal Compliance Guide", type: "PDF", description: "Indian startup legal requirements", link: "/resources/legal-guide" }
+        { name: "Business Plan Template", type: "PDF", description: "Comprehensive template for Indian startups", link: "#" },
+        { name: "Financial Model Template", type: "Excel", description: "Revenue projections & funding calculator", link: "#" },
+        { name: "Pitch Deck Template", type: "PPT", description: "Investor-ready presentation template", link: "#" },
+        { name: "Legal Compliance Guide", type: "PDF", description: "Indian startup legal requirements", link: "#" }
       ]
     },
     {
       title: "Cloud Credits",
       icon: Cloud,
       resources: [
-        { name: "AWS Activate Credits", type: "Credit", description: "Up to $10,000 in AWS credits", link: "/resources/aws-credits" },
-        { name: "Google Cloud Credits", type: "Credit", description: "Up to $20,000 in GCP credits", link: "/resources/gcp-credits" },
-        { name: "Microsoft Azure", type: "Credit", description: "Up to $15,000 in Azure credits", link: "/resources/azure-credits" },
-        { name: "Digital Ocean", type: "Credit", description: "$5,000 in hosting credits", link: "/resources/digitalocean-credits" }
+        { name: "AWS Activate Credits", type: "Credit", description: "Up to $10,000 in AWS credits", link: "#" },
+        { name: "Google Cloud Credits", type: "Credit", description: "Up to $20,000 in GCP credits", link: "#" },
+        { name: "Microsoft Azure", type: "Credit", description: "Up to $15,000 in Azure credits", link: "#" },
+        { name: "Digital Ocean", type: "Credit", description: "$5,000 in hosting credits", link: "#" }
       ]
     },
     {
       title: "Development Tools",
       icon: Code,
       resources: [
-        { name: "GitHub Enterprise", type: "Tool", description: "Free premium GitHub access", link: "/resources/github-enterprise" },
-        { name: "Figma Professional", type: "Tool", description: "Design tool for startups", link: "/resources/figma-pro" },
-        { name: "Notion Workspace", type: "Tool", description: "Team collaboration platform", link: "/resources/notion-workspace" },
-        { name: "Slack Business+", type: "Tool", description: "Premium communication tool", link: "/resources/slack-business" }
+        { name: "GitHub Enterprise", type: "Tool", description: "Free premium GitHub access", link: "#" },
+        { name: "Figma Professional", type: "Tool", description: "Design tool for startups", link: "#" },
+        { name: "Notion Workspace", type: "Tool", description: "Team collaboration platform", link: "#" },
+        { name: "Slack Business+", type: "Tool", description: "Premium communication tool", link: "#" }
       ]
     }
   ];
@@ -131,11 +129,9 @@ const Resources = () => {
                             </div>
                             <ExternalLink className="w-5 h-5 text-muted-foreground" />
                           </div>
-                          <Button variant="outline" className="w-full" asChild>
-                            <Link to={resource.link}>
-                              <Download className="w-4 h-4 mr-2" />
-                              Access Resource
-                            </Link>
+                          <Button variant="outline" className="w-full">
+                            <Download className="w-4 h-4 mr-2" />
+                            Access Resource
                           </Button>
                         </div>
                       </Card>
@@ -183,10 +179,8 @@ const Resources = () => {
               </Card>
             </div>
 
-            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow mt-8" asChild>
-              <Link to="/incubation">
-                Start Your Application
-              </Link>
+            <Button variant="hero" size="lg" className="text-lg px-8 py-6 mt-8">
+              Start Your Application
             </Button>
           </div>
         </div>
