@@ -1,4 +1,3 @@
-
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,43 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Handshake, Building, Users, Globe, TrendingUp, Award } from "lucide-react";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 
 const Partnership = () => {
-  const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    companyName: "",
-    industry: "",
-    contactName: "",
-    email: "",
-    phone: "",
-    partnershipType: "",
-    companyDetails: "",
-    partnershipGoals: "",
-    timeline: ""
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Partnership Request Submitted",
-      description: "We'll review your request and get back to you within 48 hours.",
-    });
-    // Reset form
-    setFormData({
-      companyName: "",
-      industry: "",
-      contactName: "",
-      email: "",
-      phone: "",
-      partnershipType: "",
-      companyDetails: "",
-      partnershipGoals: "",
-      timeline: ""
-    });
-  };
-
   const partnershipTypes = [
     {
       title: "Corporate Innovation",
@@ -206,21 +170,15 @@ const Partnership = () => {
             </div>
 
             <Card className="p-8 bg-card-gradient border-border">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="companyName">Company Name *</Label>
-                    <Input 
-                      id="companyName" 
-                      placeholder="Your company name" 
-                      value={formData.companyName}
-                      onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-                      required 
-                    />
+                    <Input id="companyName" placeholder="Your company name" required />
                   </div>
                   <div>
                     <Label htmlFor="industry">Industry *</Label>
-                    <Select value={formData.industry} onValueChange={(value) => setFormData({...formData, industry: value})}>
+                    <Select>
                       <SelectTrigger>
                         <SelectValue placeholder="Select industry" />
                       </SelectTrigger>
@@ -236,37 +194,19 @@ const Partnership = () => {
                   </div>
                   <div>
                     <Label htmlFor="contactName">Contact Person *</Label>
-                    <Input 
-                      id="contactName" 
-                      placeholder="Full name" 
-                      value={formData.contactName}
-                      onChange={(e) => setFormData({...formData, contactName: e.target.value})}
-                      required 
-                    />
+                    <Input id="contactName" placeholder="Full name" required />
                   </div>
                   <div>
                     <Label htmlFor="email">Email *</Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
-                      placeholder="Business email" 
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      required 
-                    />
+                    <Input id="email" type="email" placeholder="Business email" required />
                   </div>
                   <div>
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input 
-                      id="phone" 
-                      placeholder="Contact number" 
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    />
+                    <Input id="phone" placeholder="Contact number" />
                   </div>
                   <div>
                     <Label htmlFor="partnershipType">Partnership Type *</Label>
-                    <Select value={formData.partnershipType} onValueChange={(value) => setFormData({...formData, partnershipType: value})}>
+                    <Select>
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
@@ -286,8 +226,6 @@ const Partnership = () => {
                     id="companyDetails"
                     placeholder="Brief description of your company, size, and key business areas"
                     rows={3}
-                    value={formData.companyDetails}
-                    onChange={(e) => setFormData({...formData, companyDetails: e.target.value})}
                     required
                   />
                 </div>
@@ -298,15 +236,13 @@ const Partnership = () => {
                     id="partnershipGoals"
                     placeholder="What do you hope to achieve through this partnership? What value can you bring?"
                     rows={4}
-                    value={formData.partnershipGoals}
-                    onChange={(e) => setFormData({...formData, partnershipGoals: e.target.value})}
                     required
                   />
                 </div>
 
                 <div>
                   <Label htmlFor="timeline">Preferred Timeline</Label>
-                  <Select value={formData.timeline} onValueChange={(value) => setFormData({...formData, timeline: value})}>
+                  <Select>
                     <SelectTrigger>
                       <SelectValue placeholder="When would you like to start?" />
                     </SelectTrigger>

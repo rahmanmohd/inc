@@ -1,274 +1,417 @@
 
-# Inc Combinator - Technical Documentation
+# Inc Combinator Platform - Technical Documentation
 
 ## Project Overview
-Inc Combinator is a comprehensive startup incubation platform built with React, TypeScript, and modern web technologies. The platform provides multiple programs for entrepreneurs at different stages of their journey.
+Inc Combinator is a comprehensive startup accelerator and incubator platform built for the Indian startup ecosystem. The platform serves entrepreneurs, investors, mentors, and other stakeholders in the startup community.
 
-## Technology Stack
-- **Frontend**: React 18 + TypeScript + Vite
-- **UI Components**: Shadcn/ui + Radix UI primitives
-- **Styling**: Tailwind CSS
-- **State Management**: @tanstack/react-query
-- **Routing**: React Router DOM v6
-- **Build Tool**: Vite
-- **Package Manager**: Bun
+### Key Features
+- **Startup Incubation Programs**: MVP Lab, INC Lab, Hackathons, and full incubation
+- **Co-founder Matching**: Advanced matching system for entrepreneurs to find co-founders
+- **Investor Network**: Connect startups with potential investors
+- **Mentorship Program**: Experienced professionals mentoring early-stage startups
+- **Resource Hub**: Comprehensive resources, blogs, and educational content
+- **Community Platform**: Networking and collaboration tools
 
-## Architecture Overview
-The application follows a component-based architecture with clear separation of concerns:
+## Technical Architecture
+
+### Frontend Architecture
+- **Framework**: React 18.3.1 with TypeScript
+- **Build Tool**: Vite for fast development and optimized builds
+- **Styling**: Tailwind CSS with custom design system
+- **UI Components**: Radix UI primitives with custom shadcn/ui components
+- **State Management**: React hooks with React Query for server state
+- **Routing**: React Router v6 for client-side routing
+
+### Design System
+- **Component Library**: Custom shadcn/ui components
+- **Theming**: CSS variables with HSL color system
+- **Responsive Design**: Mobile-first approach with Tailwind breakpoints
+- **Icons**: Lucide React for consistent iconography
+- **Typography**: Custom font system with proper hierarchy
+
+## Project Structure
 
 ```
 src/
-├── components/           # Reusable UI components
-│   ├── ui/              # Shadcn/ui components
-│   ├── dashboard/       # Dashboard-specific components
-│   ├── hackathon/       # Hackathon-specific components
-│   └── incubation/      # Incubation-specific components
-├── pages/               # Route components (pages)
-├── hooks/               # Custom React hooks
-├── lib/                 # Utility functions
-└── assets/              # Static assets
+├── components/          # Reusable UI components
+│   ├── ui/             # Base UI components (shadcn/ui)
+│   ├── dashboard/      # Dashboard-specific components
+│   ├── hackathon/      # Hackathon-related components
+│   ├── incubation/     # Incubation program components
+│   └── ...            # Other feature components
+├── pages/              # Page components
+│   ├── Index.tsx       # Homepage
+│   ├── AboutUs.tsx     # About page
+│   ├── MeetCofounder.tsx # Co-founder matching
+│   ├── SuccessStories.tsx # Success stories
+│   ├── BecomeMentor.tsx # Mentor application
+│   └── ...            # Other pages
+├── hooks/              # Custom React hooks
+├── lib/               # Utility functions
+├── assets/            # Static assets
+└── App.tsx            # Main application component
 ```
 
-## Core Pages & Functionality
+## Core Modules
 
-### Main Pages
-- **Index** (`/`) - Landing page with hero section and program overview
-- **About Us** (`/about`) - Company information, team, and mission
-- **Contact** (`/contact`) - Contact form and information
+### 1. Authentication System
+- **Demo Implementation**: Frontend-only authentication for development
+- **Components**: Login, Register, ForgotPassword, AuthButton
+- **Future**: Integration with Supabase Auth
+- **User Types**: Founder, Investor, Mentor, Admin
 
-### Program Pages
-- **Hackathon** (`/hackathon`) - 48-hour coding competition details and registration
-- **Incubation** (`/incubation`) - 16-week comprehensive incubation program
-- **MVP Lab** (`/mvp-lab`) - Technical development and MVP creation services
-- **INC Lab** (`/inclab`) - Deep innovation and research-focused program
-- **Philosophy** (`/philosophy`) - Company philosophy and methodology
+### 2. Co-founder Matching Platform
+- **Features**:
+  - Advanced profile creation and browsing
+  - Skill-based matching algorithms
+  - Direct messaging and connection requests
+  - Success stories and testimonials
+- **Components**: MeetCofounder, CofounderPostDialog
+- **Key Files**:
+  - `/pages/MeetCofounder.tsx` - Main co-founder matching interface
+  - `/pages/SuccessStories.tsx` - Success stories showcase
+  - `/components/CofounderPostDialog.tsx` - Requirement posting
 
-### Platform Pages
-- **Resources** (`/resources`) - Startup tools, templates, and cloud credits
-- **Partnership** (`/partnership`) - Corporate partnership opportunities
-- **Meet Cofounder** (`/meet-cofounder`) - Cofounder matching platform
-- **Startup Directory** (`/startup-directory`) - Portfolio of incubated startups
-- **Success Stories** (`/success-stories`) - Alumni success stories and metrics
-- **Investor Centre** (`/investor-centre`) - Investment opportunities
-- **Deals** (`/deals`) - Business deals and partnerships
-- **Blogs** (`/blogs`) - Educational content and insights
-- **News** (`/news`) - Industry news and updates
+### 3. Incubation Programs
+- **Programs**: MVP Lab, INC Lab, Hackathons, Full Incubation
+- **Features**:
+  - Program details and application forms
+  - Cohort management
+  - Progress tracking
+  - Mentorship integration
+- **Key Files**:
+  - `/pages/Incubation.tsx` - Main incubation program
+  - `/pages/ProgramDetails.tsx` - Detailed program information
+  - `/pages/MVPLab.tsx` - MVP development program
+  - `/pages/INCLab.tsx` - Research and development program
 
-### Dashboard Pages
-- **Startup Dashboard** (`/startup-dashboard`) - Startup application management
-- **Admin Dashboard** (`/admin-dashboard`) - Administrative interface
+### 4. Mentorship System
+- **Features**:
+  - Mentor application and onboarding
+  - Mentorship matching
+  - Session scheduling and tracking
+  - Performance analytics
+- **Key Files**:
+  - `/pages/BecomeMentor.tsx` - Mentor application
+  - `/components/ConsultationDialog.tsx` - Consultation booking
 
-### Utility Pages
-- **Featured Startups** (`/featured-startups`) - Highlighted portfolio companies
-- **Current Cohort** (`/current-cohort`) - Active cohort information
-- **All Applications** (`/all-applications`) - Application management
-- **Privacy Policy** (`/privacy-policy`) - Privacy policy
-- **Terms & Conditions** (`/terms-conditions`) - Terms of service
-- **404 Not Found** (`/*`) - Error page for invalid routes
+### 5. Investor Network
+- **Features**:
+  - Investor profiles and portfolios
+  - Deal flow management
+  - Investment tracking
+  - Startup-investor matching
+- **Key Files**:
+  - `/pages/InvestorCentre.tsx` - Investor hub
+  - `/pages/InvestorProfile.tsx` - Individual investor profiles
+  - `/pages/Deals.tsx` - Investment opportunities
 
-## Component Library
+### 6. Startup Directory
+- **Features**:
+  - Comprehensive startup listings
+  - Detailed startup profiles
+  - Filtering and search capabilities
+  - Analytics and insights
+- **Key Files**:
+  - `/pages/StartupDirectory.tsx` - Startup listings
+  - `/pages/StartupProfile.tsx` - Individual startup profiles
+  - `/pages/FeaturedStartups.tsx` - Curated startup showcase
 
-### Core Components
-- **Navigation** - Main navigation bar with responsive design
-- **Footer** - Site footer with links and information
-- **Hero** - Landing page hero section
-- **ApplicationDialog** - Program application modal
-- **ConsultationDialog** - Schedule consultation modal
-- **ProgramOverview** - Program details component
+## Dependencies
 
-### Dashboard Components
-- **StartupOverview** - Startup dashboard overview
-- **AdminOverview** - Admin dashboard overview
-- **ApplicationStatus** - Application tracking
-- **ApplicationManagement** - Admin application management
+### Core Dependencies
+- **React**: ^18.3.1 - UI library
+- **React Router**: ^6.26.2 - Client-side routing
+- **React Query**: ^5.56.2 - Server state management
+- **TypeScript**: Type safety and development experience
 
-### UI Components (Shadcn/ui)
-Complete set of accessible UI components including:
-- Buttons, Cards, Dialogs, Forms
-- Navigation, Tabs, Accordion
-- Data Display, Feedback, Overlay components
+### UI/UX Dependencies
+- **Tailwind CSS**: ^3.x - Utility-first CSS framework
+- **Radix UI**: ^1.x - Unstyled, accessible UI primitives
+- **Lucide React**: ^0.462.0 - Icon library
+- **Recharts**: ^2.12.7 - Chart and data visualization
 
-## Routing Configuration
-The application uses React Router v6 with the following structure:
+### Form & Validation
+- **React Hook Form**: ^7.53.0 - Form state management
+- **Zod**: ^3.23.8 - Schema validation
+- **@hookform/resolvers**: ^3.9.0 - Form validation integration
 
-```typescript
-// Core routes in App.tsx
-<Routes>
-  <Route path="/" element={<Index />} />
-  <Route path="/hackathon" element={<Hackathon />} />
-  <Route path="/incubation" element={<Incubation />} />
-  <Route path="/mvp-lab" element={<MVPLab />} />
-  <Route path="/inclab" element={<INCLab />} />
-  <Route path="/resources" element={<Resources />} />
-  <Route path="/partnership" element={<Partnership />} />
-  <Route path="/about" element={<AboutUs />} />
-  <Route path="/contact" element={<Contact />} />
-  <Route path="/meet-cofounder" element={<MeetCofounder />} />
-  <Route path="/startup-directory" element={<StartupDirectory />} />
-  <Route path="/success-stories" element={<SuccessStories />} />
-  <Route path="/investor-centre" element={<InvestorCentre />} />
-  <Route path="/philosophy" element={<Philosophy />} />
-  // ... additional routes
-  <Route path="*" element={<NotFound />} />
-</Routes>
-```
+### Development Dependencies
+- **Vite**: Build tool and development server
+- **ESLint**: Code linting and quality
+- **PostCSS**: CSS processing
+- **Autoprefixer**: CSS vendor prefixing
 
-## Key Features
+## State Management
 
-### 1. Multi-Program Platform
-- **Hackathon**: 48-hour intensive coding competition
-- **Incubation**: 16-week comprehensive startup program
-- **MVP Lab**: Technical development and MVP creation
-- **INC Lab**: Deep innovation research program
+### Client State
+- **React useState**: Local component state
+- **React useContext**: Global state for user authentication
+- **React useReducer**: Complex state logic
 
-### 2. Application Management System
-- Program-specific application forms
-- Status tracking and management
-- Admin review and approval workflows
+### Server State
+- **React Query**: 
+  - Data fetching and caching
+  - Background updates
+  - Optimistic updates
+  - Error handling
 
-### 3. Cofounder Matching Platform
-- Profile browsing and filtering
-- Connection requests and messaging
-- Startup opportunity listings
+### Form State
+- **React Hook Form**: 
+  - Form validation
+  - Performance optimization
+  - Error handling
+  - Integration with UI components
 
-### 4. Resource Hub
-- Startup toolkits and templates
-- Cloud credits and infrastructure access
-- Educational content and guides
+## Routing System
 
-### 5. Partnership Portal
-- Corporate partnership applications
-- Integration opportunities
-- Mentorship program access
+### Main Routes
+- `/` - Homepage
+- `/about` - About Us
+- `/incubation` - Incubation Program
+- `/hackathon` - Hackathon Events
+- `/meet-cofounder` - Co-founder Matching
+- `/investor-centre` - Investor Hub
+- `/startup-directory` - Startup Listings
+- `/program-details` - Program Information
+- `/success-stories` - Success Stories
+- `/become-mentor` - Mentor Application
 
-## Data Flow & State Management
+### Dynamic Routes
+- `/startup-profile/:id` - Individual startup pages
+- `/investor-profile/:id` - Individual investor pages
+- `/hackathon-detail/:id` - Hackathon event details
 
-### React Query Integration
-- API data fetching and caching
-- Real-time updates and synchronization
-- Error handling and retry logic
+### Authentication Routes
+- `/login` - User login
+- `/register` - User registration
+- `/forgot-password` - Password recovery
 
-### Form Handling
-- React Hook Form with validation
-- Toast notifications for feedback
-- Progressive form completion
+## UI/UX Design System
 
-### Navigation State
-- React Router for page navigation
-- Dynamic breadcrumbs and navigation
-- Mobile-responsive navigation
+### Color System
+- **Primary**: HSL-based orange gradient
+- **Secondary**: Complementary blue tones
+- **Neutral**: Grayscale for text and backgrounds
+- **Semantic**: Success, warning, error, info colors
 
-## Styling & Design System
+### Typography
+- **Headings**: Multiple sizes with proper hierarchy
+- **Body Text**: Optimized for readability
+- **Code**: Monospace font for technical content
 
-### Tailwind CSS Configuration
-- Custom color palette with HSL values
-- Responsive breakpoint system
-- Component-specific utility classes
+### Components
+- **Cards**: Consistent card layouts with gradients
+- **Buttons**: Primary, secondary, outline variants
+- **Forms**: Validated form components
+- **Navigation**: Responsive navigation with mobile support
+- **Dialogs**: Modal dialogs for interactions
 
-### Design Tokens
-```css
-/* Key color variables */
---primary: 24 100% 58%;        /* Orange primary */
---secondary: 24 48% 95%;       /* Light secondary */
---background: 0 0% 100%;       /* White background */
---foreground: 240 10% 3.9%;    /* Dark text */
---muted: 240 4.8% 95.9%;       /* Muted background */
-```
+### Responsive Design
+- **Mobile First**: Optimized for mobile devices
+- **Breakpoints**: sm, md, lg, xl, 2xl
+- **Flexible Layouts**: Grid and flexbox layouts
+- **Touch Friendly**: Appropriate touch targets
 
-### Animation & Effects
-- Smooth transitions and hover effects
-- Gradient text and background effects
-- Loading states and skeleton screens
+## Data Flow
 
-## Performance Optimizations
+### Frontend Data Flow
+1. **User Interaction** → Component Event Handler
+2. **Event Handler** → State Update (local or global)
+3. **State Update** → React Query (if server interaction needed)
+4. **React Query** → API Call (future backend integration)
+5. **API Response** → Cache Update → UI Re-render
+
+### Form Data Flow
+1. **User Input** → React Hook Form
+2. **Form Validation** → Zod Schema
+3. **Form Submit** → Event Handler
+4. **Data Processing** → API Call (future)
+5. **Success/Error** → Toast Notification
+
+## Performance Optimization
 
 ### Code Splitting
-- Route-based code splitting
-- Lazy loading of components
-- Dynamic imports for heavy features
+- **Route-based splitting**: Each page is a separate chunk
+- **Component lazy loading**: Heavy components loaded on demand
+- **Dynamic imports**: Third-party libraries loaded when needed
 
-### Asset Optimization
-- Image optimization and lazy loading
-- Icon library integration (Lucide React)
-- Minimal bundle size with tree shaking
+### Bundle Optimization
+- **Tree shaking**: Unused code elimination
+- **Minification**: Code size reduction
+- **Compression**: Gzip/Brotli compression
 
-### Caching Strategy
-- React Query for API caching
-- Browser caching for static assets
-- Service worker for offline support
+### Runtime Performance
+- **React.memo**: Component memoization
+- **useMemo/useCallback**: Expensive computation caching
+- **Virtual scrolling**: Large list optimization (future)
+
+## Scalability Considerations
+
+### Frontend Scalability
+- **Component Architecture**: Modular, reusable components
+- **State Management**: Efficient state updates
+- **Code Organization**: Clear separation of concerns
+- **Performance Monitoring**: React DevTools integration
+
+### Backend Scalability (Future)
+- **Microservices**: Service-oriented architecture
+- **Database Optimization**: Query optimization and indexing
+- **Caching Strategy**: Redis for session and data caching
+- **API Rate Limiting**: Protect against abuse
+
+## Security Implementation
+
+### Frontend Security
+- **Input Validation**: Client-side validation with Zod
+- **XSS Prevention**: Sanitized user inputs
+- **CSRF Protection**: Token-based protection (future)
+- **Secure Headers**: Security headers implementation
+
+### Authentication Security (Future)
+- **JWT Tokens**: Secure authentication
+- **Password Hashing**: Bcrypt for password security
+- **Session Management**: Secure session handling
+- **OAuth Integration**: Third-party authentication
 
 ## Development Workflow
 
-### File Organization
-- Feature-based component organization
-- Shared utilities in `/lib`
-- Type definitions co-located with components
+### Code Quality
+- **ESLint**: Code linting and standards
+- **TypeScript**: Type safety and better DX
+- **Prettier**: Code formatting
+- **Husky**: Git hooks for quality checks
 
-### Code Standards
-- TypeScript for type safety
-- ESLint for code quality
-- Prettier for code formatting
+### Testing Strategy (Future)
+- **Unit Tests**: Jest and React Testing Library
+- **Integration Tests**: Component integration testing
+- **E2E Tests**: Cypress for end-to-end testing
+- **Performance Tests**: Lighthouse CI
 
-### Testing Strategy
-- Unit tests for utility functions
-- Integration tests for key workflows
-- End-to-end tests for critical paths
+### Development Process
+- **Feature Branches**: Git flow for feature development
+- **Code Reviews**: Pull request reviews
+- **Continuous Integration**: Automated testing and builds
+- **Deployment**: Automated deployment pipeline
 
-## Deployment & Infrastructure
+## Backend Architecture (Future Implementation)
 
-### Build Process
-- Vite for fast development and building
-- TypeScript compilation and checking
-- Asset optimization and minification
+### Technology Stack
+- **Runtime**: Node.js with Express or Supabase
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: Supabase Auth or Auth0
+- **File Storage**: Supabase Storage or AWS S3
+- **Email Service**: SendGrid or AWS SES
 
-### Environment Configuration
-- Environment-specific configurations
-- Feature flags for gradual rollouts
-- API endpoint management
+### API Design
+- **REST API**: RESTful endpoints
+- **GraphQL**: Flexible data fetching (optional)
+- **WebSocket**: Real-time features
+- **API Versioning**: Backward compatibility
 
-## Security Considerations
+### Database Schema
+- **Users**: User profiles and authentication
+- **Startups**: Startup information and metrics
+- **Programs**: Incubation program data
+- **Applications**: Program applications
+- **Mentorships**: Mentor-startup relationships
+- **Investments**: Investment tracking
 
-### Authentication & Authorization
-- Secure user authentication flows
-- Role-based access control
-- Protected route implementations
+## Deployment Strategy
 
-### Data Protection
-- Form validation and sanitization
-- XSS protection measures
-- HTTPS enforcement
+### Frontend Deployment
+- **Build Process**: Vite build optimization
+- **Static Hosting**: Vercel, Netlify, or AWS S3
+- **CDN**: Global content delivery
+- **Environment Variables**: Configuration management
+
+### Backend Deployment (Future)
+- **Container Deployment**: Docker containerization
+- **Cloud Hosting**: AWS, Google Cloud, or Azure
+- **Database Hosting**: Managed PostgreSQL
+- **Monitoring**: Application performance monitoring
+
+## Monitoring and Analytics
+
+### Performance Monitoring
+- **Core Web Vitals**: Page performance metrics
+- **Error Tracking**: Sentry for error monitoring
+- **User Analytics**: Google Analytics or Mixpanel
+- **A/B Testing**: Feature flag implementation
+
+### Business Metrics
+- **User Engagement**: Session duration, page views
+- **Conversion Rates**: Application completion rates
+- **Success Metrics**: Startup success tracking
+- **Platform Growth**: User acquisition and retention
 
 ## Future Enhancements
 
-### Planned Features
-1. Real-time messaging system
-2. Video call integration for mentorship
-3. Advanced analytics dashboard
-4. Mobile application (React Native)
-5. API for third-party integrations
+### Immediate Improvements
+1. **Backend Integration**: Supabase or custom backend
+2. **Real Authentication**: JWT-based authentication
+3. **Database Integration**: PostgreSQL with real data
+4. **File Upload**: Document and image uploads
+5. **Email Integration**: Automated email notifications
 
-### Technical Improvements
-1. Progressive Web App (PWA) capabilities
-2. Advanced caching strategies
-3. Micro-frontend architecture
-4. GraphQL API integration
-5. Advanced search and filtering
+### Advanced Features
+1. **AI-Powered Matching**: Machine learning for better matches
+2. **Video Conferencing**: Integrated video calls
+3. **Payment Integration**: Stripe for payments
+4. **Mobile Application**: React Native mobile app
+5. **Advanced Analytics**: Custom analytics dashboard
 
-## Troubleshooting Guide
+### Platform Expansion
+1. **Multi-language Support**: Internationalization
+2. **Regional Expansion**: Multi-region support
+3. **Integration APIs**: Third-party integrations
+4. **White-label Solution**: Platform customization
+5. **Enterprise Features**: Advanced enterprise tools
 
-### Common Issues
-1. **Build Errors**: Check TypeScript types and imports
-2. **Routing Issues**: Verify route definitions in App.tsx
-3. **Styling Problems**: Check Tailwind class names and conflicts
-4. **State Management**: Verify React Query configuration
+## Technical Debt and Maintenance
 
-### Development Tips
-1. Use TypeScript strictly for better code quality
-2. Follow the established component patterns
-3. Test responsive design across devices
-4. Optimize images and assets regularly
+### Current Technical Debt
+1. **Demo Authentication**: Replace with real authentication
+2. **Mock Data**: Replace with real database
+3. **Error Handling**: Improve error handling
+4. **Loading States**: Better loading indicators
+5. **Accessibility**: Improve accessibility features
 
-## Conclusion
-Inc Combinator represents a modern, scalable web application built with industry best practices. The modular architecture ensures maintainability while the comprehensive feature set serves the diverse needs of the startup ecosystem.
+### Maintenance Strategy
+1. **Regular Updates**: Keep dependencies updated
+2. **Security Audits**: Regular security reviews
+3. **Performance Audits**: Regular performance reviews
+4. **Code Refactoring**: Continuous code improvement
+5. **Documentation**: Keep documentation updated
 
-For additional support or questions, refer to the codebase comments and component documentation.
+## Getting Started
+
+### Prerequisites
+- Node.js (v18+)
+- npm or yarn
+- Git
+
+### Installation
+```bash
+git clone <repository-url>
+cd inc-combinator
+npm install
+npm run dev
+```
+
+### Development
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+```
+
+### Environment Variables
+```
+VITE_API_URL=<api-url>
+VITE_SUPABASE_URL=<supabase-url>
+VITE_SUPABASE_ANON_KEY=<supabase-key>
+```
+
+This documentation provides a comprehensive overview of the Inc Combinator platform's technical architecture, implementation details, and future roadmap. It should serve as a reference for developers and stakeholders working on the platform.
