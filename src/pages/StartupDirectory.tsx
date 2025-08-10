@@ -1,3 +1,4 @@
+
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,8 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, Users, TrendingUp, MapPin, Search, Filter } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import StartupProfileDialog from "@/components/StartupProfileDialog";
+import IncApplicationDialog from "@/components/IncApplicationDialog";
 
 const StartupDirectory = () => {
+  const { toast } = useToast();
+  const [selectedStartup, setSelectedStartup] = useState<any>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+
   const startups = [
     {
       id: 1,
@@ -92,6 +101,18 @@ const StartupDirectory = () => {
   const sectors = ["All Sectors", "HealthTech", "FinTech", "EdTech", "CleanTech", "AgriTech", "Logistics"];
   const stages = ["All Stages", "Pre-Seed", "Seed", "Series A", "Series B", "Series C"];
   const locations = ["All Locations", "Bangalore", "Mumbai", "Delhi", "Hyderabad", "Pune", "Chennai"];
+
+  const handleViewProfile = (startup: any) => {
+    setSelectedStartup(startup);
+    setProfileOpen(true);
+  };
+
+  const handleConnect = (startup: any) => {
+    toast({
+      title: "Connection Request Sent",
+      description: `Your connection request has been sent to ${startup.name}`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -252,10 +273,18 @@ const StartupDirectory = () => {
                 </div>
 
                 <div className="flex space-x-2 pt-4">
-                  <Button className="flex-1" size="sm">
+                  <Button 
+                    className="flex-1" 
+                    size="sm"
+                    onClick={() => handleViewProfile(startup)}
+                  >
                     View Profile
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleConnect(startup)}
+                  >
                     Connect
                   </Button>
                 </div>
@@ -277,11 +306,24 @@ const StartupDirectory = () => {
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join Inc Combinator and get your startup featured in our directory. Connect with investors, mentors, and fellow entrepreneurs.
           </p>
-          <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-            Apply to Inc Combinator
-          </Button>
+          <IncApplicationDialog>
+            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+              Apply to Inc Combinator
+            </Button>
+          </IncApplicationDialog>
         </section>
       </main>
+
+      {/* Startup Profile Dialog */}
+      {selectedStartup && (
+        <StartupProfileDialog
+          open={profileOpen}
+          onOpenChange={setProfileOpen}
+          startup={selectedStartup}
+          onConnect={() => handleConnect(selectedStartup)}
+        />
+      )}
+
       <Footer />
     </div>
   );

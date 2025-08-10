@@ -11,10 +11,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Briefcase, Star, Search, Users, Plus, ExternalLink, Mail, Linkedin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import CofounderPostDialog from "@/components/CofounderPostDialog";
+import CofounderDetailsDialog from "@/components/CofounderDetailsDialog";
 
 const MeetCofounder = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [connectMessage, setConnectMessage] = useState("");
+  const [selectedCofounder, setSelectedCofounder] = useState<any>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
   const featuredProfiles = [
     {
       id: 1,
@@ -175,6 +182,19 @@ const MeetCofounder = () => {
   const locations = ["All Locations", "Bangalore", "Mumbai", "Delhi", "Pune", "Hyderabad", "Chennai"];
   const experiences = ["All Experience", "0-2 years", "3-5 years", "6-8 years", "9+ years"];
 
+  const handleConnect = (cofounder: any) => {
+    setSelectedCofounder(cofounder);
+    toast({
+      title: "Connection Request Sent",
+      description: `Your connection request has been sent to ${cofounder.name}`,
+    });
+  };
+
+  const handleViewDetails = (cofounder: any) => {
+    setSelectedCofounder(cofounder);
+    setDetailsOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -188,11 +208,16 @@ const MeetCofounder = () => {
             Connect with like-minded entrepreneurs and build something amazing together. Join India's largest co-founder matching platform.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-              <Plus className="mr-2 h-4 w-4" />
-              Post Your Requirement
-            </Button>
-            <Button variant="outline" size="lg">
+            <CofounderPostDialog>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+                <Plus className="mr-2 h-4 w-4" />
+                Post Your Requirement
+              </Button>
+            </CofounderPostDialog>
+            <Button variant="outline" size="lg" onClick={() => {
+              const browseSection = document.getElementById('browse-profiles');
+              browseSection?.scrollIntoView({ behavior: 'smooth' });
+            }}>
               <Users className="mr-2 h-4 w-4" />
               Browse Profiles
             </Button>
@@ -234,7 +259,7 @@ const MeetCofounder = () => {
             <TabsTrigger value="create">Post Requirement</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="browse" className="space-y-6">
+          <TabsContent value="browse" className="space-y-6" id="browse-profiles">
             {/* Filters */}
             <Card>
               <CardContent className="pt-6">
@@ -350,6 +375,14 @@ const MeetCofounder = () => {
                       </div>
 
                       <div className="flex space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleViewDetails(profile)}
+                          className="flex-1"
+                        >
+                          View Details
+                        </Button>
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button className="flex-1" size="sm">
@@ -376,10 +409,7 @@ const MeetCofounder = () => {
                             </div>
                             <DialogFooter>
                               <Button onClick={() => {
-                                toast({
-                                  title: "Connection Request Sent",
-                                  description: `Your message has been sent to ${profile.name}`,
-                                });
+                                handleConnect(profile);
                                 setConnectMessage("");
                               }}>
                                 Send Message
@@ -421,8 +451,8 @@ const MeetCofounder = () => {
                         <div className="text-right">
                           <Badge variant="outline" className="mb-2">{profile.lookingFor}</Badge>
                           <div className="flex space-x-1">
-                            <Button size="sm" variant="outline">View</Button>
-                            <Button size="sm">Connect</Button>
+                            <Button size="sm" variant="outline" onClick={() => handleViewDetails(profile)}>View</Button>
+                            <Button size="sm" onClick={() => handleConnect(profile)}>Connect</Button>
                           </div>
                         </div>
                       </div>
@@ -492,129 +522,17 @@ const MeetCofounder = () => {
           </TabsContent>
 
           <TabsContent value="create" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Post Your Co-founder Requirement</CardTitle>
-                <CardDescription>
-                  Tell us what kind of co-founder you're looking for and we'll help you find the perfect match.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Your Name</label>
-                      <Input placeholder="Enter your full name" />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Startup Name</label>
-                      <Input placeholder="Your startup name" />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Current Stage</label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select stage" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="idea">Idea Stage</SelectItem>
-                          <SelectItem value="mvp">MVP</SelectItem>
-                          <SelectItem value="pre-seed">Pre-Seed</SelectItem>
-                          <SelectItem value="seed">Seed</SelectItem>
-                          <SelectItem value="series-a">Series A</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Industry Sector</label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select sector" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="fintech">FinTech</SelectItem>
-                          <SelectItem value="healthtech">HealthTech</SelectItem>
-                          <SelectItem value="edtech">EdTech</SelectItem>
-                          <SelectItem value="ecommerce">E-commerce</SelectItem>
-                          <SelectItem value="saas">SaaS</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Looking for Role</label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="cto">CTO (Technical Co-founder)</SelectItem>
-                          <SelectItem value="ceo">CEO (Business Co-founder)</SelectItem>
-                          <SelectItem value="cpo">CPO (Product Co-founder)</SelectItem>
-                          <SelectItem value="cmo">CMO (Marketing Co-founder)</SelectItem>
-                          <SelectItem value="cfo">CFO (Finance Co-founder)</SelectItem>
-                          <SelectItem value="coo">COO (Operations Co-founder)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Equity Offered (%)</label>
-                      <Input placeholder="e.g., 15-25%" />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Location Preference</label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select location" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="remote">Remote</SelectItem>
-                          <SelectItem value="bangalore">Bangalore</SelectItem>
-                          <SelectItem value="mumbai">Mumbai</SelectItem>
-                          <SelectItem value="delhi">Delhi NCR</SelectItem>
-                          <SelectItem value="pune">Pune</SelectItem>
-                          <SelectItem value="hyderabad">Hyderabad</SelectItem>
-                          <SelectItem value="chennai">Chennai</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Experience Required</label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select experience" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="0-2">0-2 years</SelectItem>
-                          <SelectItem value="3-5">3-5 years</SelectItem>
-                          <SelectItem value="6-8">6-8 years</SelectItem>
-                          <SelectItem value="9+">9+ years</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Startup Description</label>
-                  <textarea 
-                    className="w-full p-3 border rounded-md resize-none h-24"
-                    placeholder="Briefly describe your startup, the problem you're solving, and your vision..."
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Required Skills & Experience</label>
-                  <textarea 
-                    className="w-full p-3 border rounded-md resize-none h-20"
-                    placeholder="List the specific skills, experience, and qualifications you're looking for..."
-                  />
-                </div>
-                <Button size="lg" className="w-full bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-                  Post Requirement
-                </Button>
-              </CardContent>
-            </Card>
+            <CofounderPostDialog>
+              <Card className="cursor-pointer hover:shadow-lg transition-all duration-300">
+                <CardContent className="pt-6 text-center">
+                  <Plus className="h-12 w-12 text-primary mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Post Your Co-founder Requirement</h3>
+                  <p className="text-muted-foreground">
+                    Tell us what kind of co-founder you're looking for and we'll help you find the perfect match.
+                  </p>
+                </CardContent>
+              </Card>
+            </CofounderPostDialog>
           </TabsContent>
         </Tabs>
 
@@ -625,15 +543,28 @@ const MeetCofounder = () => {
             Join thousands of entrepreneurs who have found their perfect co-founder match through our platform.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-              Get Started Today
-            </Button>
-            <Button variant="outline" size="lg">
+            <CofounderPostDialog>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
+                Get Started Today
+              </Button>
+            </CofounderPostDialog>
+            <Button variant="outline" size="lg" onClick={() => navigate('/success-stories')}>
               Success Stories
             </Button>
           </div>
         </section>
       </main>
+
+      {/* Co-founder Details Dialog */}
+      {selectedCofounder && (
+        <CofounderDetailsDialog
+          open={detailsOpen}
+          onOpenChange={setDetailsOpen}
+          cofounder={selectedCofounder}
+          onConnect={() => handleConnect(selectedCofounder)}
+        />
+      )}
+
       <Footer />
     </div>
   );
