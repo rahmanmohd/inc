@@ -1,6 +1,6 @@
-
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -77,6 +77,8 @@ const HackathonDetail = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto px-4 pt-20 pb-12">
+        <Breadcrumbs />
+        
         {/* Header */}
         <div className="text-center mb-12">
           <Badge variant="secondary" className="bg-primary/10 text-primary text-lg px-4 py-2 mb-4">

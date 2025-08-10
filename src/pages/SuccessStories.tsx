@@ -1,208 +1,244 @@
 
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, TrendingUp, Users, Calendar, ExternalLink, Quote } from "lucide-react";
-import { Link } from "react-router-dom";
+import { TrendingUp, Users, Building, Award, Globe, Calendar } from "lucide-react";
 
 const SuccessStories = () => {
   const successStories = [
     {
       id: 1,
-      startup: "TechHealth Solutions",
-      founders: [
-        { name: "Dr. Priya Sharma", role: "CEO", avatar: "👩‍⚕️" },
-        { name: "Rajesh Kumar", role: "CTO", avatar: "👨‍💻" }
-      ],
-      story: "We met through the co-founder matching platform in January 2023. Priya had the healthcare expertise and vision, while I brought the technical skills. Together, we've built an AI-powered diagnostic platform that's now helping 10,000+ patients.",
-      metrics: {
-        funding: "₹5Cr raised",
-        users: "10,000+ patients",
-        growth: "400% YoY",
-        team: "25 employees"
-      },
-      founded: "2023",
+      name: "HealthTech Pro",
+      founder: "Dr. Priya Sharma",
       sector: "HealthTech",
-      testimonial: "The platform didn't just help us find each other - it helped us build a structured approach to co-founder collaboration from day one.",
-      website: "https://techhealth.com"
+      program: "Incubation",
+      cohort: "2023",
+      funding: "₹15 Cr Series A",
+      description: "AI-powered diagnostic platform revolutionizing healthcare delivery across rural India",
+      metrics: {
+        hospitals: "50+",
+        patients: "100K+",
+        accuracy: "95%",
+        cities: "25"
+      },
+      achievements: [
+        "First AI diagnostic tool approved by AIIMS",
+        "Partnership with Apollo Hospitals",
+        "Winner of HealthTech Innovation Award 2024"
+      ],
+      image: "/placeholder.svg"
     },
     {
       id: 2,
-      startup: "EduTech Innovations",
-      founders: [
-        { name: "Anita Singh", role: "CEO", avatar: "👩‍💼" },
-        { name: "Vikram Patel", role: "CTO", avatar: "👨‍💻" }
-      ],
-      story: "After months of searching for the right technical co-founder, I found Vikram through the platform. His passion for education technology matched perfectly with my vision for transforming rural education in India.",
-      metrics: {
-        funding: "₹2Cr raised",
-        users: "50,000+ students",
-        growth: "600% YoY",
-        team: "15 employees"
-      },
-      founded: "2022",
+      name: "EduConnect",
+      founder: "Rajesh Kumar",
       sector: "EdTech",
-      testimonial: "The structured matching process helped us align on vision, equity, and responsibilities before we even met in person.",
-      website: "https://edutech.com"
+      program: "MVP Lab",
+      cohort: "2022",
+      funding: "₹8 Cr Seed",
+      description: "Vernacular learning platform making quality education accessible in local languages",
+      metrics: {
+        users: "2M+",
+        languages: "12",
+        courses: "500+",
+        completion: "85%"
+      },
+      achievements: [
+        "Featured in Google Play Store top apps",
+        "Partnership with State Education Board",
+        "UNESCO EdTech Innovation Recognition"
+      ],
+      image: "/placeholder.svg"
     },
     {
       id: 3,
-      startup: "GreenTech Solutions",
-      founders: [
-        { name: "Amit Gupta", role: "CEO", avatar: "👨‍💼" },
-        { name: "Kavya Reddy", role: "CTO", avatar: "👩‍💻" }
-      ],
-      story: "We connected through the platform's sustainability-focused matching algorithm. Our shared passion for environmental impact and complementary skills in business and technology created the perfect partnership.",
+      name: "AgroSmart",
+      founder: "Anita Patel",
+      sector: "AgriTech",
+      program: "Deep Tech Incubation",
+      cohort: "2023",
+      funding: "₹12 Cr Series A",
+      description: "IoT-based precision farming solution helping farmers increase crop yield and reduce costs",
       metrics: {
-        funding: "₹8Cr raised",
-        users: "1,000+ businesses",
-        growth: "300% YoY",
-        team: "30 employees"
+        farmers: "10,000+",
+        yield: "+30%",
+        water: "-40%",
+        revenue: "₹50Cr"
       },
-      founded: "2021",
-      sector: "CleanTech",
-      testimonial: "The platform's focus on values alignment was crucial. We weren't just looking for skills - we needed someone who shared our mission.",
-      website: "https://greentech.com"
+      achievements: [
+        "Featured in Forbes 30 Under 30",
+        "Government of India Agriculture Innovation Award",
+        "Partnership with major fertilizer companies"
+      ],
+      image: "/placeholder.svg"
     }
+  ];
+
+  const programStats = [
+    { program: "Incubation", startups: 45, funding: "₹120 Cr", success: "87%" },
+    { program: "MVP Lab", startups: 78, funding: "₹85 Cr", success: "82%" },
+    { program: "INC Lab", startups: 32, funding: "₹65 Cr", success: "90%" },
+    { program: "Hackathon", startups: 25, funding: "₹40 Cr", success: "75%" }
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto px-4 pt-20 pb-12">
-        {/* Header */}
+        <Breadcrumbs />
+        
+        {/* Hero Section */}
         <section className="text-center mb-16">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-6">
             Success Stories
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Real stories from entrepreneurs who found their perfect co-founder match and built successful startups together.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Discover how our incubated startups are transforming industries and creating impact across India and beyond.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">200+</div>
-              <p className="text-sm text-muted-foreground">Successful Matches</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">₹100Cr+</div>
-              <p className="text-sm text-muted-foreground">Total Funding Raised</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">95%</div>
-              <p className="text-sm text-muted-foreground">Success Rate</p>
-            </div>
+        </section>
+
+        {/* Overall Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Startups</CardTitle>
+              <Building className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">180+</div>
+              <p className="text-xs text-muted-foreground">Across all programs</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Funding</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">₹310Cr+</div>
+              <p className="text-xs text-muted-foreground">Raised by alumni</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Jobs Created</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">3,500+</div>
+              <p className="text-xs text-muted-foreground">Direct employment</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Global Reach</CardTitle>
+              <Globe className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">15+</div>
+              <p className="text-xs text-muted-foreground">Countries served</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Featured Success Stories */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Featured Success Stories</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {successStories.map((story) => (
+              <Card key={story.id} className="hover:shadow-lg transition-all duration-300">
+                <CardHeader>
+                  <div className="flex items-center justify-between mb-4">
+                    <Badge variant="outline">{story.program}</Badge>
+                    <Badge variant="secondary">{story.cohort} Cohort</Badge>
+                  </div>
+                  <CardTitle className="text-xl">{story.name}</CardTitle>
+                  <CardDescription>
+                    Founded by {story.founder} • {story.sector}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">{story.description}</p>
+                  
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4 text-green-600" />
+                    <span className="font-medium text-green-600">{story.funding}</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    {Object.entries(story.metrics).map(([key, value]) => (
+                      <div key={key} className="text-center p-2 bg-muted/5 rounded">
+                        <div className="font-bold text-primary">{value}</div>
+                        <div className="text-xs text-muted-foreground capitalize">{key}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium mb-2">Key Achievements:</p>
+                    <ul className="text-xs text-muted-foreground space-y-1">
+                      {story.achievements.map((achievement, index) => (
+                        <li key={index} className="flex items-start space-x-2">
+                          <Award className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
+                          <span>{achievement}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
 
-        {/* Success Stories */}
-        <section className="space-y-12">
-          {successStories.map((story) => (
-            <Card key={story.id} className="bg-card-gradient border-border overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-primary/5 to-orange-400/5">
-                <div className="flex items-center justify-between">
+        {/* Program Performance */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Program Performance</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {programStats.map((stat, index) => (
+              <Card key={index} className="text-center">
+                <CardHeader>
+                  <CardTitle className="text-lg">{stat.program}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div>
-                    <CardTitle className="text-2xl">{story.startup}</CardTitle>
-                    <CardDescription className="text-lg">
-                      Founded in {story.founded} • {story.sector}
-                    </CardDescription>
+                    <div className="text-2xl font-bold text-primary">{stat.startups}</div>
+                    <p className="text-xs text-muted-foreground">Startups Incubated</p>
                   </div>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary">
-                    {story.sector}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  {/* Story */}
-                  <div className="lg:col-span-2 space-y-6">
-                    <div className="flex items-start space-x-4">
-                      <Quote className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
-                      <p className="text-muted-foreground italic text-lg leading-relaxed">
-                        "{story.story}"
-                      </p>
-                    </div>
-                    
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-2">Testimonial</p>
-                      <p className="font-medium">"{story.testimonial}"</p>
-                    </div>
-
-                    {/* Founders */}
-                    <div>
-                      <h4 className="font-semibold mb-4">Meet the Co-founders</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {story.founders.map((founder, index) => (
-                          <div key={index} className="flex items-center space-x-3 p-3 border rounded-lg">
-                            <div className="text-2xl">{founder.avatar}</div>
-                            <div>
-                              <h5 className="font-medium">{founder.name}</h5>
-                              <p className="text-sm text-muted-foreground">{founder.role}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                  <div>
+                    <div className="text-2xl font-bold text-green-600">{stat.funding}</div>
+                    <p className="text-xs text-muted-foreground">Total Funding</p>
                   </div>
-
-                  {/* Metrics */}
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold mb-4">Key Metrics</h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center p-3 bg-primary/5 rounded-lg">
-                          <TrendingUp className="h-5 w-5 mx-auto mb-1 text-primary" />
-                          <div className="font-bold text-primary">{story.metrics.funding}</div>
-                          <div className="text-xs text-muted-foreground">Funding</div>
-                        </div>
-                        <div className="text-center p-3 bg-primary/5 rounded-lg">
-                          <Users className="h-5 w-5 mx-auto mb-1 text-primary" />
-                          <div className="font-bold text-primary">{story.metrics.users}</div>
-                          <div className="text-xs text-muted-foreground">Users</div>
-                        </div>
-                        <div className="text-center p-3 bg-primary/5 rounded-lg">
-                          <Star className="h-5 w-5 mx-auto mb-1 text-primary" />
-                          <div className="font-bold text-primary">{story.metrics.growth}</div>
-                          <div className="text-xs text-muted-foreground">Growth</div>
-                        </div>
-                        <div className="text-center p-3 bg-primary/5 rounded-lg">
-                          <Calendar className="h-5 w-5 mx-auto mb-1 text-primary" />
-                          <div className="font-bold text-primary">{story.metrics.team}</div>
-                          <div className="text-xs text-muted-foreground">Team</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Button className="w-full" variant="outline" onClick={() => window.open(story.website, '_blank')}>
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Visit Website
-                    </Button>
+                  <div>
+                    <div className="text-2xl font-bold text-orange-600">{stat.success}</div>
+                    <p className="text-xs text-muted-foreground">Success Rate</p>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="text-center py-16 mt-16 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-3xl">
-          <h2 className="text-3xl font-bold mb-4">Ready to Write Your Success Story?</h2>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join these successful entrepreneurs and find your perfect co-founder match today.
-          </p>
-          <div className="flex justify-center space-x-4">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow" asChild>
-              <Link to="/meet-cofounder">
-                Find Your Co-founder
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link to="/startup-directory">
-                Explore Startups
-              </Link>
-            </Button>
+        {/* Impact Metrics */}
+        <section className="py-16 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-3xl">
+          <div className="text-center space-y-8">
+            <h2 className="text-3xl font-bold">Our Impact</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div>
+                <div className="text-4xl font-bold text-primary mb-2">₹310Cr+</div>
+                <p className="text-muted-foreground">Total funding raised by our startups</p>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-primary mb-2">3,500+</div>
+                <p className="text-muted-foreground">Jobs created across all ventures</p>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-primary mb-2">85%</div>
+                <p className="text-muted-foreground">Average success rate across programs</p>
+              </div>
+            </div>
           </div>
         </section>
       </main>

@@ -1,261 +1,215 @@
 
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle, Users, Star, TrendingUp, Clock, Award } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Users, Target, Award, Calendar, MessageSquare } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const BecomeMentor = () => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    expertise: "",
-    experience: "",
-    company: "",
-    linkedin: "",
-    motivation: "",
-    availability: ""
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Application Submitted",
-      description: "Thank you for your interest in becoming a mentor. We'll review your application and get back to you soon.",
-    });
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      expertise: "",
-      experience: "",
-      company: "",
-      linkedin: "",
-      motivation: "",
-      availability: ""
-    });
-  };
-
-  const benefits = [
+  const mentorBenefits = [
     {
-      icon: <Users className="h-6 w-6" />,
-      title: "Impact Lives",
-      description: "Guide the next generation of entrepreneurs and help them build successful startups"
+      icon: <Users className="h-6 w-6 text-primary" />,
+      title: "Impact Next Generation",
+      description: "Guide and shape the future of entrepreneurship by mentoring promising startups"
     },
     {
-      icon: <Star className="h-6 w-6" />,
-      title: "Build Your Network",
-      description: "Connect with like-minded professionals and expand your industry network"
+      icon: <Target className="h-6 w-6 text-primary" />,
+      title: "Strategic Network",
+      description: "Connect with like-minded professionals and expand your business network"
     },
     {
-      icon: <TrendingUp className="h-6 w-6" />,
-      title: "Stay Updated",
-      description: "Keep up with the latest trends and innovations in the startup ecosystem"
-    },
-    {
-      icon: <Award className="h-6 w-6" />,
+      icon: <Award className="h-6 w-6 text-primary" />,
       title: "Recognition",
-      description: "Get recognized as a thought leader and expert in your field"
+      description: "Get recognized as a thought leader in your industry and domain expertise"
+    },
+    {
+      icon: <Calendar className="h-6 w-6 text-primary" />,
+      title: "Flexible Schedule",
+      description: "Mentor on your own schedule with flexible time commitment options"
     }
   ];
 
-  const responsibilities = [
-    "Provide guidance on business strategy and growth",
-    "Share industry insights and best practices",
-    "Help startups navigate challenges and obstacles",
-    "Assist with fundraising and investor relations",
-    "Offer technical expertise and product development guidance",
-    "Support founders with networking and partnership opportunities"
+  const expertiseAreas = [
+    "Technology & Engineering",
+    "Product Management",
+    "Marketing & Sales",
+    "Finance & Fundraising",
+    "Operations & Strategy",
+    "Human Resources",
+    "Legal & Compliance",
+    "Design & User Experience",
+    "Business Development",
+    "Industry Specific Knowledge"
   ];
 
-  const requirements = [
-    "5+ years of industry experience",
-    "Leadership or entrepreneurial background",
-    "Strong communication and mentoring skills",
-    "Commitment to regular mentoring sessions",
-    "Passion for helping early-stage startups",
-    "Domain expertise in relevant areas"
-  ];
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate form submission
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    toast({
+      title: "Application Submitted!",
+      description: "Thank you for your interest in becoming a mentor. We'll review your application and get back to you within 5 business days.",
+    });
+    
+    setIsSubmitting(false);
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto px-4 pt-20 pb-12">
-        {/* Header */}
+        <Breadcrumbs />
+        
+        {/* Hero Section */}
         <section className="text-center mb-16">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-6">
             Become a Mentor
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Share your expertise and help shape the future of entrepreneurship. Join our community of experienced mentors guiding the next generation of startup founders.
+            Share your expertise and help shape the next generation of entrepreneurs. 
+            Join our mentor network and make a lasting impact on innovative startups.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">100+</div>
-              <p className="text-sm text-muted-foreground">Active Mentors</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">500+</div>
-              <p className="text-sm text-muted-foreground">Startups Mentored</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">₹50Cr+</div>
-              <p className="text-sm text-muted-foreground">Funding Facilitated</p>
-            </div>
+          <div className="flex justify-center space-x-4">
+            <Badge variant="secondary" className="bg-primary/10 text-primary text-lg px-4 py-2">
+              🎯 Make an Impact
+            </Badge>
+            <Badge variant="secondary" className="bg-primary/10 text-primary text-lg px-4 py-2">
+              🚀 Shape the Future
+            </Badge>
           </div>
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Benefits & Requirements */}
+          {/* Benefits Section */}
           <div className="space-y-8">
-            {/* Benefits */}
-            <Card className="bg-card-gradient border-border">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Star className="h-5 w-5 text-primary" />
-                  <span>Why Become a Mentor?</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 gap-4">
-                  {benefits.map((benefit, index) => (
-                    <div key={index} className="flex items-start space-x-3 p-3 border rounded-lg">
-                      <div className="text-primary mt-1">{benefit.icon}</div>
-                      <div>
-                        <h4 className="font-semibold mb-1">{benefit.title}</h4>
-                        <p className="text-sm text-muted-foreground">{benefit.description}</p>
+            <div>
+              <h2 className="text-3xl font-bold mb-6">Why Become a Mentor?</h2>
+              <div className="space-y-6">
+                {mentorBenefits.map((benefit, index) => (
+                  <Card key={index} className="hover:shadow-md transition-all duration-300">
+                    <CardHeader>
+                      <div className="flex items-center space-x-3">
+                        {benefit.icon}
+                        <CardTitle className="text-lg">{benefit.title}</CardTitle>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
 
-            {/* Responsibilities */}
+            {/* Mentor Requirements */}
             <Card className="bg-card-gradient border-border">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Users className="h-5 w-5 text-primary" />
-                  <span>Mentor Responsibilities</span>
-                </CardTitle>
+                <CardTitle>Mentor Requirements</CardTitle>
+                <CardDescription>What we look for in our mentors</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {responsibilities.map((responsibility, index) => (
+                  {[
+                    "5+ years of industry experience",
+                    "Leadership or senior management role",
+                    "Track record of business success",
+                    "Passion for helping entrepreneurs",
+                    "Available for 2-4 hours per month",
+                    "Strong communication skills"
+                  ].map((requirement, index) => (
                     <div key={index} className="flex items-start space-x-2">
-                      <CheckCircle className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
-                      <span className="text-sm">{responsibility}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Requirements */}
-            <Card className="bg-card-gradient border-border">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Award className="h-5 w-5 text-primary" />
-                  <span>Requirements</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {requirements.map((requirement, index) => (
-                    <div key={index} className="flex items-start space-x-2">
-                      <CheckCircle className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                      <CheckCircle className="h-4 w-4 text-primary mt-0.5" />
                       <span className="text-sm">{requirement}</span>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
+
+            {/* Testimonials */}
+            <Card className="bg-gradient-to-r from-primary/5 to-orange-400/5 border-border">
+              <CardHeader>
+                <CardTitle>What Our Mentors Say</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 bg-background rounded-lg">
+                    <p className="text-sm italic mb-2">
+                      "Mentoring startups has been incredibly rewarding. Seeing young entrepreneurs 
+                      turn their ideas into successful businesses gives me immense satisfaction."
+                    </p>
+                    <p className="text-xs text-muted-foreground">- Rajesh Kumar, Former CTO at TechCorp</p>
+                  </div>
+                  <div className="p-4 bg-background rounded-lg">
+                    <p className="text-sm italic mb-2">
+                      "The mentor network here is exceptional. I've not only helped startups but 
+                      also learned so much from fellow mentors and entrepreneurs."
+                    </p>
+                    <p className="text-xs text-muted-foreground">- Dr. Priya Sharma, Healthcare Industry Expert</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Application Form */}
-          <Card className="bg-card-gradient border-border">
-            <CardHeader>
-              <CardTitle>Mentor Application</CardTitle>
-              <CardDescription>
-                Fill out this form to apply as a mentor and start making an impact.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Full Name</label>
-                    <Input
-                      placeholder="Enter your full name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      required
-                    />
+          <div>
+            <Card className="bg-card-gradient border-border">
+              <CardHeader>
+                <CardTitle>Mentor Application</CardTitle>
+                <CardDescription>Join our mentor network and start making an impact</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">First Name*</label>
+                      <Input placeholder="Enter your first name" required />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Last Name*</label>
+                      <Input placeholder="Enter your last name" required />
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Email</label>
-                    <Input
-                      type="email"
-                      placeholder="your.email@example.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      required
-                    />
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Phone</label>
-                    <Input
-                      placeholder="+91 98765 43210"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      required
-                    />
+                    <label className="text-sm font-medium mb-2 block">Email*</label>
+                    <Input type="email" placeholder="your.email@company.com" required />
                   </div>
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Current Company</label>
-                    <Input
-                      placeholder="Your current company"
-                      value={formData.company}
-                      onChange={(e) => setFormData({...formData, company: e.target.value})}
-                      required
-                    />
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Area of Expertise</label>
-                    <Select value={formData.expertise} onValueChange={(value) => setFormData({...formData, expertise: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your expertise" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="technology">Technology & Product</SelectItem>
-                        <SelectItem value="business">Business Strategy</SelectItem>
-                        <SelectItem value="marketing">Marketing & Growth</SelectItem>
-                        <SelectItem value="finance">Finance & Fundraising</SelectItem>
-                        <SelectItem value="operations">Operations & Scaling</SelectItem>
-                        <SelectItem value="design">Design & UX</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <label className="text-sm font-medium mb-2 block">Phone*</label>
+                    <Input type="tel" placeholder="+91 9876543210" required />
                   </div>
+
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Years of Experience</label>
-                    <Select value={formData.experience} onValueChange={(value) => setFormData({...formData, experience: value})}>
+                    <label className="text-sm font-medium mb-2 block">Current Position*</label>
+                    <Input placeholder="e.g., VP Engineering at TechCorp" required />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Company*</label>
+                    <Input placeholder="Your current company" required />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Years of Experience*</label>
+                    <Select required>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select experience" />
+                        <SelectValue placeholder="Select experience range" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="5-10">5-10 years</SelectItem>
@@ -265,51 +219,106 @@ const BecomeMentor = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
 
-                <div>
-                  <label className="text-sm font-medium mb-2 block">LinkedIn Profile</label>
-                  <Input
-                    placeholder="https://linkedin.com/in/yourprofile"
-                    value={formData.linkedin}
-                    onChange={(e) => setFormData({...formData, linkedin: e.target.value})}
-                    required
-                  />
-                </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Area of Expertise*</label>
+                    <Select required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your primary expertise" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {expertiseAreas.map((area) => (
+                          <SelectItem key={area} value={area.toLowerCase().replace(/\s+/g, '-')}>
+                            {area}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Availability</label>
-                  <Select value={formData.availability} onValueChange={(value) => setFormData({...formData, availability: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your availability" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="2-4 hours/week">2-4 hours per week</SelectItem>
-                      <SelectItem value="4-6 hours/week">4-6 hours per week</SelectItem>
-                      <SelectItem value="6-8 hours/week">6-8 hours per week</SelectItem>
-                      <SelectItem value="flexible">Flexible schedule</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">LinkedIn Profile*</label>
+                    <Input placeholder="https://linkedin.com/in/yourprofile" required />
+                  </div>
 
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Why do you want to become a mentor?</label>
-                  <Textarea
-                    placeholder="Share your motivation and what you hope to contribute..."
-                    value={formData.motivation}
-                    onChange={(e) => setFormData({...formData, motivation: e.target.value})}
-                    className="min-h-[100px]"
-                    required
-                  />
-                </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Why do you want to become a mentor?*</label>
+                    <Textarea 
+                      placeholder="Tell us about your motivation to mentor startups..." 
+                      className="min-h-[100px]"
+                      required 
+                    />
+                  </div>
 
-                <Button type="submit" size="lg" className="w-full bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-                  Submit Application
-                </Button>
-              </form>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Industry Experience</label>
+                    <Textarea 
+                      placeholder="Describe your industry experience and notable achievements..." 
+                      className="min-h-[100px]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Time Commitment</label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="How much time can you commit monthly?" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="2-4">2-4 hours per month</SelectItem>
+                        <SelectItem value="4-8">4-8 hours per month</SelectItem>
+                        <SelectItem value="8-12">8-12 hours per month</SelectItem>
+                        <SelectItem value="12+">12+ hours per month</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit Application"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Next Steps */}
+        <section className="mt-16 text-center">
+          <Card className="bg-gradient-to-r from-primary/10 to-orange-400/10 border-border">
+            <CardHeader>
+              <CardTitle>What Happens Next?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center mx-auto font-bold">
+                    1
+                  </div>
+                  <h3 className="font-semibold">Application Review</h3>
+                  <p className="text-sm text-muted-foreground">We review your application within 5 business days</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center mx-auto font-bold">
+                    2
+                  </div>
+                  <h3 className="font-semibold">Interview Process</h3>
+                  <p className="text-sm text-muted-foreground">A brief interview to understand your expertise and goals</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center mx-auto font-bold">
+                    3
+                  </div>
+                  <h3 className="font-semibold">Onboarding</h3>
+                  <p className="text-sm text-muted-foreground">Welcome to the mentor network and startup matching</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
-        </div>
+        </section>
       </main>
       <Footer />
     </div>
