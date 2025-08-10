@@ -1,13 +1,9 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import Breadcrumbs from "@/components/Breadcrumbs";
-import IncubationApplicationForm from "@/components/IncubationApplicationForm";
-import ConsultationDialog from "@/components/ConsultationDialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Link } from "react-router-dom";
 
 const MVPLab = () => {
   const services = [
@@ -99,7 +95,6 @@ const MVPLab = () => {
       <section className="pt-20 pb-16 bg-hero-gradient relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/95"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <Breadcrumbs />
           <div className="text-center space-y-8 animate-fade-in">
             <div className="space-y-4">
               <Badge variant="secondary" className="bg-primary/10 text-primary text-lg px-4 py-2">
@@ -118,16 +113,12 @@ const MVPLab = () => {
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 justify-center items-center pt-4">
-              <IncubationApplicationForm>
-                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                  Join MVP Lab
-                </Button>
-              </IncubationApplicationForm>
-              <Link to="/success-stories">
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                  View Success Stories
-                </Button>
-              </Link>
+              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                Join MVP Lab
+              </Button>
+              <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+                View Success Stories
+              </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-8 max-w-5xl mx-auto">
@@ -222,11 +213,9 @@ const MVPLab = () => {
                   <h3 className="text-2xl font-bold">{partner.name}</h3>
                   <div className="text-3xl font-bold text-primary">{partner.credits}</div>
                   <p className="text-muted-foreground text-sm">{partner.benefits}</p>
-                  <Link to="/cloud-credits">
-                    <Button variant="outline" className="w-full">
-                      Learn More
-                    </Button>
-                  </Link>
+                  <Button variant="outline" className="w-full">
+                    Learn More
+                  </Button>
                 </div>
               </Card>
             ))}
@@ -274,11 +263,9 @@ const MVPLab = () => {
                   </div>
                   <div className="text-3xl font-bold text-primary">{grant.amount}</div>
                   <p className="text-muted-foreground">{grant.criteria}</p>
-                  <Link to="/grants-funding">
-                    <Button variant="outline" className="w-full">
-                      Apply Now
-                    </Button>
-                  </Link>
+                  <Button variant="outline" className="w-full">
+                    Apply Now
+                  </Button>
                 </div>
               </Card>
             ))}
@@ -304,16 +291,12 @@ const MVPLab = () => {
                 great execution support - and that's exactly what MVP Lab provides."
               </p>
               <div className="flex flex-col md:flex-row gap-4 justify-center pt-6">
-                <IncubationApplicationForm>
-                  <Button variant="hero" size="lg" className="text-lg px-8 py-6">
-                    Join MVP Lab Today
-                  </Button>
-                </IncubationApplicationForm>
-                <ConsultationDialog>
-                  <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                    Schedule a Consultation
-                  </Button>
-                </ConsultationDialog>
+                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                  Join MVP Lab Today
+                </Button>
+                <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+                  Schedule a Consultation
+                </Button>
               </div>
             </div>
           </Card>
