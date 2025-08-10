@@ -42,6 +42,8 @@ import BecomeMentor from "./pages/BecomeMentor";
 import PastEvents from "./pages/PastEvents";
 import CloudCredits from "./pages/CloudCredits";
 import GrantsFunding from "./pages/GrantsFunding";
+import UserDashboard from "./pages/UserDashboard";
+import CofounderDashboard from "./pages/CofounderDashboard";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +70,8 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/startup-dashboard" element={<StartupDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/user-dashboard" element={<UserDashboard />} />
+          <Route path="/cofounder-dashboard" element={<CofounderDashboard />} />
           <Route path="/blog/:id" element={<BlogDetail />} />
           <Route path="/requirements" element={<RequirementsDetail />} />
           <Route path="/startup-directory" element={<StartupDirectory />} />
