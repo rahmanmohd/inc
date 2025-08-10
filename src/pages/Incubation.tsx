@@ -1,10 +1,13 @@
 import Navigation from "@/components/Navigation";
 import IncubationApplicationForm from "@/components/IncubationApplicationForm";
 import Footer from "@/components/Footer";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import ConsultationDialog from "@/components/ConsultationDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, Users, TrendingUp, Lightbulb, Target, Award, Building } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Incubation = () => {
   const programs = [
@@ -134,6 +137,8 @@ const Incubation = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto px-4 pt-20 pb-12">
+        <Breadcrumbs />
+        
         {/* Hero Section */}
         <section className="text-center mb-16">
           <h1 className="text-6xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-6">
@@ -149,9 +154,11 @@ const Incubation = () => {
                 Apply for Incubation
               </Button>
             </IncubationApplicationForm>
-            <Button variant="outline" size="lg">
-              Program Details
-            </Button>
+            <Link to="/program-details">
+              <Button variant="outline" size="lg">
+                Program Details
+              </Button>
+            </Link>
           </div>
         </section>
 
@@ -252,9 +259,11 @@ const Incubation = () => {
                         Applications Opening Soon
                       </Button>
                     )}
-                    <Button variant="outline" className="w-full">
-                      Learn More
-                    </Button>
+                    <Link to="/program-details">
+                      <Button variant="outline" className="w-full">
+                        Learn More
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -347,9 +356,11 @@ const Incubation = () => {
                 Apply Now
               </Button>
             </IncubationApplicationForm>
-            <Button variant="outline" size="lg">
-              Schedule Consultation
-            </Button>
+            <ConsultationDialog>
+              <Button variant="outline" size="lg">
+                Schedule Consultation
+              </Button>
+            </ConsultationDialog>
           </div>
         </section>
       </main>

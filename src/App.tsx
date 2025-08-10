@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -38,6 +37,11 @@ import Philosophy from "./pages/Philosophy";
 import AllApplications from "./pages/AllApplications";
 import ProgramDetails from "./pages/ProgramDetails";
 import ConsultationBooking from "./pages/ConsultationBooking";
+import SuccessStories from "./pages/SuccessStories";
+import BecomeMentor from "./pages/BecomeMentor";
+import PastEvents from "./pages/PastEvents";
+import CloudCredits from "./pages/CloudCredits";
+import GrantsFunding from "./pages/GrantsFunding";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +58,7 @@ const App = () => (
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/hackathon" element={<Hackathon />} />
           <Route path="/hackathon/:id" element={<HackathonDetail />} />
+          <Route path="/hackathon-detail/:id" element={<HackathonDetail />} />
           <Route path="/incubation" element={<Incubation />} />
           <Route path="/mvp-lab" element={<MVPLab />} />
           <Route path="/inclab" element={<INCLab />} />
@@ -81,7 +86,11 @@ const App = () => (
           <Route path="/all-applications" element={<AllApplications />} />
           <Route path="/program-details" element={<ProgramDetails />} />
           <Route path="/consultation-booking" element={<ConsultationBooking />} />
-          <Route path="/hackathon-detail/:id" element={<HackathonDetail />} />
+          <Route path="/success-stories" element={<SuccessStories />} />
+          <Route path="/become-mentor" element={<BecomeMentor />} />
+          <Route path="/past-events" element={<PastEvents />} />
+          <Route path="/cloud-credits" element={<CloudCredits />} />
+          <Route path="/grants-funding" element={<GrantsFunding />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
