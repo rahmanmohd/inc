@@ -1,6 +1,5 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import Breadcrumbs from "@/components/Breadcrumbs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +11,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Briefcase, Star, Search, Users, Plus, ExternalLink, Mail, Linkedin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 
 const MeetCofounder = () => {
   const { toast } = useToast();
@@ -180,8 +178,7 @@ const MeetCofounder = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <Breadcrumbs />
-      <main className="container mx-auto px-4 pb-12">
+      <main className="container mx-auto px-4 pt-20 pb-12">
         {/* Hero Section */}
         <section className="text-center mb-12">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-4">
@@ -191,21 +188,11 @@ const MeetCofounder = () => {
             Connect with like-minded entrepreneurs and build something amazing together. Join India's largest co-founder matching platform.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow" onClick={() => {
-              const createTab = document.querySelector('[data-value="create"]');
-              if (createTab) {
-                (createTab as HTMLElement).click();
-              }
-            }}>
+            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
               <Plus className="mr-2 h-4 w-4" />
               Post Your Requirement
             </Button>
-            <Button variant="outline" size="lg" onClick={() => {
-              const browseTab = document.querySelector('[data-value="browse"]');
-              if (browseTab) {
-                (browseTab as HTMLElement).click();
-              }
-            }}>
+            <Button variant="outline" size="lg">
               <Users className="mr-2 h-4 w-4" />
               Browse Profiles
             </Button>
@@ -434,18 +421,8 @@ const MeetCofounder = () => {
                         <div className="text-right">
                           <Badge variant="outline" className="mb-2">{profile.lookingFor}</Badge>
                           <div className="flex space-x-1">
-                            <Button size="sm" variant="outline" onClick={() => {
-                              toast({
-                                title: "Profile Viewed",
-                                description: `Viewing ${profile.name}'s detailed profile`,
-                              });
-                            }}>View</Button>
-                            <Button size="sm" onClick={() => {
-                              toast({
-                                title: "Connection Request Sent",
-                                description: `Your connection request has been sent to ${profile.name}`,
-                              });
-                            }}>Connect</Button>
+                            <Button size="sm" variant="outline">View</Button>
+                            <Button size="sm">Connect</Button>
                           </div>
                         </div>
                       </div>
@@ -454,12 +431,7 @@ const MeetCofounder = () => {
                 ))}
               </div>
               <div className="text-center mt-8">
-                <Button variant="outline" size="lg" onClick={() => {
-                  toast({
-                    title: "Loading More Profiles",
-                    description: "Fetching additional co-founder profiles...",
-                  });
-                }}>Load More Profiles</Button>
+                <Button variant="outline" size="lg">Load More Profiles</Button>
               </div>
             </section>
           </TabsContent>
@@ -653,19 +625,12 @@ const MeetCofounder = () => {
             Join thousands of entrepreneurs who have found their perfect co-founder match through our platform.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow" onClick={() => {
-              const createTab = document.querySelector('[data-value="create"]');
-              if (createTab) {
-                (createTab as HTMLElement).click();
-              }
-            }}>
+            <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
               Get Started Today
             </Button>
-            <Link to="/success-stories">
-              <Button variant="outline" size="lg">
-                Success Stories
-              </Button>
-            </Link>
+            <Button variant="outline" size="lg">
+              Success Stories
+            </Button>
           </div>
         </section>
       </main>

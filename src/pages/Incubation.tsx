@@ -1,461 +1,345 @@
 import Navigation from "@/components/Navigation";
+import IncubationApplicationForm from "@/components/IncubationApplicationForm";
 import Footer from "@/components/Footer";
-import Breadcrumbs from "@/components/Breadcrumbs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, CheckCircle, Clock, FileText, GraduationCap, Lightbulb, Rocket, Users } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { CheckCircle, Clock, Users, TrendingUp, Lightbulb, Target, Award, Building } from "lucide-react";
 
 const Incubation = () => {
-  const { toast } = useToast();
-  const [applicationOpen, setApplicationOpen] = useState(false);
-  const [consultationOpen, setConsultationOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    startupName: "",
-    stage: "",
-    sector: "",
-    description: "",
-    teamSize: "",
-    problem: "",
-    solution: "",
-    whyUs: "",
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Application Submitted Successfully!",
-      description: "Thank you for your interest in our Incubation Program. We'll review your application and get back to you within 3-5 business days.",
-    });
-    setApplicationOpen(false);
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      startupName: "",
-      stage: "",
-      sector: "",
-      description: "",
-      teamSize: "",
-      problem: "",
-      solution: "",
-      whyUs: "",
-    });
-  };
-
-  const programHighlights = [
+  const programs = [
     {
-      icon: <Lightbulb className="h-6 w-6 text-primary" />,
-      title: "Mentorship",
-      description: "Access to industry experts and seasoned entrepreneurs who provide guidance and support."
+      id: 1,
+      name: "Early Stage Incubation",
+      duration: "6 months",
+      stage: "Idea to MVP",
+      description: "Perfect for early-stage startups looking to validate their idea and build their first product.",
+      benefits: ["Seed funding up to ₹25L", "Weekly mentorship", "Product development support", "Market validation"],
+      nextCohort: "March 2025",
+      applications: "Open"
     },
     {
-      icon: <GraduationCap className="h-6 w-6 text-primary" />,
-      title: "Workshops",
-      description: "Interactive sessions and training programs to enhance your skills and knowledge."
+      id: 2,
+      name: "Growth Acceleration",
+      duration: "12 months",
+      stage: "MVP to Scale",
+      description: "For startups with proven traction ready to scale their business and expand market reach.",
+      benefits: ["Growth funding up to ₹1Cr", "Go-to-market strategy", "Investor connections", "International expansion"],
+      nextCohort: "April 2025",
+      applications: "Open"
     },
     {
-      icon: <Users className="h-6 w-6 text-primary" />,
-      title: "Networking",
-      description: "Opportunities to connect with investors, partners, and fellow startups."
-    },
-    {
-      icon: <Rocket className="h-6 w-6 text-primary" />,
-      title: "Resources",
-      description: "Access to funding, office space, and other resources to help you grow your business."
+      id: 3,
+      name: "Deep Tech Incubation",
+      duration: "18 months",
+      stage: "R&D to Market",
+      description: "Specialized program for deep tech startups working on breakthrough technologies.",
+      benefits: ["R&D funding up to ₹2Cr", "Technical mentorship", "Lab facilities", "Patent support"],
+      nextCohort: "May 2025",
+      applications: "Coming Soon"
     }
   ];
 
-  const applicationRequirements = [
-    "Innovative idea with a clear problem-solution fit",
-    "Scalable business model with high growth potential",
-    "Dedicated and passionate founding team",
-    "Commitment to building a sustainable business",
-    "Alignment with Inc Combinator's values and mission"
+  const success_stories = [
+    {
+      name: "HealthTech Pro",
+      sector: "HealthTech",
+      funding: "₹15 Cr Series A",
+      description: "AI-powered diagnostic platform serving 50+ hospitals across India",
+      year: "2023 Cohort"
+    },
+    {
+      name: "EduConnect",
+      sector: "EdTech",
+      funding: "₹8 Cr Seed",
+      description: "Vernacular learning platform with 2M+ active users",
+      year: "2022 Cohort"
+    },
+    {
+      name: "AgroSmart",
+      sector: "AgriTech",
+      funding: "₹12 Cr Series A",
+      description: "IoT-based precision farming solution for 10,000+ farmers",
+      year: "2023 Cohort"
+    }
   ];
 
-  const IncubationApplicationForm = ({ children }: { children: React.ReactNode }) => (
-    <Dialog open={applicationOpen} onOpenChange={setApplicationOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Incubation Program Application</DialogTitle>
-          <DialogDescription>
-            Apply to our 6-month incubation program and transform your idea into a thriving business.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Your Name
-            </Label>
-            <Input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">
-              Email
-            </Label>
-            <Input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="phone" className="text-right">
-              Phone Number
-            </Label>
-            <Input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="startupName" className="text-right">
-              Startup Name
-            </Label>
-            <Input
-              type="text"
-              id="startupName"
-              name="startupName"
-              value={formData.startupName}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="stage" className="text-right">
-              Current Stage
-            </Label>
-            <Input
-              type="text"
-              id="stage"
-              name="stage"
-              value={formData.stage}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="sector" className="text-right">
-              Industry Sector
-            </Label>
-            <Input
-              type="text"
-              id="sector"
-              name="sector"
-              value={formData.sector}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="teamSize" className="text-right">
-              Team Size
-            </Label>
-            <Input
-              type="number"
-              id="teamSize"
-              name="teamSize"
-              value={formData.teamSize}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="description" className="text-right mt-2">
-              Startup Description
-            </Label>
-            <Textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="problem" className="text-right mt-2">
-              Problem You're Solving
-            </Label>
-            <Textarea
-              id="problem"
-              name="problem"
-              value={formData.problem}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="solution" className="text-right mt-2">
-              Your Solution
-            </Label>
-            <Textarea
-              id="solution"
-              name="solution"
-              value={formData.solution}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="whyUs" className="text-right mt-2">
-              Why Inc Combinator?
-            </Label>
-            <Textarea
-              id="whyUs"
-              name="whyUs"
-              value={formData.whyUs}
-              onChange={handleInputChange}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <Button type="submit">Submit Application</Button>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
+  const incubation_benefits = [
+    {
+      icon: <TrendingUp className="h-6 w-6 text-primary" />,
+      title: "Funding Support",
+      description: "Seed funding from ₹25L to ₹2Cr based on program and milestones"
+    },
+    {
+      icon: <Users className="h-6 w-6 text-primary" />,
+      title: "Expert Mentorship",
+      description: "1-on-1 guidance from successful entrepreneurs and industry experts"
+    },
+    {
+      icon: <Building className="h-6 w-6 text-primary" />,
+      title: "Infrastructure",
+      description: "Office space, lab facilities, and access to technical resources"
+    },
+    {
+      icon: <Target className="h-6 w-6 text-primary" />,
+      title: "Market Access",
+      description: "Customer introductions, pilot opportunities, and partnership facilitation"
+    },
+    {
+      icon: <Award className="h-6 w-6 text-primary" />,
+      title: "Legal & Compliance",
+      description: "Legal support, IP protection, and regulatory guidance"
+    },
+    {
+      icon: <Lightbulb className="h-6 w-6 text-primary" />,
+      title: "Product Development",
+      description: "Technical support, design resources, and product strategy guidance"
+    }
+  ];
 
-  const ConsultationDialog = ({ children }: { children: React.ReactNode }) => (
-    <Dialog open={consultationOpen} onOpenChange={setConsultationOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Schedule a Consultation</DialogTitle>
-          <DialogDescription>
-            Book a free consultation with our team to discuss your startup idea and learn how Inc Combinator can help.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <p>
-            To schedule a consultation, please contact us at{" "}
-            <a href="mailto:consultations@inccombinator.com" className="text-primary">
-              consultations@inccombinator.com
-            </a>{" "}
-            or call us at <a href="tel:+919876543210" className="text-primary">+91 98765 43210</a>.
-          </p>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
+  const application_process = [
+    {
+      step: "01",
+      title: "Application Submission",
+      description: "Submit detailed application with business plan and pitch deck",
+      timeline: "Week 1"
+    },
+    {
+      step: "02",
+      title: "Initial Screening",
+      description: "Our team reviews applications and shortlists candidates",
+      timeline: "Week 2-3"
+    },
+    {
+      step: "03",
+      title: "Interview Round",
+      description: "Video interviews with founders and technical evaluation",
+      timeline: "Week 4"
+    },
+    {
+      step: "04",
+      title: "Final Pitch",
+      description: "Present your startup to our investment committee",
+      timeline: "Week 5"
+    },
+    {
+      step: "05",
+      title: "Selection & Onboarding",
+      description: "Successful startups are welcomed into the program",
+      timeline: "Week 6"
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <Breadcrumbs />
-      
-      <main className="container mx-auto px-4 pb-12">
+      <main className="container mx-auto px-4 pt-20 pb-12">
         {/* Hero Section */}
-        <section className="text-center mb-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-4">
-            Incubation Program
+        <section className="text-center mb-16">
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-6">
+            Startup Incubation Program
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Transform your innovative idea into a thriving business with our comprehensive 6-month incubation program.
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8">
+            Transform your innovative idea into a thriving business. Join our comprehensive incubation program 
+            designed to accelerate your startup journey from concept to market success.
           </p>
           <div className="flex justify-center space-x-4">
             <IncubationApplicationForm>
               <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-                Apply Now
+                Apply for Incubation
               </Button>
             </IncubationApplicationForm>
-            <Link to="/program-details">
-              <Button variant="outline" size="lg">
-                Program Details
-              </Button>
-            </Link>
-            <ConsultationDialog>
-              <Button variant="outline" size="lg">
-                Schedule Consultation
-              </Button>
-            </ConsultationDialog>
+            <Button variant="outline" size="lg">
+              Program Details
+            </Button>
           </div>
         </section>
 
-        {/* Program Highlights */}
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Startups Incubated</CardTitle>
+              <Building className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">150+</div>
+              <p className="text-xs text-muted-foreground">Across all cohorts</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Funding</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">₹250Cr</div>
+              <p className="text-xs text-muted-foreground">Raised by alumni</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+              <Award className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">85%</div>
+              <p className="text-xs text-muted-foreground">Still operating</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Jobs Created</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">2,500+</div>
+              <p className="text-xs text-muted-foreground">Direct employment</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Incubation Programs */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Program Highlights</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {programHighlights.map((highlight, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-all duration-300">
+          <h2 className="text-3xl font-bold text-center mb-8">Incubation Programs</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {programs.map((program) => (
+              <Card key={program.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <CardHeader>
-                  <div className="flex justify-center mb-2">{highlight.icon}</div>
-                  <CardTitle className="text-lg">{highlight.title}</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <Badge variant={program.applications === "Open" ? "default" : "secondary"}>
+                      {program.applications}
+                    </Badge>
+                    <div className="text-2xl">🚀</div>
+                  </div>
+                  <CardTitle className="text-xl">{program.name}</CardTitle>
+                  <CardDescription className="flex items-center space-x-4 text-sm">
+                    <span className="flex items-center space-x-1">
+                      <Clock className="h-3 w-3" />
+                      <span>{program.duration}</span>
+                    </span>
+                    <Badge variant="outline" className="text-xs">{program.stage}</Badge>
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{highlight.description}</p>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">{program.description}</p>
+                  
+                  <div>
+                    <p className="text-sm font-medium mb-2">Key Benefits:</p>
+                    <div className="space-y-1">
+                      {program.benefits.map((benefit, index) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <CheckCircle className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
+                          <span className="text-xs text-muted-foreground">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="text-sm text-muted-foreground">
+                    <p><strong>Next Cohort:</strong> {program.nextCohort}</p>
+                  </div>
+
+                  <div className="pt-4 space-y-2">
+                    {program.applications === "Open" ? (
+                      <IncubationApplicationForm>
+                        <Button className="w-full">
+                          Apply Now
+                        </Button>
+                      </IncubationApplicationForm>
+                    ) : (
+                      <Button className="w-full" disabled>
+                        Applications Opening Soon
+                      </Button>
+                    )}
+                    <Button variant="outline" className="w-full">
+                      Learn More
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         </section>
 
-        {/* Application Requirements */}
+        {/* Benefits */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Application Requirements</h2>
-          <div className="max-w-3xl mx-auto">
-            <ul className="list-disc list-inside text-lg text-muted-foreground space-y-3">
-              {applicationRequirements.map((requirement, index) => (
-                <li key={index}>{requirement}</li>
-              ))}
-            </ul>
+          <h2 className="text-3xl font-bold text-center mb-8">What You Get</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {incubation_benefits.map((benefit, index) => (
+              <Card key={index} className="hover:shadow-md transition-all duration-300">
+                <CardHeader>
+                  <div className="flex items-center space-x-3">
+                    {benefit.icon}
+                    <CardTitle className="text-lg">{benefit.title}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
 
         {/* Success Stories */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-center mb-8">Success Stories</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                id: 1,
-                startup: "HealthTech Solutions",
-                description: "AI-powered diagnostic platform serving 50,000+ patients across rural India",
-                logo: "🏥",
-                link: "/success-stories"
-              },
-              {
-                id: 2,
-                startup: "EduLearn Platform",
-                description: "Personalized learning platform using AI to improve K-12 education outcomes",
-                logo: "📚",
-                link: "/success-stories"
-              },
-              {
-                id: 3,
-                startup: "GreenTech Innovations",
-                description: "Renewable energy solutions for residential and commercial properties",
-                logo: "🌱",
-                link: "/success-stories"
-              }
-            ].map((story) => (
-              <Card key={story.id} className="hover:shadow-lg transition-all duration-300">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {success_stories.map((story, index) => (
+              <Card key={index} className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
-                  <div className="flex items-center space-x-4">
-                    <div className="text-4xl">{story.logo}</div>
-                    <div>
-                      <CardTitle className="text-xl">{story.startup}</CardTitle>
-                      <CardDescription className="text-muted-foreground">{story.description}</CardDescription>
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">{story.name}</CardTitle>
+                    <Badge variant="outline">{story.year}</Badge>
                   </div>
+                  <CardDescription className="font-medium text-primary">
+                    {story.sector}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Link to={story.link}>
-                    <Button variant="secondary" className="w-full">
-                      Learn More
-                    </Button>
-                  </Link>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-muted-foreground">{story.description}</p>
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4 text-green-600" />
+                    <span className="font-medium text-green-600">{story.funding}</span>
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         </section>
 
-        {/* Timeline */}
+        {/* Application Process */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Program Timeline</h2>
-          <div className="relative max-w-5xl mx-auto">
-            <div className="absolute top-4 left-1/2 h-[calc(100% - 2rem)] w-[2px] bg-muted"></div>
-            <div className="space-y-8">
-              {[
-                {
-                  date: "Month 1",
-                  title: "Orientation & Kickoff",
-                  description: "Welcome to the program! Get to know your mentors, fellow startups, and the Inc Combinator team.",
-                  icon: <Calendar className="h-5 w-5 text-primary" />
-                },
-                {
-                  date: "Month 2-3",
-                  title: "Workshops & Training",
-                  description: "Attend workshops and training sessions on topics such as business strategy, marketing, and fundraising.",
-                  icon: <FileText className="h-5 w-5 text-primary" />
-                },
-                {
-                  date: "Month 4-5",
-                  title: "Mentorship & Guidance",
-                  description: "Receive personalized mentorship and guidance from industry experts and seasoned entrepreneurs.",
-                  icon: <Lightbulb className="h-5 w-5 text-primary" />
-                },
-                {
-                  date: "Month 6",
-                  title: "Demo Day & Graduation",
-                  description: "Showcase your startup to investors, partners, and the Inc Combinator community.",
-                  icon: <CheckCircle className="h-5 w-5 text-primary" />
-                }
-              ].map((item, index) => (
-                <div key={index} className="flex items-start">
-                  <div className="mr-4 shrink-0">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                      {item.icon}
+          <h2 className="text-3xl font-bold text-center mb-8">Application Process</h2>
+          <div className="max-w-4xl mx-auto">
+            <div className="space-y-6">
+              {application_process.map((step, index) => (
+                <Card key={index} className="hover:shadow-md transition-all duration-300">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
+                        {step.step}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
+                        <p className="text-muted-foreground mb-2">{step.description}</p>
+                        <Badge variant="outline">{step.timeline}</Badge>
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold">{item.date}</h3>
-                    <h4 className="text-lg font-medium">{item.title}</h4>
-                    <p className="text-muted-foreground">{item.description}</p>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* Call to Action */}
         <section className="text-center py-16 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-3xl">
-          <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Idea?</h2>
+          <h2 className="text-3xl font-bold mb-4">Ready to Scale Your Startup?</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join Inc Combinator's Incubation Program and turn your innovative idea into a thriving business.
+            Join our comprehensive incubation program and transform your startup with expert guidance, 
+            funding support, and access to a thriving ecosystem of entrepreneurs and investors.
           </p>
           <div className="flex justify-center space-x-4">
             <IncubationApplicationForm>
@@ -463,15 +347,12 @@ const Incubation = () => {
                 Apply Now
               </Button>
             </IncubationApplicationForm>
-            <Link to="/program-details">
-              <Button variant="outline" size="lg">
-                Learn More
-              </Button>
-            </Link>
+            <Button variant="outline" size="lg">
+              Schedule Consultation
+            </Button>
           </div>
         </section>
       </main>
-      
       <Footer />
     </div>
   );

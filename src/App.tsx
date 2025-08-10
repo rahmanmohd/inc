@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -37,8 +38,6 @@ import Philosophy from "./pages/Philosophy";
 import AllApplications from "./pages/AllApplications";
 import ProgramDetails from "./pages/ProgramDetails";
 import ConsultationBooking from "./pages/ConsultationBooking";
-import SuccessStories from "./pages/SuccessStories";
-import BecomeMentor from "./pages/BecomeMentor";
 
 const queryClient = new QueryClient();
 
@@ -83,8 +82,6 @@ const App = () => (
           <Route path="/program-details" element={<ProgramDetails />} />
           <Route path="/consultation-booking" element={<ConsultationBooking />} />
           <Route path="/hackathon-detail/:id" element={<HackathonDetail />} />
-          <Route path="/success-stories" element={<SuccessStories />} />
-          <Route path="/become-mentor" element={<BecomeMentor />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
