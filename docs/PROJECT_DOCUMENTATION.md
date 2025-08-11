@@ -1,358 +1,290 @@
 
-# Inc Combinator - Comprehensive Project Documentation
+# INCombinator Platform - Project Documentation
 
-## Table of Contents
-1. [Project Overview](#project-overview)
-2. [Architecture & Technology Stack](#architecture--technology-stack)
-3. [Page Structure & Navigation](#page-structure--navigation)
-4. [Component System](#component-system)
-5. [User Types & Dashboards](#user-types--dashboards)
-6. [Forms & Data Management](#forms--data-management)
-7. [Routing & Navigation](#routing--navigation)
-8. [UI/UX Design System](#uiux-design-system)
-9. [Development Guidelines](#development-guidelines)
-10. [Deployment & Integration](#deployment--integration)
+## Overview
+INCombinator is a comprehensive startup ecosystem platform that connects entrepreneurs, investors, mentors, and co-founders. The platform provides tools for incubation, hackathons, co-founder matching, investment opportunities, and mentorship programs.
 
-## Project Overview
+## Platform Architecture
 
-Inc Combinator is a comprehensive startup accelerator platform built with React, featuring multiple user types, dashboards, and integrated workflows for entrepreneurs, co-founders, investors, and administrators.
+### User Types & Dashboards
+The platform supports multiple user types, each with dedicated dashboards:
 
-### Key Features
-- Multi-user dashboard system (Startup, Admin, User, Co-founder)
-- Comprehensive application management
-- Co-founder matching platform
-- Event and hackathon management
-- Resource center and learning materials
-- Investment tracking and deal management
+1. **Admin Dashboard** (`/admin-dashboard`)
+   - Startup management and oversight
+   - Application review and approval
+   - Investor relationship management
+   - Platform analytics and reporting
+   - Event and program management
 
-## Architecture & Technology Stack
+2. **Startup Dashboard** (`/startup-dashboard`)
+   - Business profile management
+   - Investment application tracking
+   - Mentor matching and session scheduling
+   - Resource access and downloads
+   - Progress tracking and analytics
+
+3. **Investor Dashboard** (`/investor-dashboard`)
+   - Portfolio company management
+   - Deal pipeline tracking
+   - Investment opportunity discovery
+   - Due diligence tools
+   - Performance analytics and ROI tracking
+
+4. **Mentor Dashboard** (`/mentor-dashboard`)
+   - Mentee management and tracking
+   - Session scheduling and management
+   - Mentorship request handling
+   - Resource library access
+   - Impact tracking and analytics
+
+5. **Co-founder Dashboard** (`/cofounder-dashboard`)
+   - Co-founder search and matching
+   - Application management
+   - Profile optimization
+   - Opportunity discovery
+   - Networking and communication tools
+
+6. **User Dashboard** (`/user-dashboard`)
+   - General user profile management
+   - Event registration and tracking
+   - Application submissions
+   - Resource access
+   - Community participation
+
+## Core Features
+
+### 1. Incubation Program
+- **MVP Lab**: Minimum Viable Product development support
+- **INC Lab**: Advanced incubation with mentorship
+- Multi-stage application process with detailed evaluation
+- Mentor assignment and progress tracking
+- Resource allocation and milestone management
+
+### 2. Co-founder Matching
+- Advanced matching algorithm based on skills and requirements
+- Detailed co-founder profiles with experience and expertise
+- Communication tools for potential co-founder connections
+- Application tracking and management system
+- Success rate monitoring and analytics
+
+### 3. Investment Platform
+- Investment application management
+- Investor-startup matching
+- Due diligence document management
+- Deal pipeline tracking
+- Investment analytics and reporting
+
+### 4. Mentorship Program
+- Mentor-mentee matching based on industry and expertise
+- Session scheduling and management
+- Progress tracking and goal setting
+- Resource sharing and knowledge transfer
+- Impact measurement and feedback systems
+
+### 5. Event Management
+- Hackathon organization and participation
+- Workshop and seminar scheduling
+- Networking event coordination
+- Registration and attendance tracking
+- Post-event follow-up and engagement
+
+### 6. Resource Center
+- Startup toolkit and templates
+- Industry reports and market research
+- Legal and compliance documentation
+- Technical resources and guides
+- Grant and funding opportunity listings
+
+## Technical Implementation
 
 ### Frontend Framework
-- **React 18.3.1** with TypeScript
-- **Vite** for build tooling and development server
-- **React Router DOM 6.26.2** for navigation
+- **React 18** with TypeScript for type safety
+- **Vite** for fast development and building
+- **Tailwind CSS** for responsive design and theming
+- **shadcn/ui** for consistent component library
 
-### UI Framework
-- **Tailwind CSS** for styling with semantic tokens
-- **shadcn/ui** component library
-- **Radix UI** primitives for accessibility
-- **Lucide React** for icons
+### State Management
+- **React Query** for server state management
+- **React Hook Form** with Zod validation
+- Local state management with React hooks
 
-### State Management & Data
-- **React Hook Form 7.53.0** for form management
-- **Zod 3.23.8** for schema validation
-- **TanStack React Query 5.56.2** for data fetching
-- **Supabase Integration** (enabled for backend functionality)
+### Routing & Navigation
+- **React Router** for client-side routing
+- Protected routes for authenticated users
+- Role-based access control for different user types
 
-## Page Structure & Navigation
+### UI/UX Design
+- Responsive design for mobile and desktop
+- Dark/light theme support
+- Consistent design system with custom components
+- Accessibility features and ARIA compliance
 
-### Public Pages
-```
-├── / (Index) - Homepage with hero section and features
-├── /about - About Us with Advisory Board
-├── /contact - Contact information and forms
-├── /philosophy - Inc Combinator philosophy and methodology
-├── /privacy-policy - Privacy policy
-├── /terms-conditions - Terms and conditions
-```
+## Data Models
 
-### Program Pages
-```
-├── /incubation - Incubation program details
-├── /mvp-lab - MVP Lab program
-├── /inclab - INC Lab details
-├── /hackathon - Hackathon events listing
-├── /hackathon/:id - Individual hackathon details
-├── /past-events - Historical events
-```
-
-### Application & User Pages
-```
-├── /login - User authentication
-├── /register - User registration
-├── /forgot-password - Password recovery
-├── /all-applications - Application management
-├── /program-details - Detailed program information
-├── /consultation-booking - Schedule consultations
-```
-
-### Community & Resources
-```
-├── /startup-directory - Directory of startups
-├── /startup-profile/:id - Individual startup profiles
-├── /meet-cofounder - Co-founder matching
-├── /investor-centre - Investor portal
-├── /investor-profile/:id - Individual investor profiles
-├── /resources - Learning resources
-├── /deals - Available deals and offers
-├── /blogs - Blog articles
-├── /blog/:id - Individual blog posts
-├── /news - News and updates
-├── /success-stories - Success story showcase
-├── /become-mentor - Mentor application
-```
-
-### Dashboard Pages
-```
-├── /startup-dashboard - Startup founder dashboard
-├── /admin-dashboard - Administrator dashboard
-├── /user-dashboard - General user dashboard
-├── /cofounder-dashboard - Co-founder specific dashboard
-```
-
-### Utility & Support
-```
-├── /cloud-credits - Cloud credit information
-├── /grants-funding - Funding and grants
-├── /partnership - Partnership opportunities
-├── /current-cohort - Current program cohort
-├── /featured-startups - Featured startup showcase
-├── /requirements - Co-founder requirements
-```
-
-## Component System
-
-### Core Components
-- **Navigation.tsx** - Main navigation with user authentication state
-- **Footer.tsx** - Site footer with links and information
-- **AuthButton.tsx** - Authentication status and controls
-- **Breadcrumbs.tsx** - Navigation breadcrumbs (available but not yet implemented)
-
-### Dialog Components
-- **ApplicationDialog.tsx** - Application form modal
-- **CofounderPostDialog.tsx** - Co-founder requirement posting
-- **CofounderDetailsDialog.tsx** - Co-founder profile details
-- **StartupProfileDialog.tsx** - Startup profile management
-- **IncApplicationDialog.tsx** - Inc Combinator application
-- **HackathonRegistrationDialog.tsx** - Event registration
-- **ConsultationDialog.tsx** - Consultation booking
-- **InvestmentApplicationDialog.tsx** - Investment applications
-- **PitchSubmissionDialog.tsx** - Pitch deck submission
-
-### Dashboard Components
-```
-src/components/dashboard/
-├── AdminOverview.tsx - Admin dashboard overview
-├── StartupOverview.tsx - Startup dashboard overview
-├── ApplicationStatus.tsx - Application tracking
-├── StartupManagement.tsx - Startup management tools
-├── ApplicationManagement.tsx - Application oversight
-├── InvestorManagement.tsx - Investor relationship management
-└── InvestmentTable.tsx - Investment tracking table
-```
-
-### Form Components
-```
-src/components/incubation/
-├── FounderInfoSection.tsx - Founder information forms
-└── StartupInfoSection.tsx - Startup detail forms
-
-src/components/hackathon/
-├── PersonalInfoSection.tsx - Personal information
-└── TechnicalSkillsSection.tsx - Technical skill assessment
-```
-
-## User Types & Dashboards
-
-### 1. Startup Dashboard (`/startup-dashboard`)
-**Target User:** Startup founders and teams
-**Features:**
-- Application status tracking
-- Investment opportunity management
-- Deal browsing and claiming
-- Co-founder requirement posting
-- Program overview and progress
-
-### 2. Admin Dashboard (`/admin-dashboard`)
-**Target User:** Inc Combinator administrators
-**Features:**
-- Startup portfolio management
-- Application review and approval
-- Investor relationship management
-- Deal creation and management
-- Content and analytics oversight
-- User management across all types
-
-### 3. User Dashboard (`/user-dashboard`)
-**Target User:** General applicants and participants
-**Features:**
-- Application tracking across programs
-- Event registration and management
-- Co-founder opportunity browsing
-- Learning resource access
-- Community participation
-
-### 4. Co-founder Dashboard (`/cofounder-dashboard`)
-**Target User:** Professionals seeking co-founder opportunities
-**Features:**
-- Co-founder post management
-- Application review and response
-- Opportunity matching with AI scoring
-- Profile analytics and performance
-- Networking and communication tools
-
-## Forms & Data Management
-
-### Application Forms
-- **Incubation Application** - Comprehensive startup application
-- **Hackathon Registration** - Event participation
-- **Co-founder Requirements** - Posting co-founder needs
-- **Mentor Application** - Professional mentor onboarding
-- **Investment Application** - Funding requests
-
-### Form Features
-- **Validation** - Zod schema validation
-- **Multi-step Forms** - Complex applications broken into sections
-- **Auto-save** - Draft functionality (requires Supabase)
-- **File Upload** - Document and image handling
-- **Real-time Updates** - Progress tracking
-
-## Routing & Navigation
-
-### Route Configuration
-All routes are defined in `src/App.tsx` using React Router DOM v6:
-
+### User Profiles
 ```typescript
-// Main application routes
-<Route path="/" element={<Index />} />
-<Route path="/startup-dashboard" element={<StartupDashboard />} />
-<Route path="/admin-dashboard" element={<AdminDashboard />} />
-<Route path="/user-dashboard" element={<UserDashboard />} />
-<Route path="/cofounder-dashboard" element={<CofounderDashboard />} />
-
-// Parameterized routes
-<Route path="/hackathon/:id" element={<HackathonDetail />} />
-<Route path="/startup-profile/:id" element={<StartupProfile />} />
-<Route path="/investor-profile/:id" element={<InvestorProfile />} />
-<Route path="/blog/:id" element={<BlogDetail />} />
-
-// Catch-all route
-<Route path="*" element={<NotFound />} />
-```
-
-### Navigation Patterns
-- **Link Components** - React Router Link for internal navigation
-- **Button Navigation** - Programmatic navigation with useNavigate
-- **Breadcrumb Support** - Hierarchical navigation (component available)
-- **Deep Linking** - All pages support direct URL access
-
-## UI/UX Design System
-
-### Color System
-The project uses a semantic color system defined in `src/index.css`:
-
-```css
-:root {
-  --background: 210 100% 98%;
-  --foreground: 210 15% 10%;
-  --primary: 211 100% 50%;
-  --secondary: 210 20% 95%;
-  --muted: 210 20% 95%;
-  --accent: 210 20% 90%;
-  --destructive: 0 84% 60%;
+interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: 'startup' | 'investor' | 'mentor' | 'cofounder' | 'admin';
+  profile: StartupProfile | InvestorProfile | MentorProfile | CofounderProfile;
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
-### Component Variants
-- **Button Variants:** default, destructive, outline, secondary, ghost, link, hero
-- **Card Styles:** card-gradient with border-border
-- **Badge Types:** default, secondary, destructive, outline
-- **Form Elements:** Consistent styling with error states
-
-### Responsive Design
-- **Mobile-first approach** with Tailwind CSS
-- **Breakpoints:** sm, md, lg, xl, 2xl
-- **Grid Systems:** CSS Grid and Flexbox
-- **Adaptive layouts** for all dashboard types
-
-## Development Guidelines
-
-### Code Organization
-```
-src/
-├── components/          # Reusable UI components
-│   ├── ui/             # shadcn/ui components
-│   ├── dashboard/      # Dashboard-specific components
-│   ├── incubation/     # Program-specific components
-│   └── hackathon/      # Event-specific components
-├── pages/              # Route components
-├── hooks/              # Custom React hooks
-├── lib/                # Utility functions
-└── assets/             # Static assets
+### Startup Profile
+```typescript
+interface StartupProfile {
+  companyName: string;
+  industry: string;
+  stage: 'idea' | 'mvp' | 'seed' | 'series-a' | 'series-b' | 'growth';
+  fundingStatus: string;
+  teamSize: number;
+  description: string;
+  website?: string;
+  socialLinks: SocialLinks;
+  metrics: StartupMetrics;
+}
 ```
 
-### Component Guidelines
-- **Single Responsibility** - One component, one purpose
-- **Prop Typing** - TypeScript interfaces for all props
-- **Error Boundaries** - Graceful error handling
-- **Accessibility** - ARIA labels and keyboard navigation
-- **Performance** - Lazy loading and code splitting where appropriate
-
-### State Management Patterns
-- **Local State** - useState for component-specific state
-- **Form State** - React Hook Form for complex forms
-- **Server State** - TanStack Query for API data
-- **Global State** - Context API for authentication state
-
-## Deployment & Integration
-
-### Supabase Integration
-The project has Supabase enabled for:
-- **Authentication** - Email/password and social login
-- **Database** - PostgreSQL with Row Level Security
-- **Storage** - File uploads and management
-- **Real-time** - Live updates and notifications
-
-### Build & Deploy
-```bash
-# Development
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+### Investor Profile
+```typescript
+interface InvestorProfile {
+  firmName: string;
+  type: 'vc' | 'angel' | 'family-office' | 'corporate';
+  checkSize: string;
+  sectors: string[];
+  stages: string[];
+  portfolio: PortfolioCompany[];
+  investmentThesis: string;
+}
 ```
 
-### Environment Variables
-```env
-VITE_SUPABASE_URL=your-supabase-url
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+### Mentor Profile
+```typescript
+interface MentorProfile {
+  expertise: string[];
+  experience: string;
+  company: string;
+  bio: string;
+  availability: string;
+  mentees: MenteeRelationship[];
+  specializations: string[];
+  rating: number;
+}
 ```
 
-### Performance Optimization
-- **Code Splitting** - Lazy loading of routes
-- **Image Optimization** - WebP format and lazy loading
-- **Bundle Analysis** - Regular bundle size monitoring
-- **Caching** - Service worker implementation (planned)
+## Form Management
+
+### Application Forms
+- **Incubation Application**: Multi-step form with validation
+- **Investment Application**: Comprehensive startup information
+- **Mentorship Request**: Matching criteria and requirements
+- **Co-founder Search**: Skills and role requirements
+- **Event Registration**: Personal and professional details
+
+### Form Features
+- Real-time validation with Zod schemas
+- File upload capabilities for documents
+- Auto-save functionality for long forms
+- Progress tracking for multi-step processes
+- Error handling and user feedback
+
+## Security & Privacy
+
+### Data Protection
+- Form data validation and sanitization
+- Secure file upload handling
+- Privacy policy compliance
+- GDPR considerations for user data
+
+### Access Control
+- Role-based dashboard access
+- Protected routes for sensitive data
+- Session management and authentication
+- Permission-based feature access
+
+## Integration Capabilities
+
+### External Services
+- **Supabase Integration**: Ready for database and authentication
+- **Payment Processing**: Stripe integration capability
+- **Email Services**: Automated communication systems
+- **File Storage**: Document and media management
+- **Analytics**: User behavior and platform metrics
+
+### API Architecture
+- RESTful API design patterns
+- GraphQL capability for complex queries
+- Real-time updates with WebSocket support
+- Third-party service integrations
+
+## Performance Optimization
+
+### Frontend Performance
+- Code splitting and lazy loading
+- Image optimization and caching
+- Bundle size optimization
+- Performance monitoring and metrics
+
+### User Experience
+- Fast page load times
+- Smooth transitions and animations
+- Responsive design across devices
+- Offline capability for critical features
+
+## Documentation & Support
+
+### User Guides
+- Platform navigation and feature usage
+- Step-by-step application processes
+- Best practices for each user type
+- Troubleshooting and FAQ sections
+
+### Technical Documentation
+- API documentation and examples
+- Integration guides for external services
+- Development setup and deployment guides
+- Code contribution guidelines
+
+## Deployment & Maintenance
+
+### Environment Configuration
+- Development, staging, and production environments
+- Environment variable management
+- Database migration strategies
+- Continuous integration and deployment
+
+### Monitoring & Analytics
+- Application performance monitoring
+- User analytics and behavior tracking
+- Error logging and alerting
+- Business metrics and KPI tracking
 
 ## Future Enhancements
 
 ### Planned Features
-1. **Real-time Chat** - Co-founder and mentor communication
-2. **Video Calls** - Integrated consultation platform
-3. **AI Matching** - Enhanced co-founder and opportunity matching
-4. **Mobile App** - React Native implementation
-5. **Analytics Dashboard** - Advanced metrics and insights
-6. **Payment Integration** - Stripe for program fees
-7. **Email Automation** - Automated communication workflows
-8. **API Documentation** - Comprehensive API docs
+- Advanced AI-powered matching algorithms
+- Video conferencing integration for mentorship
+- Mobile application development
+- Advanced analytics and reporting dashboards
+- Community forums and discussion boards
 
-### Technical Improvements
-- **Testing Suite** - Jest and React Testing Library
-- **Storybook** - Component documentation
-- **Performance Monitoring** - Real user metrics
-- **Security Audit** - Regular security assessments
-- **Accessibility Audit** - WCAG compliance verification
+### Scalability Considerations
+- Microservices architecture migration
+- Database optimization and sharding
+- CDN implementation for global reach
+- Load balancing and auto-scaling capabilities
+
+## Contact & Support
+
+For technical support or questions about the platform:
+- Development Team: dev@incombinator.com
+- Business Inquiries: business@incombinator.com
+- Platform Support: support@incombinator.com
 
 ---
 
-## Version History
-- **v1.0.0** - Initial platform with basic functionality
-- **v1.1.0** - Added dashboard system and user management
-- **v1.2.0** - Implemented co-founder matching platform
-- **v1.3.0** - Enhanced forms and navigation system
-- **v1.4.0** - Current version with comprehensive dashboards
-
-For questions or contributions, please refer to the development team or create an issue in the project repository.
+This documentation serves as a comprehensive guide to the INCombinator platform's current state and future roadmap. Regular updates ensure accuracy and reflect the latest platform developments.

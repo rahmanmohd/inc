@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +20,8 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import StartupDashboard from "./pages/StartupDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import InvestorDashboard from "./pages/InvestorDashboard";
+import MentorDashboard from "./pages/MentorDashboard";
 import StartupDirectory from "./pages/StartupDirectory";
 import StartupProfile from "./pages/StartupProfile";
 import Deals from "./pages/Deals";
@@ -70,6 +73,8 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/startup-dashboard" element={<StartupDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/investor-dashboard" element={<InvestorDashboard />} />
+          <Route path="/mentor-dashboard" element={<MentorDashboard />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
           <Route path="/cofounder-dashboard" element={<CofounderDashboard />} />
           <Route path="/blog/:id" element={<BlogDetail />} />
