@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import type { UserType } from "@/context/AuthContext";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +18,13 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAuthenticated, login, user } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate(user.userType === "admin" ? "/admin-dashboard" : "/user-dashboard", { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,21 +33,14 @@ const Login = () => {
     if (email && password && userType) {
       toast({
         title: "Login Successful",
-        description: `Welcome back! Redirecting to ${userType} dashboard...`,
+        description: "Redirecting...",
       });
       
-      // Redirect based on user type
+      // set auth and redirect
+      login({ email, userType: userType as UserType });
       setTimeout(() => {
-        if (userType === "admin") {
-          navigate("/admin-dashboard");
-        } else if (userType === "startup") {
-          navigate("/startup-dashboard");
-        } else if (userType === "investor") {
-          navigate("/investor-centre");
-        } else {
-          navigate("/");
-        }
-      }, 1000);
+        navigate(userType === "admin" ? "/admin-dashboard" : "/user-dashboard");
+      }, 300);
     } else {
       toast({
         title: "Login Failed",
@@ -75,6 +77,7 @@ const Login = () => {
                   <SelectItem value="investor">Investor</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                   <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
+                  <SelectItem value="mentor">Mentor</SelectItem>
                 </SelectContent>
               </Select>
             </div>

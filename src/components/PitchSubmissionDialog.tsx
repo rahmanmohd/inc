@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthUI } from "@/context/AuthUIContext";
 
 interface PitchSubmissionDialogProps {
   children: React.ReactNode;
@@ -14,6 +16,8 @@ interface PitchSubmissionDialogProps {
 
 const PitchSubmissionDialog = ({ children }: PitchSubmissionDialogProps) => {
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const { openLogin } = useAuthUI();
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     startupName: "",
@@ -58,8 +62,16 @@ const PitchSubmissionDialog = ({ children }: PitchSubmissionDialogProps) => {
     });
   };
 
+  const handleOpenChange = (next: boolean) => {
+    if (next && !isAuthenticated) {
+      openLogin();
+      return;
+    }
+    setIsOpen(next);
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>

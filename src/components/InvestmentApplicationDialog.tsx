@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthUI } from "@/context/AuthUIContext";
 
 interface InvestmentApplicationDialogProps {
   children: React.ReactNode;
@@ -14,6 +16,8 @@ interface InvestmentApplicationDialogProps {
 const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogProps) => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const { openLogin } = useAuthUI();
 
   const [formData, setFormData] = useState({
     investor: "",
@@ -52,8 +56,16 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
     });
   };
 
+  const handleOpenChange = (next: boolean) => {
+    if (next && !isAuthenticated) {
+      openLogin();
+      return;
+    }
+    setOpen(next);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>

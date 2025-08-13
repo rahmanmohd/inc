@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import type { UserType } from "@/context/AuthContext";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,6 +20,13 @@ const Register = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAuthenticated, login, user } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate(user.userType === "admin" ? "/admin-dashboard" : "/user-dashboard", { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -55,15 +64,22 @@ const Register = () => {
       return;
     }
 
-    // Demo registration logic
+    // Demo registration logic => auto-login and redirect
     toast({
       title: "Registration Successful",
-      description: "Your account has been created successfully!",
+      description: "Welcome! Redirecting...",
     });
-    
+
+    const newUser = {
+      email: formData.email,
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
+      userType: (userType || "user") as UserType,
+    };
+    login(newUser);
+
     setTimeout(() => {
-      navigate("/login");
-    }, 1000);
+      navigate(newUser.userType === "admin" ? "/admin-dashboard" : "/user-dashboard");
+    }, 300);
   };
 
   return (

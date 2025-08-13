@@ -10,6 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { ReactNode, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthUI } from "@/context/AuthUIContext";
 
 const consultationSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -29,6 +31,8 @@ interface ConsultationDialogProps {
 const ConsultationDialog = ({ children, title = "Schedule Consultation", description = "Book a consultation with our experts" }: ConsultationDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const { openLogin } = useAuthUI();
   
   const form = useForm<z.infer<typeof consultationSchema>>({
     resolver: zodResolver(consultationSchema),
@@ -61,8 +65,16 @@ const ConsultationDialog = ({ children, title = "Schedule Consultation", descrip
     { value: "general", label: "General Consultation" },
   ];
 
+  const handleOpenChange = (next: boolean) => {
+    if (next && !isAuthenticated) {
+      openLogin();
+      return;
+    }
+    setIsOpen(next);
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>

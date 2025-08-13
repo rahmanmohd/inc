@@ -5,9 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Trophy, Users, Code, Zap, Target } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Hackathon = () => {
+  const navigate = useNavigate();
+  
   const upcomingHackathons = [
     {
       id: 1,
@@ -143,7 +145,7 @@ const Hackathon = () => {
                 Register for Next Hackathon
               </Button>
             </HackathonRegistrationForm>
-            <Button variant="outline" size="lg">
+            <Button variant="outline" size="lg" onClick={() => navigate("/past-events")}>
               View Past Events
             </Button>
           </div>

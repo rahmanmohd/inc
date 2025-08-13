@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthUI } from "@/context/AuthUIContext";
 
 interface HackathonRegistrationDialogProps {
   children: React.ReactNode;
@@ -16,6 +18,8 @@ interface HackathonRegistrationDialogProps {
 const HackathonRegistrationDialog = ({ children, hackathonTitle = "Upcoming Hackathon" }: HackathonRegistrationDialogProps) => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const { openLogin } = useAuthUI();
 
   const [formData, setFormData] = useState({
     teamName: "",
@@ -72,8 +76,16 @@ const HackathonRegistrationDialog = ({ children, hackathonTitle = "Upcoming Hack
     });
   };
 
+  const handleOpenChange = (next: boolean) => {
+    if (next && !isAuthenticated) {
+      openLogin();
+      return;
+    }
+    setOpen(next);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>

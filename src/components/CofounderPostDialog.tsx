@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthUI } from "@/context/AuthUIContext";
 
 interface CofounderPostDialogProps {
   children: React.ReactNode;
@@ -18,6 +20,8 @@ const CofounderPostDialog = ({ children }: CofounderPostDialogProps) => {
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState("");
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const { openLogin } = useAuthUI();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -62,8 +66,16 @@ const CofounderPostDialog = ({ children }: CofounderPostDialogProps) => {
     setSkills([]);
   };
 
+  const handleOpenChange = (next: boolean) => {
+    if (next && !isAuthenticated) {
+      openLogin();
+      return;
+    }
+    setOpen(next);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>

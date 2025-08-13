@@ -3,9 +3,24 @@ import Hero from "@/components/Hero";
 import WeeklyShowcase from "@/components/WeeklyShowcase";
 import ProgramOverview from "@/components/ProgramOverview";
 import CohortInfo from "@/components/CohortInfo";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useAuthUI } from "@/context/AuthUIContext";
 
 const Index = () => {
+  const { openLogin } = useAuthUI();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("login") === "1") {
+      openLogin();
+      // clean the query without a hard navigation
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("login");
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams, openLogin]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />

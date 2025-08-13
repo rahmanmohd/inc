@@ -1,15 +1,19 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import ApplicationDialog from "./ApplicationDialog";
 import AuthButton from "./AuthButton";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthUI } from "@/context/AuthUIContext";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userType, setUserType] = useState("");
+  const { isAuthenticated, user, logout } = useAuth();
+  const { openLogin } = useAuthUI();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
     { name: "Hackathon", href: "/hackathon" },
@@ -19,8 +23,23 @@ const Navigation = () => {
   ];
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUserType("");
+    logout();
+    navigate("/");
+  };
+
+  const handleNavClick = (href: string) => {
+    console.log("Navigation clicked:", href);
+    console.log("isAuthenticated:", isAuthenticated);
+    console.log("Current user:", user);
+    
+    if (!isAuthenticated) {
+      console.log("User not authenticated, opening login");
+      openLogin();
+      return;
+    }
+    
+    console.log("User authenticated, navigating to:", href);
+    navigate(href);
   };
 
   return (
@@ -40,14 +59,14 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <Link
+              <button
                 key={item.name}
-                to={item.href}
-                className="text-muted-foreground hover:text-primary transition-colors duration-200 relative group"
+                onClick={() => handleNavClick(item.href)}
+                className="text-muted-foreground hover:text-primary transition-colors duration-200 relative group bg-transparent border-none cursor-pointer"
               >
                 {item.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-              </Link>
+              </button>
             ))}
             <ApplicationDialog>
               <Button variant="hero" size="lg">
@@ -56,7 +75,7 @@ const Navigation = () => {
             </ApplicationDialog>
             <AuthButton
               isAuthenticated={isAuthenticated}
-              userType={userType}
+              userType={user?.userType || "user"}
               onLogout={handleLogout}
             />
           </div>
@@ -75,14 +94,16 @@ const Navigation = () => {
           <div className="md:hidden py-4 border-t border-border animate-fade-in">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
-                <Link
+                <button
                   key={item.name}
-                  to={item.href}
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 px-2 py-1"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    handleNavClick(item.href);
+                    setIsOpen(false);
+                  }}
+                  className="text-muted-foreground hover:text-primary transition-colors duration-200 px-2 py-1 bg-transparent border-none cursor-pointer text-left w-full"
                 >
                   {item.name}
-                </Link>
+                </button>
               ))}
               <ApplicationDialog>
                 <Button variant="hero" size="lg">
@@ -91,7 +112,7 @@ const Navigation = () => {
               </ApplicationDialog>
               <AuthButton
                 isAuthenticated={isAuthenticated}
-                userType={userType}
+                userType={user?.userType || "user"}
                 onLogout={handleLogout}
               />
             </div>
