@@ -6,10 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthUI } from "@/context/AuthUIContext";
+import startupDashboardService from "@/services/startupDashboardService";
+import emailService from "@/services/emailService";
 
 interface CofounderPostDialogProps {
   children: React.ReactNode;
@@ -17,10 +19,11 @@ interface CofounderPostDialogProps {
 
 const CofounderPostDialog = ({ children }: CofounderPostDialogProps) => {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState("");
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { openLogin } = useAuthUI();
 
   const [formData, setFormData] = useState({
@@ -45,25 +48,100 @@ const CofounderPostDialog = ({ children }: CofounderPostDialogProps) => {
     setSkills(skills.filter(skill => skill !== skillToRemove));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Co-founder Requirement Posted",
-      description: "Your co-founder requirement has been posted successfully.",
-    });
-    setOpen(false);
-    // Reset form
-    setFormData({
-      title: "",
-      role: "",
-      description: "",
-      experience: "",
-      equity: "",
-      location: "",
-      commitment: "",
-      salary: ""
-    });
-    setSkills([]);
+    
+    // Validate required fields
+    const requiredFields = ['title', 'role', 'description', 'experience'];
+    const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (missingFields.length > 0) {
+      toast({
+        title: "Missing Information",
+        description: `Please fill in all required fields: ${missingFields.join(', ')}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check authentication first
+    if (!isAuthenticated || !user?.id) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to post your requirement",
+        variant: "destructive"
+      });
+      openLogin();
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Prepare post data
+      const postData = {
+        user_id: user.id,
+        title: formData.title,
+        role: formData.role,
+        description: formData.description,
+        experience: formData.experience,
+        equity: formData.equity,
+        skills: skills,
+        location: formData.location,
+        commitment: formData.commitment,
+        salary: formData.salary
+      };
+
+      // Submit cofounder post
+      const response = await startupDashboardService.submitCofounderPost(postData);
+
+      if (response.success) {
+        // Send confirmation email
+        try {
+          await emailService.sendCofounderPostEmail(
+            user.email || 'user@example.com',
+            user.name || 'User',
+            postData
+          );
+        } catch (emailError) {
+          console.error('Email sending failed:', emailError);
+        }
+
+        toast({
+          title: "Co-founder Requirement Posted Successfully! 🚀",
+          description: "Your co-founder requirement has been posted and is now visible to potential co-founders. You'll receive applications directly.",
+        });
+        
+        // Reset form
+        setFormData({
+          title: "",
+          role: "",
+          description: "",
+          experience: "",
+          equity: "",
+          location: "",
+          commitment: "",
+          salary: ""
+        });
+        setSkills([]);
+        setOpen(false);
+      } else {
+        toast({
+          title: "Posting Failed",
+          description: response.message || "Failed to post requirement. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Cofounder post error:', error);
+      toast({
+        title: "Posting Error",
+        description: "An unexpected error occurred. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleOpenChange = (next: boolean) => {
@@ -211,10 +289,19 @@ const CofounderPostDialog = ({ children }: CofounderPostDialogProps) => {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit">Post Requirement</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Posting...
+                </>
+              ) : (
+                "Post Requirement"
+              )}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

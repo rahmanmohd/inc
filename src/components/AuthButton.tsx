@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { LogIn, UserPlus, LogOut, User } from "lucide-react";
+import { LogIn, UserPlus, LogOut, User, Loader2 } from "lucide-react";
 import type { UserType } from "@/context/AuthContext";
 import {
   DropdownMenu,
@@ -15,11 +15,18 @@ interface AuthButtonProps {
   isAuthenticated?: boolean;
   userType?: UserType | string;
   onLogout?: () => void;
+  isLoggingOut?: boolean;
 }
 
-const AuthButton = ({ isAuthenticated = false, userType, onLogout }: AuthButtonProps) => {
+const AuthButton = ({ isAuthenticated = false, userType, onLogout, isLoggingOut = false }: AuthButtonProps) => {
   if (isAuthenticated) {
     const getDashboardLinks = (userType: UserType | string) => {
+      // For admin users, show only Admin Dashboard
+      if (userType === "admin") {
+        return [{ name: "Admin Dashboard", href: "/admin-dashboard" }];
+      }
+
+      // For other users, show User Dashboard and role-specific dashboards
       const links = [
         { name: "User Dashboard", href: "/user-dashboard" }
       ];
@@ -37,9 +44,6 @@ const AuthButton = ({ isAuthenticated = false, userType, onLogout }: AuthButtonP
         case "mentor":
           links.push({ name: "Mentor Dashboard", href: "/mentor-dashboard" });
           break;
-        case "admin":
-          links.push({ name: "Admin Dashboard", href: "/admin-dashboard" });
-          break;
       }
 
       return links;
@@ -53,7 +57,7 @@ const AuthButton = ({ isAuthenticated = false, userType, onLogout }: AuthButtonP
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="flex items-center space-x-1">
               <User className="h-4 w-4" />
-              <span>Profile</span>
+              <span>{userType === "admin" ? "Admin" : "Profile"}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
@@ -63,9 +67,17 @@ const AuthButton = ({ isAuthenticated = false, userType, onLogout }: AuthButtonP
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onLogout} className="text-red-600">
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
+            <DropdownMenuItem 
+              onClick={onLogout} 
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <LogOut className="h-4 w-4 mr-2" />
+              )}
+              {isLoggingOut ? "Logging out..." : "Logout"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

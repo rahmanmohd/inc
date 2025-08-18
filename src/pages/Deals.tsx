@@ -1,367 +1,142 @@
+import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Clock, Tag, Zap, Cloud, Mail, CreditCard, Users, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import startupDashboardService from "@/services/startupDashboardService";
+import { Loader2 } from "lucide-react";
+
+interface Deal {
+  id: number;
+  title: string;
+  value: string;
+  status: string;
+  expires: string;
+  description: string;
+  category: string;
+  requirements: string;
+  application_count: number;
+}
 
 const Deals = () => {
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  const [selectedDeal, setSelectedDeal] = useState<any>(null);
-  const featuredDeals = [
-    {
-      id: 1,
-      company: "AWS",
-      title: "AWS Activate Credits",
-      description: "Get up to $5,000 in AWS credits for your startup infrastructure",
-      value: "$5,000",
-      discount: "Free Credits",
-      category: "Cloud Services",
-      validUntil: "Dec 31, 2024",
-      claimed: 45,
-      totalSlots: 100,
-      requirements: ["Startup must be < 2 years old", "First-time AWS user"],
-      logo: "☁️"
-    },
-    {
-      id: 2,
-      company: "Notion",
-      title: "Notion Pro for Startups",
-      description: "6 months free of Notion Pro for teams up to 50 members",
-      value: "$600",
-      discount: "100% Off",
-      category: "Productivity",
-      validUntil: "Jan 15, 2025",
-      claimed: 78,
-      totalSlots: 150,
-      requirements: ["Inc Combinator member", "Team size < 50"],
-      logo: "📝"
-    },
-    {
-      id: 3,
-      company: "Stripe",
-      title: "Stripe Fee Waiver",
-      description: "First $20,000 in payment processing fees waived",
-      value: "$500",
-      discount: "Fees Waived",
-      category: "Payments",
-      validUntil: "Mar 31, 2025",
-      claimed: 23,
-      totalSlots: 75,
-      requirements: ["Active startup", "New Stripe account"],
-      logo: "💳"
+  const { user } = useAuth();
+
+  const fetchDeals = async () => {
+    try {
+      setIsLoading(true);
+      const response = await startupDashboardService.getActiveDeals();
+      
+      if (response.success) {
+        setDeals(response.data);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to load deals",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching deals:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load deals",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
 
-  const cloudDeals = [
-    { company: "Google Cloud", offer: "$3,000 Credits", discount: "Free", logo: "🌐" },
-    { company: "Microsoft Azure", offer: "$2,500 Credits", discount: "Free", logo: "🔷" },
-    { company: "DigitalOcean", offer: "$200 Credits", discount: "Free", logo: "🌊" },
-    { company: "Vercel", offer: "Pro Plan 6 months", discount: "100% Off", logo: "▲" }
-  ];
+  useEffect(() => {
+    fetchDeals();
+  }, []);
 
-  const saasDeals = [
-    { company: "Slack", offer: "Pro Plan 3 months", discount: "100% Off", logo: "💬" },
-    { company: "Figma", offer: "Professional 1 year", discount: "50% Off", logo: "🎨" },
-    { company: "Calendly", offer: "Professional 6 months", discount: "100% Off", logo: "📅" },
-    { company: "Mailchimp", offer: "Standard Plan 6 months", discount: "50% Off", logo: "📧" }
-  ];
+  const handleApplyForDeal = (deal: Deal) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to apply for deals",
+        variant: "destructive"
+      });
+      return;
+    }
 
-  const businessDeals = [
-    { company: "LegalZoom", offer: "Business Formation", discount: "30% Off", logo: "⚖️" },
-    { company: "QuickBooks", offer: "Simple Start 6 months", discount: "50% Off", logo: "📊" },
-    { company: "Freshworks", offer: "CRM Suite 3 months", discount: "100% Off", logo: "📞" },
-    { company: "HubSpot", offer: "Startup Program", discount: "90% Off", logo: "🎯" }
-  ];
-
-  const renderDealCard = (deal: any, isDetailed = false) => (
-    <Card key={deal.id || deal.company} className="hover:shadow-lg transition-all duration-300">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="text-2xl">{deal.logo}</div>
-            <div>
-              <CardTitle className="text-lg">{deal.title || `${deal.company} Deal`}</CardTitle>
-              <CardDescription>{deal.company}</CardDescription>
-            </div>
-          </div>
-          <Badge variant="secondary">{deal.discount}</Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {isDetailed && (
-          <>
-            <p className="text-sm text-muted-foreground">{deal.description}</p>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Value:</span>
-              <span className="font-bold text-primary">{deal.value}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Category:</span>
-              <Badge variant="outline">{deal.category}</Badge>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Claimed:</span>
-                <span>{deal.claimed}/{deal.totalSlots}</span>
-              </div>
-              <Progress value={(deal.claimed / deal.totalSlots) * 100} className="h-2" />
-            </div>
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Requirements:</p>
-              <ul className="text-xs text-muted-foreground space-y-1">
-                {deal.requirements.map((req: string, index: number) => (
-                  <li key={index} className="flex items-center space-x-2">
-                    <div className="w-1 h-1 bg-primary rounded-full"></div>
-                    <span>{req}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span>Valid until {deal.validUntil}</span>
-            </div>
-          </>
-        )}
-        {!isDetailed && (
-          <div className="space-y-2">
-            <p className="font-medium">{deal.offer}</p>
-            <Badge variant="outline" className="text-xs">{deal.discount}</Badge>
-          </div>
-        )}
-        <Button className="w-full" onClick={() => {
-          if (isDetailed) {
-            toast({
-              title: "Deal Claimed Successfully!",
-              description: `You have successfully claimed ${deal.title || deal.company + ' Deal'}`,
-            });
-          } else {
-            setSelectedDeal(deal);
-          }
-        }}>
-          {isDetailed ? "Claim Deal" : "View Details"}
-        </Button>
-      </CardContent>
-    </Card>
-  );
+    toast({
+      title: "Application Submitted",
+      description: `Your application for ${deal.title} has been submitted successfully!`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto px-4 pt-20 pb-12">
-        {/* Hero Section */}
-        <section className="text-center mb-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-4">
-            Exclusive Startup Deals
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent mb-2">
+            Active Deals
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Access premium tools, services, and resources at incredible discounts. Save thousands on essential startup infrastructure.
-          </p>
-          <div className="flex justify-center space-x-4">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary">₹25L+</div>
-              <p className="text-sm text-muted-foreground">Total Value</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary">150+</div>
-              <p className="text-sm text-muted-foreground">Active Deals</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary">2K+</div>
-              <p className="text-sm text-muted-foreground">Startups Benefited</p>
+          <p className="text-muted-foreground">Discover exclusive deals and offers for startups</p>
+        </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="flex items-center space-x-2">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <span>Loading deals...</span>
             </div>
           </div>
-        </section>
-
-        {/* Featured Deals */}
-        <section className="mb-12">
-          <div className="flex items-center space-x-2 mb-6">
-            <Star className="h-6 w-6 text-primary" />
-            <h2 className="text-3xl font-bold">Featured Deals</h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {featuredDeals.map((deal) => renderDealCard(deal, true))}
-          </div>
-        </section>
-
-        {/* Deal Categories */}
-        <Tabs defaultValue="cloud" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="cloud" className="flex items-center space-x-2">
-              <Cloud className="h-4 w-4" />
-              <span>Cloud & Infrastructure</span>
-            </TabsTrigger>
-            <TabsTrigger value="saas" className="flex items-center space-x-2">
-              <Zap className="h-4 w-4" />
-              <span>SaaS Tools</span>
-            </TabsTrigger>
-            <TabsTrigger value="business" className="flex items-center space-x-2">
-              <Users className="h-4 w-4" />
-              <span>Business Services</span>
-            </TabsTrigger>
-            <TabsTrigger value="marketing" className="flex items-center space-x-2">
-              <Mail className="h-4 w-4" />
-              <span>Marketing & Sales</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="cloud" className="space-y-6">
-            <h3 className="text-2xl font-bold mb-4">Cloud & Infrastructure Deals</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {cloudDeals.map((deal) => renderDealCard(deal))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="saas" className="space-y-6">
-            <h3 className="text-2xl font-bold mb-4">SaaS Tools & Productivity</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {saasDeals.map((deal) => renderDealCard(deal))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="business" className="space-y-6">
-            <h3 className="text-2xl font-bold mb-4">Business & Legal Services</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {businessDeals.map((deal) => renderDealCard(deal))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="marketing" className="space-y-6">
-            <h3 className="text-2xl font-bold mb-4">Marketing & Sales Tools</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="hover:shadow-lg transition-all duration-300">
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {deals.map((deal) => (
+              <Card key={deal.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <div className="text-2xl">📧</div>
-                    <div>
-                      <CardTitle className="text-lg">Email Marketing Suite</CardTitle>
-                      <CardDescription>Mailchimp, SendGrid, ConvertKit</CardDescription>
-                    </div>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg">{deal.title}</CardTitle>
+                    <Badge className="bg-green-100 text-green-800">
+                      {deal.status}
+                    </Badge>
                   </div>
+                  <p className="text-2xl font-bold text-primary">
+                    {deal.value}
+                  </p>
                 </CardHeader>
-                <CardContent>
-                  <p className="font-medium mb-2">Up to 6 months free</p>
-                  <Badge variant="outline" className="text-xs mb-4">100% Off</Badge>
-                  <Button className="w-full">View Offers</Button>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">{deal.description}</p>
+                  
+                  <div className="flex items-center justify-between">
+                    <Badge className="bg-blue-100 text-blue-800">
+                      {deal.category}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {deal.application_count} applied
+                    </span>
+                  </div>
+
+                  <div className="text-sm text-muted-foreground">
+                    Expires: {deal.expires}
+                  </div>
+
+                  <div className="text-sm">
+                    <strong>Requirements:</strong> {deal.requirements}
+                  </div>
+
+                  <Button 
+                    className="w-full" 
+                    onClick={() => handleApplyForDeal(deal)}
+                  >
+                    Apply for Deal
+                  </Button>
                 </CardContent>
               </Card>
-              <Card className="hover:shadow-lg transition-all duration-300">
-                <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <div className="text-2xl">📊</div>
-                    <div>
-                      <CardTitle className="text-lg">Analytics & Tracking</CardTitle>
-                      <CardDescription>Google Analytics, Mixpanel, Hotjar</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="font-medium mb-2">Premium features</p>
-                  <Badge variant="outline" className="text-xs mb-4">50% Off</Badge>
-                  <Button className="w-full">View Offers</Button>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {/* How It Works */}
-        <section className="py-16 mt-16">
-          <h2 className="text-3xl font-bold text-center mb-12">How to Access Deals</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary">1</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Apply to Inc Combinator</h3>
-              <p className="text-muted-foreground">Join our accelerator program to unlock exclusive partner deals</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary">2</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Browse & Select</h3>
-              <p className="text-muted-foreground">Explore hundreds of deals tailored for startups in your stage</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary">3</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Claim & Save</h3>
-              <p className="text-muted-foreground">Activate deals instantly and start saving thousands on tools</p>
-            </div>
+            ))}
           </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="text-center py-16 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-3xl">
-          <h2 className="text-3xl font-bold mb-4">Ready to Save Thousands?</h2>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join Inc Combinator today and get instant access to our exclusive deal marketplace worth over ₹25 lakhs.
-          </p>
-          <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow mr-4">
-            Apply Now
-          </Button>
-          <Button variant="outline" size="lg">
-            View All Deals
-          </Button>
-        </section>
-
-        {/* Deal Details Dialog */}
-        <Dialog open={!!selectedDeal} onOpenChange={() => setSelectedDeal(null)}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center space-x-3">
-                <span className="text-2xl">{selectedDeal?.logo}</span>
-                <span>{selectedDeal?.title || selectedDeal?.company + ' Deal'}</span>
-              </DialogTitle>
-              <DialogDescription>
-                Exclusive deal for Inc Combinator members
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Company:</span>
-                <span className="font-medium">{selectedDeal?.company}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Offer:</span>
-                <span className="font-medium">{selectedDeal?.offer}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Discount:</span>
-                <Badge variant="secondary">{selectedDeal?.discount}</Badge>
-              </div>
-              <div className="border-t pt-4">
-                <p className="text-sm text-muted-foreground mb-4">
-                  This is an exclusive deal available only to Inc Combinator members. Click claim to activate this offer.
-                </p>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setSelectedDeal(null)}>
-                Cancel
-              </Button>
-              <Button onClick={() => {
-                toast({
-                  title: "Deal Claimed Successfully!",
-                  description: `You have successfully claimed ${selectedDeal?.title || selectedDeal?.company + ' Deal'}`,
-                });
-                setSelectedDeal(null);
-              }}>
-                Claim Deal
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        )}
       </main>
-      <Footer />
     </div>
   );
 };

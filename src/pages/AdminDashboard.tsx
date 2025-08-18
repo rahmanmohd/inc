@@ -1,17 +1,27 @@
+import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
 import AdminOverview from "@/components/dashboard/AdminOverview";
 import StartupManagement from "@/components/dashboard/StartupManagement";
 import ApplicationManagement from "@/components/dashboard/ApplicationManagement";
 import InvestorManagement from "@/components/dashboard/InvestorManagement";
+import adminApiService, { type AdminStats, type StartupData, type InvestorData } from "@/services/adminApiService";
 
 const AdminDashboard = () => {
   const { toast } = useToast();
-  const stats = {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [realStats, setRealStats] = useState<AdminStats | null>(null);
+  const [realStartups, setRealStartups] = useState<StartupData[]>([]);
+  const [realInvestors, setRealInvestors] = useState<InvestorData[]>([]);
+  
+  // Fallback static data
+  const fallbackStats = {
     totalStartups: 1247,
     activeApplications: 89,
     totalInvestors: 156,
@@ -19,23 +29,101 @@ const AdminDashboard = () => {
     monthlyGrowth: 12.5
   };
 
-  const recentApplications = [
+  const fallbackApplications = [
     { id: 1, startup: "AI Healthcare Solutions", founder: "Priya Sharma", stage: "Seed", status: "Under Review", date: "Dec 20, 2024" },
     { id: 2, startup: "GreenTech Innovations", founder: "Rahul Verma", stage: "Pre-Seed", status: "Approved", date: "Dec 19, 2024" },
     { id: 3, startup: "EdTech Platform", founder: "Anita Singh", stage: "Series A", status: "Pending", date: "Dec 18, 2024" }
   ];
 
-  const topStartups = [
+  const fallbackStartups = [
     { id: 1, name: "AI Healthcare Solutions", sector: "HealthTech", valuation: "₹50Cr", growth: "+45%", status: "Series A" },
     { id: 2, name: "GreenTech Innovations", sector: "CleanTech", valuation: "₹30Cr", growth: "+38%", status: "Seed" },
     { id: 3, name: "EdTech Platform", sector: "Education", valuation: "₹25Cr", growth: "+32%", status: "Pre-Seed" }
   ];
 
-  const investors = [
+  const fallbackInvestors = [
     { id: 1, name: "Sequoia Capital India", checkSize: "₹5-50Cr", portfolio: 45, stage: "Series A+", status: "Active" },
     { id: 2, name: "Accel Partners", checkSize: "₹2-25Cr", portfolio: 38, stage: "Seed-Series B", status: "Active" },
     { id: 3, name: "Matrix Partners", checkSize: "₹1-15Cr", portfolio: 52, stage: "Pre-Seed-Series A", status: "Active" }
   ];
+
+  useEffect(() => {
+    fetchData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      console.log('Fetching admin dashboard data...');
+      
+      // Fetch all real-time data in parallel
+      const [statsResponse, startupsResponse, investorsResponse] = await Promise.all([
+        adminApiService.getDashboardStats(),
+        adminApiService.getAllStartups(),
+        adminApiService.getAllInvestors()
+      ]);
+
+      if (statsResponse.success) {
+        setRealStats(statsResponse.data!);
+        console.log('Dashboard stats loaded:', statsResponse.data);
+      }
+
+      if (startupsResponse.success) {
+        setRealStartups(startupsResponse.data!);
+        console.log(`Loaded ${startupsResponse.data!.length} startups`);
+      }
+
+      if (investorsResponse.success) {
+        setRealInvestors(investorsResponse.data!);
+        console.log(`Loaded ${investorsResponse.data!.length} investors`);
+      }
+
+      toast({
+        title: "Data Loaded",
+        description: "Real-time dashboard data loaded successfully",
+      });
+    } catch (error) {
+      console.error('Error fetching admin data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load real-time data. Using fallback data.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading real-time admin dashboard...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Use real data if available, otherwise fall back to static data
+  const stats = realStats || fallbackStats;
+  const startups = realStartups.length > 0 ? realStartups.map(startup => ({
+    id: parseInt(startup.id) || 0,
+    name: startup.name,
+    sector: startup.sector,
+    valuation: startup.valuation,
+    growth: startup.growth,
+    status: startup.status
+  })) : fallbackStartups;
+  
+  const investors = realInvestors.length > 0 ? realInvestors.map(investor => ({
+    id: parseInt(investor.id) || 0,
+    name: investor.name,
+    checkSize: investor.checkSize,
+    portfolio: investor.portfolio,
+    stage: investor.stage,
+    status: investor.status
+  })) : fallbackInvestors;
 
   return (
     <div className="min-h-screen bg-background">
@@ -62,17 +150,17 @@ const AdminDashboard = () => {
           <TabsContent value="overview" className="space-y-6">
             <AdminOverview 
               stats={stats} 
-              recentApplications={recentApplications} 
-              topStartups={topStartups} 
+              recentApplications={fallbackApplications} 
+              topStartups={startups} 
             />
           </TabsContent>
 
           <TabsContent value="startups" className="space-y-6">
-            <StartupManagement startups={topStartups} />
+            <StartupManagement startups={startups} />
           </TabsContent>
 
           <TabsContent value="applications" className="space-y-6">
-            <ApplicationManagement applications={recentApplications} />
+            <ApplicationManagement applications={fallbackApplications} />
           </TabsContent>
 
           <TabsContent value="investors" className="space-y-6">

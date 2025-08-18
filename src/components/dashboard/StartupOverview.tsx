@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { FileText, TrendingUp, DollarSign, Users, Plus } from "lucide-react";
 import CofounderPostDialog from "@/components/CofounderPostDialog";
 import InvestmentApplicationDialog from "@/components/InvestmentApplicationDialog";
+import UpdateApplicationDialog from "@/components/UpdateApplicationDialog";
 import { useNavigate } from "react-router-dom";
 
 interface StartupOverviewProps {
@@ -13,9 +14,24 @@ interface StartupOverviewProps {
     submittedDate: string;
     nextReview: string;
   };
+  dashboardStats: {
+    activeDeals: number;
+    dealsValue: string;
+    investmentApps: number;
+    totalApplied: string;
+    cofounderPosts: number;
+    applicationsReceived: number;
+  };
+  recentActivity: Array<{
+    id: number;
+    type: string;
+    message: string;
+    time: string;
+    color: string;
+  }>;
 }
 
-const StartupOverview = ({ applicationStatus }: StartupOverviewProps) => {
+const StartupOverview = ({ applicationStatus, dashboardStats, recentActivity }: StartupOverviewProps) => {
   const navigate = useNavigate();
 
   return (
@@ -38,8 +54,8 @@ const StartupOverview = ({ applicationStatus }: StartupOverviewProps) => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">3</div>
-            <p className="text-xs text-muted-foreground">Worth ₹2.5L+ in value</p>
+            <div className="text-2xl font-bold text-primary">{dashboardStats.activeDeals}</div>
+            <p className="text-xs text-muted-foreground">Worth {dashboardStats.dealsValue} in value</p>
           </CardContent>
         </Card>
 
@@ -49,8 +65,8 @@ const StartupOverview = ({ applicationStatus }: StartupOverviewProps) => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">3</div>
-            <p className="text-xs text-muted-foreground">₹7.5Cr total applied</p>
+            <div className="text-2xl font-bold text-primary">{dashboardStats.investmentApps}</div>
+            <p className="text-xs text-muted-foreground">{dashboardStats.totalApplied} total applied</p>
           </CardContent>
         </Card>
 
@@ -60,8 +76,8 @@ const StartupOverview = ({ applicationStatus }: StartupOverviewProps) => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">2</div>
-            <p className="text-xs text-muted-foreground">12 applications received</p>
+            <div className="text-2xl font-bold text-primary">{dashboardStats.cofounderPosts}</div>
+            <p className="text-xs text-muted-foreground">{dashboardStats.applicationsReceived} applications received</p>
           </CardContent>
         </Card>
       </div>
@@ -72,27 +88,21 @@ const StartupOverview = ({ applicationStatus }: StartupOverviewProps) => {
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <div className="w-2 h-2 bg-primary rounded-full"></div>
-              <div className="flex-1">
-                <p className="text-sm">Application moved to review stage</p>
-                <p className="text-xs text-muted-foreground">2 hours ago</p>
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity) => (
+                <div key={activity.id} className="flex items-center space-x-4">
+                  <div className={`w-2 h-2 ${activity.color} rounded-full`}></div>
+                  <div className="flex-1">
+                    <p className="text-sm">{activity.message}</p>
+                    <p className="text-xs text-muted-foreground">{activity.time}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-sm text-muted-foreground">No recent activity</p>
               </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-              <div className="flex-1">
-                <p className="text-sm">New co-founder application received</p>
-                <p className="text-xs text-muted-foreground">1 day ago</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <div className="flex-1">
-                <p className="text-sm">AWS credits deal activated</p>
-                <p className="text-xs text-muted-foreground">3 days ago</p>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
@@ -117,10 +127,12 @@ const StartupOverview = ({ applicationStatus }: StartupOverviewProps) => {
               <TrendingUp className="mr-2 h-4 w-4" />
               Browse Active Deals
             </Button>
-            <Button variant="outline" className="w-full justify-start">
-              <FileText className="mr-2 h-4 w-4" />
-              Update Application
-            </Button>
+            <UpdateApplicationDialog>
+              <Button variant="outline" className="w-full justify-start">
+                <FileText className="mr-2 h-4 w-4" />
+                Update Application
+              </Button>
+            </UpdateApplicationDialog>
           </CardContent>
         </Card>
       </div>

@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthUI } from "@/context/AuthUIContext";
+import startupDashboardService from "@/services/startupDashboardService";
+import emailService from "@/services/emailService";
 
 interface InvestmentApplicationDialogProps {
   children: React.ReactNode;
@@ -15,8 +17,9 @@ interface InvestmentApplicationDialogProps {
 
 const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogProps) => {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { openLogin } = useAuthUI();
 
   const [formData, setFormData] = useState({
@@ -33,35 +36,122 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
     financials: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Investment Application Submitted",
-      description: "Your investment application has been submitted successfully.",
-    });
-    setOpen(false);
-    // Reset form
-    setFormData({
-      investor: "",
-      amount: "",
-      stage: "",
-      valuation: "",
-      useOfFunds: "",
-      businessModel: "",
-      revenue: "",
-      traction: "",
-      teamSize: "",
-      pitchDeck: "",
-      financials: ""
-    });
-  };
-
   const handleOpenChange = (next: boolean) => {
     if (next && !isAuthenticated) {
       openLogin();
       return;
     }
     setOpen(next);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate required fields
+    const requiredFields = ['investor', 'amount', 'stage', 'useOfFunds', 'businessModel'];
+    const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (missingFields.length > 0) {
+      toast({
+        title: "Missing Information",
+        description: `Please fill in all required fields: ${missingFields.join(', ')}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check authentication first
+    if (!isAuthenticated || !user?.id) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to submit your application",
+        variant: "destructive"
+      });
+      openLogin();
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Prepare application data for Supabase
+      const applicationData = {
+        applicant_id: user.id,
+        user_id: user.id,
+        investor: formData.investor,
+        amount: formData.amount,
+        stage: formData.stage,
+        valuation: formData.valuation || null,
+        use_of_funds: formData.useOfFunds,
+        business_model: formData.businessModel,
+        revenue: formData.revenue || null,
+        traction: formData.traction || null,
+        team_size: formData.teamSize ? parseInt(formData.teamSize) : null,
+        pitch_deck_url: formData.pitchDeck || null,
+        financials_url: formData.financials || null,
+        status: 'pending'
+      };
+
+      // Submit application using startup dashboard service
+      const response = await startupDashboardService.submitInvestmentApplication(applicationData);
+
+      if (response.success) {
+        // Send confirmation email
+        const emailResponse = await emailService.sendInvestmentApplicationEmail(
+          user.email || 'user@example.com',
+          user.name || 'User',
+          formData
+        );
+
+        if (emailResponse.success) {
+          toast({
+            title: "Investment Application Submitted Successfully! 🚀",
+            description: "Your investment application has been submitted and confirmation email sent. You can submit additional applications anytime. We'll review and get back to you within 7 business days.",
+          });
+        } else {
+          toast({
+            title: "Investment Application Submitted Successfully! 🚀",
+            description: "Your investment application has been submitted. You can submit additional applications anytime. We'll review and get back to you within 7 business days.",
+          });
+        }
+        
+        // Reset form
+        setFormData({
+          investor: "",
+          amount: "",
+          stage: "",
+          valuation: "",
+          useOfFunds: "",
+          businessModel: "",
+          revenue: "",
+          traction: "",
+          teamSize: "",
+          pitchDeck: "",
+          financials: ""
+        });
+        
+        setOpen(false);
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: response.message || "Failed to submit application. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Investment application error:', error);
+      toast({
+        title: "Submission Error",
+        description: "An unexpected error occurred. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -79,8 +169,8 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="investor">Target Investor</Label>
-              <Select value={formData.investor} onValueChange={(value) => setFormData({...formData, investor: value})}>
+              <Label htmlFor="investor">Target Investor *</Label>
+              <Select value={formData.investor} onValueChange={(value) => handleInputChange("investor", value)} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Select investor" />
                 </SelectTrigger>
@@ -95,12 +185,12 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="amount">Funding Amount</Label>
+              <Label htmlFor="amount">Funding Amount *</Label>
               <Input
                 id="amount"
                 placeholder="e.g., ₹2.5 Cr"
                 value={formData.amount}
-                onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                onChange={(e) => handleInputChange("amount", e.target.value)}
                 required
               />
             </div>
@@ -108,8 +198,8 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="stage">Funding Stage</Label>
-              <Select value={formData.stage} onValueChange={(value) => setFormData({...formData, stage: value})}>
+              <Label htmlFor="stage">Funding Stage *</Label>
+              <Select value={formData.stage} onValueChange={(value) => handleInputChange("stage", value)} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Select stage" />
                 </SelectTrigger>
@@ -128,30 +218,30 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
                 id="valuation"
                 placeholder="e.g., ₹10 Cr"
                 value={formData.valuation}
-                onChange={(e) => setFormData({...formData, valuation: e.target.value})}
+                onChange={(e) => handleInputChange("valuation", e.target.value)}
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="useOfFunds">Use of Funds</Label>
+            <Label htmlFor="useOfFunds">Use of Funds *</Label>
             <Textarea
               id="useOfFunds"
               placeholder="Describe how you plan to use the funding..."
               value={formData.useOfFunds}
-              onChange={(e) => setFormData({...formData, useOfFunds: e.target.value})}
+              onChange={(e) => handleInputChange("useOfFunds", e.target.value)}
               className="min-h-[100px]"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="businessModel">Business Model</Label>
+            <Label htmlFor="businessModel">Business Model *</Label>
             <Textarea
               id="businessModel"
               placeholder="Describe your business model and revenue streams..."
               value={formData.businessModel}
-              onChange={(e) => setFormData({...formData, businessModel: e.target.value})}
+              onChange={(e) => handleInputChange("businessModel", e.target.value)}
               className="min-h-[100px]"
               required
             />
@@ -164,7 +254,7 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
                 id="revenue"
                 placeholder="e.g., ₹5 Lakh"
                 value={formData.revenue}
-                onChange={(e) => setFormData({...formData, revenue: e.target.value})}
+                onChange={(e) => handleInputChange("revenue", e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -173,7 +263,7 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
                 id="traction"
                 placeholder="e.g., 10,000 users"
                 value={formData.traction}
-                onChange={(e) => setFormData({...formData, traction: e.target.value})}
+                onChange={(e) => handleInputChange("traction", e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -182,7 +272,7 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
                 id="teamSize"
                 placeholder="e.g., 8 people"
                 value={formData.teamSize}
-                onChange={(e) => setFormData({...formData, teamSize: e.target.value})}
+                onChange={(e) => handleInputChange("teamSize", e.target.value)}
               />
             </div>
           </div>
@@ -194,7 +284,7 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
                 id="pitchDeck"
                 placeholder="https://drive.google.com/..."
                 value={formData.pitchDeck}
-                onChange={(e) => setFormData({...formData, pitchDeck: e.target.value})}
+                onChange={(e) => handleInputChange("pitchDeck", e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -203,16 +293,18 @@ const InvestmentApplicationDialog = ({ children }: InvestmentApplicationDialogPr
                 id="financials"
                 placeholder="https://drive.google.com/..."
                 value={formData.financials}
-                onChange={(e) => setFormData({...formData, financials: e.target.value})}
+                onChange={(e) => handleInputChange("financials", e.target.value)}
               />
             </div>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit">Submit Application</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Submitting..." : "Submit Application"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

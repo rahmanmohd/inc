@@ -6,47 +6,114 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Loader2, Shield, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import type { UserType } from "@/context/AuthContext";
+import { validateAdminCredentials, logAdminAuthEvent, getAdminErrorMessage } from "@/utils/adminUtils";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [userType, setUserType] = useState("");
+  const [loginMode, setLoginMode] = useState<"user" | "admin">("user");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAuthenticated, login, user } = useAuth();
+  const { isAuthenticated, signIn, user } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      navigate(user.userType === "admin" ? "/admin-dashboard" : "/user-dashboard", { replace: true });
+      console.log('Login: User already authenticated', { user });
+      if (user.role === "admin") {
+        navigate("/admin-dashboard", { replace: true });
+      } else {
+        navigate("/user-dashboard", { replace: true });
+      }
     }
   }, [isAuthenticated, user, navigate]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Demo login logic
-    if (email && password && userType) {
+    // Validate credentials format
+    const credentialValidation = validateAdminCredentials(email, password);
+    if (!credentialValidation.isValid) {
       toast({
-        title: "Login Successful",
-        description: "Redirecting...",
-      });
-      
-      // set auth and redirect
-      login({ email, userType: userType as UserType });
-      setTimeout(() => {
-        navigate(userType === "admin" ? "/admin-dashboard" : "/user-dashboard");
-      }, 300);
-    } else {
-      toast({
-        title: "Login Failed",
-        description: "Please fill in all fields",
+        title: "Invalid Input",
+        description: credentialValidation.message,
         variant: "destructive",
       });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      console.log('Login: Starting authentication...', { email, loginMode });
+      
+      // Log admin login attempt
+      if (loginMode === "admin") {
+        logAdminAuthEvent("Admin login attempt", undefined, { email });
+      }
+      
+      const response = await signIn(email, password);
+      
+      if (response.success && response.user) {
+        console.log('Login: Authentication successful', { user: response.user });
+        
+        // Validate admin access for admin login mode
+        if (loginMode === "admin" && response.user.role !== "admin") {
+          logAdminAuthEvent("Admin access denied", response.user, { attemptedEmail: email });
+          toast({
+            title: "Admin Access Denied",
+            description: "This account does not have admin privileges. Please use regular user login.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        // Log successful admin login
+        if (loginMode === "admin" && response.user.role === "admin") {
+          logAdminAuthEvent("Admin login successful", response.user);
+        }
+        
+        toast({
+          title: "Login Successful",
+          description: loginMode === "admin" ? "Welcome, Admin!" : "Welcome back!",
+        });
+        
+        // Navigate based on user role and login mode
+        setTimeout(() => {
+          if (response.user.role === "admin") {
+            navigate("/admin-dashboard", { replace: true });
+          } else {
+            navigate("/user-dashboard", { replace: true });
+          }
+        }, 500);
+      } else {
+        console.error('Login: Authentication failed', response);
+        
+        // Use admin-specific error messages for admin login
+        const errorMessage = loginMode === "admin" 
+          ? getAdminErrorMessage(response.message || "Invalid credentials")
+          : response.message || "Invalid credentials";
+        
+        toast({
+          title: "Login Failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Login: Unexpected error', error);
+      toast({
+        title: "Login Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -65,32 +132,49 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="userType">User Type</Label>
-              <Select value={userType} onValueChange={setUserType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select user type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="startup">Startup</SelectItem>
-                  <SelectItem value="investor">Investor</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
-                  <SelectItem value="mentor">Mentor</SelectItem>
-                </SelectContent>
-              </Select>
+          {/* Login Mode Toggle */}
+          <div className="mb-6">
+            <div className="flex bg-muted rounded-lg p-1">
+              <button
+                type="button"
+                onClick={() => setLoginMode("user")}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center space-x-2 ${
+                  loginMode === "user"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                disabled={isLoading}
+              >
+                <User className="h-4 w-4" />
+                <span>User Login</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setLoginMode("admin")}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center space-x-2 ${
+                  loginMode === "admin"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                disabled={isLoading}
+              >
+                <Shield className="h-4 w-4" />
+                <span>Admin Login</span>
+              </button>
             </div>
-            
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder={loginMode === "admin" ? "Enter admin email" : "Enter your email"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             
@@ -104,6 +188,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
                 <Button
                   type="button"
@@ -111,6 +196,7 @@ const Login = () => {
                   size="sm"
                   className="absolute right-2 top-1/2 -translate-y-1/2"
                   onClick={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
@@ -119,7 +205,7 @@ const Login = () => {
             
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <input type="checkbox" id="remember" className="rounded" />
+                <input type="checkbox" id="remember" className="rounded" disabled={isLoading} />
                 <Label htmlFor="remember" className="text-sm">Remember me</Label>
               </div>
               <Link to="/forgot-password" className="text-sm text-primary hover:underline">
@@ -127,19 +213,35 @@ const Login = () => {
               </Link>
             </div>
             
-            <Button type="submit" className="w-full" variant="hero">
-              Sign In
+            <Button type="submit" className="w-full" variant="hero" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                loginMode === "admin" ? "Admin Sign In" : "Sign In"
+              )}
             </Button>
           </form>
           
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Link to="/register" className="text-primary hover:underline">
-                Sign up
-              </Link>
-            </p>
-          </div>
+          {loginMode === "user" && (
+            <div className="mt-6 text-center">
+              <p className="text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <Link to="/register" className="text-primary hover:underline">
+                  Sign up
+                </Link>
+              </p>
+            </div>
+          )}
+          {loginMode === "admin" && (
+            <div className="mt-6 text-center">
+              <p className="text-sm text-muted-foreground">
+                Admin access only. Contact system administrator for credentials.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

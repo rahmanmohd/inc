@@ -1,15 +1,9 @@
-
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Plus, Eye, Edit, Trash2, Users, TrendingUp, Building } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Eye, Edit, Trash2, Search, Filter, Plus, ChevronUp, Building2 } from "lucide-react";
 import { useState } from "react";
 
 interface StartupManagementProps {
@@ -18,301 +12,203 @@ interface StartupManagementProps {
     name: string;
     sector: string;
     valuation: string;
+    growth: string;
     status: string;
   }>;
 }
 
 const StartupManagement = ({ startups }: StartupManagementProps) => {
-  const { toast } = useToast();
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedStartup, setSelectedStartup] = useState<any>(null);
-  const [newStartup, setNewStartup] = useState({
-    name: "",
-    founder: "",
-    sector: "",
-    stage: "",
-    valuation: "",
-    description: "",
-    location: "",
-    teamSize: "",
-    status: "Active"
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sectorFilter, setSectorFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredStartups = startups.filter(startup => {
+    const matchesSearch = startup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         startup.sector.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSector = sectorFilter === "all" || startup.sector === sectorFilter;
+    const matchesStatus = statusFilter === "all" || startup.status === statusFilter;
+    
+    return matchesSearch && matchesSector && matchesStatus;
   });
 
-  const handleAddStartup = () => {
-    toast({
-      title: "Startup Added",
-      description: `${newStartup.name} has been added to the portfolio.`,
-    });
-    setAddDialogOpen(false);
-    setNewStartup({
-      name: "",
-      founder: "",
-      sector: "",
-      stage: "",
-      valuation: "",
-      description: "",
-      location: "",
-      teamSize: "",
-      status: "Active"
-    });
-  };
-
-  const handleEditStartup = () => {
-    toast({
-      title: "Startup Updated",
-      description: `${selectedStartup?.name} information has been updated.`,
-    });
-    setEditDialogOpen(false);
-    setSelectedStartup(null);
-  };
-
-  const handleViewStartup = (startup: any) => {
-    toast({
-      title: "Startup Details",
-      description: `Viewing detailed information for ${startup.name}`,
-    });
+  const getStatusBadge = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'series a':
+        return <Badge className="bg-green-500 text-white hover:bg-green-600">Series A</Badge>;
+      case 'seed':
+        return <Badge className="bg-blue-500 text-white hover:bg-blue-600">Seed</Badge>;
+      case 'pre-seed':
+        return <Badge className="bg-purple-500 text-white hover:bg-purple-600">Pre-Seed</Badge>;
+      case 'series b':
+        return <Badge className="bg-orange-500 text-white hover:bg-orange-600">Series B</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
   };
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Startup Portfolio Management</h2>
-          <p className="text-muted-foreground">Manage and track your portfolio companies</p>
+          <h2 className="text-2xl font-bold">Startup Management</h2>
+          <p className="text-muted-foreground">Manage and oversee all registered startups</p>
         </div>
-        <div className="flex space-x-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search startups..." className="pl-10" />
-          </div>
-          <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Startup
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Add New Startup</DialogTitle>
-                <DialogDescription>
-                  Add a new startup to your portfolio management system.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="startupName">Startup Name *</Label>
-                  <Input
-                    id="startupName"
-                    value={newStartup.name}
-                    onChange={(e) => setNewStartup({...newStartup, name: e.target.value})}
-                    placeholder="Enter startup name"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="founderName">Founder Name *</Label>
-                  <Input
-                    id="founderName"
-                    value={newStartup.founder}
-                    onChange={(e) => setNewStartup({...newStartup, founder: e.target.value})}
-                    placeholder="Enter founder name"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sector">Sector *</Label>
-                  <Select value={newStartup.sector} onValueChange={(value) => setNewStartup({...newStartup, sector: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select sector" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="fintech">FinTech</SelectItem>
-                      <SelectItem value="healthtech">HealthTech</SelectItem>
-                      <SelectItem value="edtech">EdTech</SelectItem>
-                      <SelectItem value="ecommerce">E-commerce</SelectItem>
-                      <SelectItem value="saas">SaaS</SelectItem>
-                      <SelectItem value="cleantech">CleanTech</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="stage">Stage *</Label>
-                  <Select value={newStartup.stage} onValueChange={(value) => setNewStartup({...newStartup, stage: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select stage" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="idea">Idea</SelectItem>
-                      <SelectItem value="mvp">MVP</SelectItem>
-                      <SelectItem value="pre-seed">Pre-Seed</SelectItem>
-                      <SelectItem value="seed">Seed</SelectItem>
-                      <SelectItem value="series-a">Series A</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="valuation">Valuation</Label>
-                  <Input
-                    id="valuation"
-                    value={newStartup.valuation}
-                    onChange={(e) => setNewStartup({...newStartup, valuation: e.target.value})}
-                    placeholder="e.g., ₹5Cr"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={newStartup.location}
-                    onChange={(e) => setNewStartup({...newStartup, location: e.target.value})}
-                    placeholder="e.g., Bangalore"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={newStartup.description}
-                  onChange={(e) => setNewStartup({...newStartup, description: e.target.value})}
-                  placeholder="Brief description of the startup..."
-                />
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleAddStartup}>
-                  Add Startup
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Add New Startup
+        </Button>
       </div>
 
-      {/* Quick Stats */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="pt-6 text-center">
-            <Building className="h-8 w-8 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold">{startups.length}</div>
-            <p className="text-sm text-muted-foreground">Total Startups</p>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm font-medium">Total Startups</p>
+                <p className="text-2xl font-bold">1,247</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6 text-center">
-            <TrendingUp className="h-8 w-8 text-green-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold">₹127Cr</div>
-            <p className="text-sm text-muted-foreground">Total Valuation</p>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <ChevronUp className="h-5 w-5 text-green-500" />
+              <div>
+                <p className="text-sm font-medium">Active</p>
+                <p className="text-2xl font-bold text-green-600">892</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6 text-center">
-            <Users className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold">85%</div>
-            <p className="text-sm text-muted-foreground">Active Rate</p>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Filter className="h-5 w-5 text-blue-500" />
+              <div>
+                <p className="text-sm font-medium">Funded</p>
+                <p className="text-2xl font-bold text-blue-600">234</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6 text-center">
-            <TrendingUp className="h-8 w-8 text-orange-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-sm text-muted-foreground">This Month</p>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Eye className="h-5 w-5 text-purple-500" />
+              <div>
+                <p className="text-sm font-medium">Unicorns</p>
+                <p className="text-2xl font-bold text-purple-600">12</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
 
+      {/* Filters */}
       <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Startup Name</TableHead>
-                <TableHead>Founder</TableHead>
-                <TableHead>Sector</TableHead>
-                <TableHead>Stage</TableHead>
-                <TableHead>Valuation</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {startups.map((startup) => (
-                <TableRow key={startup.id}>
-                  <TableCell className="font-medium">{startup.name}</TableCell>
-                  <TableCell>John Doe</TableCell>
-                  <TableCell>{startup.sector}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{startup.status}</Badge>
-                  </TableCell>
-                  <TableCell>{startup.valuation}</TableCell>
-                  <TableCell>
-                    <Badge variant="default">Active</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => handleViewStartup(startup)}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" onClick={() => setSelectedStartup(startup)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Edit Startup</DialogTitle>
-                            <DialogDescription>
-                              Update startup information and status.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div className="space-y-2">
-                              <Label>Status</Label>
-                              <Select defaultValue="active">
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="active">Active</SelectItem>
-                                  <SelectItem value="graduated">Graduated</SelectItem>
-                                  <SelectItem value="paused">Paused</SelectItem>
-                                  <SelectItem value="closed">Closed</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Notes</Label>
-                              <Textarea placeholder="Add notes about this startup..." />
-                            </div>
+        <CardHeader>
+          <CardTitle>Startup Directory</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search startups..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <Select value={sectorFilter} onValueChange={setSectorFilter}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Filter by sector" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sectors</SelectItem>
+                <SelectItem value="HealthTech">HealthTech</SelectItem>
+                <SelectItem value="CleanTech">CleanTech</SelectItem>
+                <SelectItem value="Education">Education</SelectItem>
+                <SelectItem value="FinTech">FinTech</SelectItem>
+                <SelectItem value="E-commerce">E-commerce</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="Pre-Seed">Pre-Seed</SelectItem>
+                <SelectItem value="Seed">Seed</SelectItem>
+                <SelectItem value="Series A">Series A</SelectItem>
+                <SelectItem value="Series B">Series B</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Startup List */}
+          <div className="space-y-4">
+            {filteredStartups.length === 0 ? (
+              <div className="text-center py-8">
+                <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No startups found</h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your search or filters
+                </p>
+              </div>
+            ) : (
+              filteredStartups.map((startup) => (
+                <Card key={startup.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="font-semibold text-lg">{startup.name}</h3>
+                          {getStatusBadge(startup.status)}
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
+                          <div>
+                            <span className="font-medium">Sector:</span> {startup.sector}
                           </div>
-                          <DialogFooter>
-                            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
-                              Cancel
-                            </Button>
-                            <Button onClick={handleEditStartup}>
-                              Update
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                      <Button variant="outline" size="sm" onClick={() => {
-                        toast({
-                          title: "Startup Archived",
-                          description: "Startup has been moved to archived status.",
-                          variant: "destructive"
-                        });
-                      }}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                          <div>
+                            <span className="font-medium">Valuation:</span> {startup.valuation}
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <span className="font-medium">Growth:</span> 
+                            <span className="text-green-600 flex items-center">
+                              <ChevronUp className="h-4 w-4" />
+                              {startup.growth}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          Remove
+                        </Button>
+                      </div>
                     </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

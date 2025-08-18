@@ -6,13 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Trophy, Users, Code, Zap, Target } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import hackathonService from "@/services/hackathonService";
+import { useToast } from "@/hooks/use-toast";
 
 const Hackathon = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [hackathons, setHackathons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const upcomingHackathons = [
     {
-      id: 1,
+      id: "1",
       title: "AI Innovation Challenge 2025",
       date: "Feb 15-17, 2025",
       location: "Bangalore, India",
@@ -24,7 +30,7 @@ const Hackathon = () => {
       registrationDeadline: "Feb 10, 2025"
     },
     {
-      id: 2,
+      id: "2",
       title: "FinTech Revolution Hackathon",
       date: "Mar 22-24, 2025",
       location: "Mumbai, India",
@@ -36,7 +42,7 @@ const Hackathon = () => {
       registrationDeadline: "Mar 15, 2025"
     },
     {
-      id: 3,
+      id: "3",
       title: "Green Tech Challenge",
       date: "Apr 5-7, 2025",
       location: "Hyderabad, India",
@@ -48,6 +54,34 @@ const Hackathon = () => {
       registrationDeadline: "Mar 30, 2025"
     }
   ];
+
+  // Fetch hackathons from Supabase
+  useEffect(() => {
+    const fetchHackathons = async () => {
+      try {
+        const response = await hackathonService.getHackathons();
+        if (response.success && response.data) {
+          setHackathons(response.data);
+        } else {
+          // Fallback to static data if API fails
+          setHackathons(upcomingHackathons);
+        }
+      } catch (error) {
+        console.error('Error fetching hackathons:', error);
+        // Fallback to static data
+        setHackathons(upcomingHackathons);
+        toast({
+          title: "Warning",
+          description: "Using cached hackathon data. Some features may be limited.",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHackathons();
+  }, [toast]);
 
   const tracks = [
     {
@@ -140,7 +174,10 @@ const Hackathon = () => {
             Join India's most exciting hackathons where innovation meets opportunity. Code, compete, and create solutions that matter.
           </p>
           <div className="flex justify-center space-x-4">
-            <HackathonRegistrationForm>
+            <HackathonRegistrationForm 
+              hackathonId="1" 
+              hackathonTitle="AI Innovation Challenge 2025"
+            >
               <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
                 Register for Next Hackathon
               </Button>
@@ -199,7 +236,7 @@ const Hackathon = () => {
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-center mb-8">Upcoming Hackathons</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {upcomingHackathons.map((hackathon) => (
+            {hackathons.map((hackathon) => (
               <Card key={hackathon.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -241,7 +278,10 @@ const Hackathon = () => {
 
                   <div className="pt-4 space-y-2">
                     {hackathon.status === "Registration Open" ? (
-                      <HackathonRegistrationForm>
+                      <HackathonRegistrationForm 
+                        hackathonId={hackathon.id} 
+                        hackathonTitle={hackathon.title}
+                      >
                         <Button className="w-full">
                           Register Now
                         </Button>
@@ -355,7 +395,10 @@ const Hackathon = () => {
             Register now and be part of India's premier hackathon experience.
           </p>
           <div className="flex justify-center space-x-4">
-            <HackathonRegistrationForm>
+            <HackathonRegistrationForm 
+              hackathonId="1" 
+              hackathonTitle="AI Innovation Challenge 2025"
+            >
               <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
                 Register Now
               </Button>

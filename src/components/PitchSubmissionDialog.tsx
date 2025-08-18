@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthUI } from "@/context/AuthUIContext";
+import apiService from "@/services/apiService";
 
 interface PitchSubmissionDialogProps {
   children: React.ReactNode;
@@ -16,9 +17,11 @@ interface PitchSubmissionDialogProps {
 
 const PitchSubmissionDialog = ({ children }: PitchSubmissionDialogProps) => {
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { openLogin } = useAuthUI();
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
   const [formData, setFormData] = useState({
     startupName: "",
     founderName: "",
@@ -38,36 +41,98 @@ const PitchSubmissionDialog = ({ children }: PitchSubmissionDialogProps) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Pitch submission:", formData);
-    toast({
-      title: "Pitch Submitted Successfully!",
-      description: "We'll review your pitch within 48 hours and connect you with relevant investors.",
-    });
-    setIsOpen(false);
-    setFormData({
-      startupName: "",
-      founderName: "",
-      email: "",
-      phone: "",
-      stage: "",
-      sector: "",
-      fundingRequired: "",
-      monthlyRevenue: "",
-      teamSize: "",
-      location: "",
-      description: "",
-      useOfFunds: ""
-    });
-  };
-
   const handleOpenChange = (next: boolean) => {
     if (next && !isAuthenticated) {
       openLogin();
       return;
     }
     setIsOpen(next);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate required fields
+    const requiredFields = ['startupName', 'founderName', 'email', 'stage', 'sector', 'fundingRequired', 'description', 'useOfFunds'];
+    const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (missingFields.length > 0) {
+      toast({
+        title: "Missing Information",
+        description: `Please fill in all required fields: ${missingFields.join(', ')}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Prepare investment application data for Supabase (treating pitch as investment application)
+      const applicationData = {
+        user_id: user?.id || '',
+        target_investor: 'pitch-submission', // Special identifier for pitch submissions
+        funding_amount: formData.fundingRequired,
+        funding_stage: formData.stage,
+        current_valuation: null,
+        use_of_funds: formData.useOfFunds,
+        business_model: formData.description, // Using description as business model
+        monthly_revenue: formData.monthlyRevenue || null,
+        user_traction: null,
+        team_size: formData.teamSize || null,
+        pitch_deck_url: null,
+        financial_statements_url: null,
+        status: 'pending' as const,
+        // Additional pitch-specific fields (these might need to be added to the database schema)
+        startup_name: formData.startupName,
+        founder_name: formData.founderName,
+        sector: formData.sector,
+        location: formData.location || null
+      };
+
+      // Submit application using API service
+      const response = await apiService.submitInvestmentApplication(applicationData);
+
+      if (response.success) {
+        toast({
+          title: "Pitch Submitted Successfully! 🚀",
+          description: "We'll review your pitch within 48 hours and connect you with relevant investors.",
+        });
+        
+        // Reset form
+        setFormData({
+          startupName: "",
+          founderName: "",
+          email: "",
+          phone: "",
+          stage: "",
+          sector: "",
+          fundingRequired: "",
+          monthlyRevenue: "",
+          teamSize: "",
+          location: "",
+          description: "",
+          useOfFunds: ""
+        });
+        
+        setIsOpen(false);
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: response.message || "Failed to submit pitch. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Pitch submission error:', error);
+      toast({
+        title: "Submission Error",
+        description: "An unexpected error occurred. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -127,7 +192,7 @@ const PitchSubmissionDialog = ({ children }: PitchSubmissionDialogProps) => {
               </div>
               <div>
                 <Label htmlFor="stage">Current Stage *</Label>
-                <Select onValueChange={(value) => handleInputChange("stage", value)}>
+                <Select value={formData.stage} onValueChange={(value) => handleInputChange("stage", value)} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select stage" />
                   </SelectTrigger>
@@ -142,7 +207,7 @@ const PitchSubmissionDialog = ({ children }: PitchSubmissionDialogProps) => {
               </div>
               <div>
                 <Label htmlFor="sector">Industry Sector *</Label>
-                <Select onValueChange={(value) => handleInputChange("sector", value)}>
+                <Select value={formData.sector} onValueChange={(value) => handleInputChange("sector", value)} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select sector" />
                   </SelectTrigger>
@@ -179,7 +244,7 @@ const PitchSubmissionDialog = ({ children }: PitchSubmissionDialogProps) => {
               </div>
               <div>
                 <Label htmlFor="teamSize">Team Size</Label>
-                <Select onValueChange={(value) => handleInputChange("teamSize", value)}>
+                <Select value={formData.teamSize} onValueChange={(value) => handleInputChange("teamSize", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select team size" />
                   </SelectTrigger>
@@ -194,7 +259,7 @@ const PitchSubmissionDialog = ({ children }: PitchSubmissionDialogProps) => {
               </div>
               <div>
                 <Label htmlFor="location">Location</Label>
-                <Select onValueChange={(value) => handleInputChange("location", value)}>
+                <Select value={formData.location} onValueChange={(value) => handleInputChange("location", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select location" />
                   </SelectTrigger>
@@ -233,11 +298,11 @@ const PitchSubmissionDialog = ({ children }: PitchSubmissionDialogProps) => {
             />
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setIsOpen(false)} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-gradient-to-r from-primary to-orange-400">
-              Submit Pitch
+            <Button type="submit" className="bg-gradient-to-r from-primary to-orange-400" disabled={isLoading}>
+              {isLoading ? "Submitting..." : "Submit Pitch"}
             </Button>
           </DialogFooter>
         </form>

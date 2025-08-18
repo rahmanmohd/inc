@@ -2,16 +2,19 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Loader2 } from "lucide-react";
 import ApplicationDialog from "./ApplicationDialog";
 import AuthButton from "./AuthButton";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthUI } from "@/context/AuthUIContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
   const { openLogin } = useAuthUI();
+  const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -22,9 +25,46 @@ const Navigation = () => {
     { name: "INC Lab", href: "/inclab" },
   ];
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    if (isLoggingOut) return; // Prevent multiple logout attempts
+    
+    try {
+      setIsLoggingOut(true);
+      console.log('Navigation: Starting logout...');
+      
+      // Call the logout function
+      const result = await logout();
+      
+      if (result?.success) {
+        console.log('Navigation: Logout successful, redirecting...');
+        toast({
+          title: "Logged out successfully",
+          description: "You have been logged out of your account",
+        });
+        // Navigate to home page after successful logout
+        navigate("/", { replace: true });
+      } else {
+        console.error('Navigation: Logout failed:', result?.message);
+        toast({
+          title: "Logout failed",
+          description: result?.message || "There was an issue logging you out",
+          variant: "destructive",
+        });
+        // Even if logout fails, redirect to home
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      console.error('Navigation: Logout error:', error);
+      toast({
+        title: "Logout error",
+        description: "An unexpected error occurred during logout",
+        variant: "destructive",
+      });
+      // Always redirect to home even if there's an error
+      navigate("/", { replace: true });
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const handleNavClick = (href: string) => {
@@ -75,8 +115,9 @@ const Navigation = () => {
             </ApplicationDialog>
             <AuthButton
               isAuthenticated={isAuthenticated}
-              userType={user?.userType || "user"}
+              userType={user?.role || "user"}
               onLogout={handleLogout}
+              isLoggingOut={isLoggingOut}
             />
           </div>
 
@@ -112,8 +153,9 @@ const Navigation = () => {
               </ApplicationDialog>
               <AuthButton
                 isAuthenticated={isAuthenticated}
-                userType={user?.userType || "user"}
+                userType={user?.role || "user"}
                 onLogout={handleLogout}
+                isLoggingOut={isLoggingOut}
               />
             </div>
           </div>

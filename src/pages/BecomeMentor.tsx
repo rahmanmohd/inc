@@ -11,10 +11,31 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Users, Target, Award, Calendar, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthUI } from "@/context/AuthUIContext";
+import apiService from "@/services/apiService";
+import emailService from "@/services/emailService";
 
 const BecomeMentor = () => {
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
+  const { openLogin } = useAuthUI();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    currentPosition: "",
+    company: "",
+    yearsOfExperience: "",
+    areaOfExpertise: "",
+    linkedinProfile: "",
+    whyMentor: "",
+    industryExperience: "",
+    timeCommitment: ""
+  });
 
   const mentorBenefits = [
     {
@@ -52,19 +73,128 @@ const BecomeMentor = () => {
     "Industry Specific Knowledge"
   ];
 
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isAuthenticated) {
+      openLogin();
+      return;
+    }
+
+    // Check authentication first
+    if (!user?.id) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to submit your application",
+        variant: "destructive"
+      });
+      openLogin();
+      return;
+    }
+    
+    // Validate required fields
+    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'currentPosition', 'company', 'yearsOfExperience', 'areaOfExpertise', 'linkedinProfile', 'whyMentor'];
+    const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (missingFields.length > 0) {
+      toast({
+        title: "Missing Information",
+        description: `Please fill in all required fields: ${missingFields.join(', ')}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    toast({
-      title: "Application Submitted!",
-      description: "Thank you for your interest in becoming a mentor. We'll review your application and get back to you within 5 business days.",
-    });
-    
-    setIsSubmitting(false);
+
+    try {
+      // Ensure user profile exists
+      const profileResponse = await apiService.ensureUserProfile(user.id, formData.email);
+      if (!profileResponse.success) {
+        throw new Error('Failed to create user profile. Please try again.');
+      }
+
+      // Prepare application data for Supabase
+      const applicationData = {
+        user_id: user.id,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        position: formData.currentPosition,
+        current_position: formData.currentPosition,
+        company: formData.company,
+        years_experience: formData.yearsOfExperience,
+        years_of_experience: formData.yearsOfExperience,
+        area_of_expertise: formData.areaOfExpertise,
+        linkedin: formData.linkedinProfile,
+        linkedin_profile: formData.linkedinProfile,
+        motivation: formData.whyMentor,
+        why_mentor: formData.whyMentor,
+        industry_experience: formData.industryExperience || null,
+        time_commitment: formData.timeCommitment || null,
+        status: 'pending'
+      };
+
+      // Submit application using API service
+      const response = await apiService.submitMentorApplication(applicationData);
+
+      if (response.success) {
+        // Send confirmation email
+        const emailResponse = await emailService.sendMentorApplicationEmail(
+          formData.email,
+          `${formData.firstName} ${formData.lastName}`,
+          formData
+        );
+
+        if (emailResponse.success) {
+          toast({
+            title: "Application Submitted Successfully! 🚀",
+            description: "Thank you for your interest in becoming a mentor. Your application has been submitted and confirmation email sent. You can submit additional applications anytime. We'll review and get back to you within 5 business days.",
+          });
+        } else {
+          toast({
+            title: "Application Submitted Successfully! 🚀",
+            description: "Thank you for your interest in becoming a mentor. Your application has been submitted. You can submit additional applications anytime. We'll review and get back to you within 5 business days.",
+          });
+        }
+        
+        // Reset form
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          currentPosition: "",
+          company: "",
+          yearsOfExperience: "",
+          areaOfExpertise: "",
+          linkedinProfile: "",
+          whyMentor: "",
+          industryExperience: "",
+          timeCommitment: ""
+        });
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: response.message || "Failed to submit application. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Mentor application error:', error);
+      toast({
+        title: "Submission Error",
+        description: "An unexpected error occurred. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -99,50 +229,60 @@ const BecomeMentor = () => {
               <h2 className="text-3xl font-bold mb-6">Why Become a Mentor?</h2>
               <div className="space-y-6">
                 {mentorBenefits.map((benefit, index) => (
-                  <Card key={index} className="hover:shadow-md transition-all duration-300">
-                    <CardHeader>
-                      <div className="flex items-center space-x-3">
-                        {benefit.icon}
-                        <CardTitle className="text-lg">{benefit.title}</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
-                    </CardContent>
-                  </Card>
+                  <div key={index} className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                      {benefit.icon}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2">{benefit.title}</h3>
+                      <p className="text-muted-foreground">{benefit.description}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
 
-            {/* Mentor Requirements */}
+            {/* Requirements */}
             <Card className="bg-card-gradient border-border">
               <CardHeader>
-                <CardTitle>Mentor Requirements</CardTitle>
-                <CardDescription>What we look for in our mentors</CardDescription>
+                <CardTitle className="flex items-center space-x-2">
+                  <CheckCircle className="h-5 w-5 text-primary" />
+                  <span>Mentor Requirements</span>
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {[
-                    "5+ years of industry experience",
-                    "Leadership or senior management role",
-                    "Track record of business success",
-                    "Passion for helping entrepreneurs",
-                    "Available for 2-4 hours per month",
-                    "Strong communication skills"
-                  ].map((requirement, index) => (
-                    <div key={index} className="flex items-start space-x-2">
-                      <CheckCircle className="h-4 w-4 text-primary mt-0.5" />
-                      <span className="text-sm">{requirement}</span>
-                    </div>
-                  ))}
-                </div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start space-x-2">
+                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Minimum 5+ years of professional experience</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Proven track record in your domain</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Strong communication and leadership skills</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Commitment to helping entrepreneurs succeed</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Availability for regular mentoring sessions</span>
+                  </li>
+                </ul>
               </CardContent>
             </Card>
 
             {/* Testimonials */}
-            <Card className="bg-gradient-to-r from-primary/5 to-orange-400/5 border-border">
+            <Card className="bg-card-gradient border-border">
               <CardHeader>
-                <CardTitle>What Our Mentors Say</CardTitle>
+                <CardTitle className="flex items-center space-x-2">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                  <span>What Our Mentors Say</span>
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -177,37 +317,69 @@ const BecomeMentor = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium mb-2 block">First Name*</label>
-                      <Input placeholder="Enter your first name" required />
+                      <Input 
+                        placeholder="Enter your first name" 
+                        value={formData.firstName}
+                        onChange={(e) => handleInputChange("firstName", e.target.value)}
+                        required 
+                      />
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block">Last Name*</label>
-                      <Input placeholder="Enter your last name" required />
+                      <Input 
+                        placeholder="Enter your last name" 
+                        value={formData.lastName}
+                        onChange={(e) => handleInputChange("lastName", e.target.value)}
+                        required 
+                      />
                     </div>
                   </div>
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">Email*</label>
-                    <Input type="email" placeholder="your.email@company.com" required />
+                    <Input 
+                      type="email" 
+                      placeholder="your.email@company.com" 
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      required 
+                    />
                   </div>
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">Phone*</label>
-                    <Input type="tel" placeholder="+91 9876543210" required />
+                    <Input 
+                      type="tel" 
+                      placeholder="+91 9876543210" 
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange("phone", e.target.value)}
+                      required 
+                    />
                   </div>
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">Current Position*</label>
-                    <Input placeholder="e.g., VP Engineering at TechCorp" required />
+                    <Input 
+                      placeholder="e.g., VP Engineering at TechCorp" 
+                      value={formData.currentPosition}
+                      onChange={(e) => handleInputChange("currentPosition", e.target.value)}
+                      required 
+                    />
                   </div>
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">Company*</label>
-                    <Input placeholder="Your current company" required />
+                    <Input 
+                      placeholder="Your current company" 
+                      value={formData.company}
+                      onChange={(e) => handleInputChange("company", e.target.value)}
+                      required 
+                    />
                   </div>
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">Years of Experience*</label>
-                    <Select required>
+                    <Select value={formData.yearsOfExperience} onValueChange={(value) => handleInputChange("yearsOfExperience", value)} required>
                       <SelectTrigger>
                         <SelectValue placeholder="Select experience range" />
                       </SelectTrigger>
@@ -222,7 +394,7 @@ const BecomeMentor = () => {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">Area of Expertise*</label>
-                    <Select required>
+                    <Select value={formData.areaOfExpertise} onValueChange={(value) => handleInputChange("areaOfExpertise", value)} required>
                       <SelectTrigger>
                         <SelectValue placeholder="Select your primary expertise" />
                       </SelectTrigger>
@@ -238,7 +410,12 @@ const BecomeMentor = () => {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">LinkedIn Profile*</label>
-                    <Input placeholder="https://linkedin.com/in/yourprofile" required />
+                    <Input 
+                      placeholder="https://linkedin.com/in/yourprofile" 
+                      value={formData.linkedinProfile}
+                      onChange={(e) => handleInputChange("linkedinProfile", e.target.value)}
+                      required 
+                    />
                   </div>
 
                   <div>
@@ -246,6 +423,8 @@ const BecomeMentor = () => {
                     <Textarea 
                       placeholder="Tell us about your motivation to mentor startups..." 
                       className="min-h-[100px]"
+                      value={formData.whyMentor}
+                      onChange={(e) => handleInputChange("whyMentor", e.target.value)}
                       required 
                     />
                   </div>
@@ -255,12 +434,14 @@ const BecomeMentor = () => {
                     <Textarea 
                       placeholder="Describe your industry experience and notable achievements..." 
                       className="min-h-[100px]"
+                      value={formData.industryExperience}
+                      onChange={(e) => handleInputChange("industryExperience", e.target.value)}
                     />
                   </div>
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">Time Commitment</label>
-                    <Select>
+                    <Select value={formData.timeCommitment} onValueChange={(value) => handleInputChange("timeCommitment", value)}>
                       <SelectTrigger>
                         <SelectValue placeholder="How much time can you commit monthly?" />
                       </SelectTrigger>

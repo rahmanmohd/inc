@@ -6,12 +6,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import RequireAuth from "@/routes/RequireAuth";
+import RequireAdmin from "@/routes/RequireAdmin";
 import { AuthUIProvider } from "@/context/AuthUIContext";
 import LoginDialog from "@/components/LoginDialog";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
+import AuthTest from "./pages/AuthTest";
 import Hackathon from "./pages/Hackathon";
 import HackathonDetail from "./pages/HackathonDetail";
 import Incubation from "./pages/Incubation";
@@ -51,6 +53,8 @@ import CloudCredits from "./pages/CloudCredits";
 import GrantsFunding from "./pages/GrantsFunding";
 import UserDashboard from "./pages/UserDashboard";
 import CofounderDashboard from "./pages/CofounderDashboard";
+import HackathonTest from "@/components/HackathonTest";
+import EmailTest from "@/components/EmailTest";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +73,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/auth-test" element={<AuthTest />} />
 
             {/* Protected routes */}
             <Route path="/hackathon" element={<RequireAuth><Hackathon /></RequireAuth>} />
@@ -82,7 +87,7 @@ const App = () => (
             <Route path="/about" element={<RequireAuth><AboutUs /></RequireAuth>} />
             <Route path="/contact" element={<RequireAuth><Contact /></RequireAuth>} />
             <Route path="/startup-dashboard" element={<RequireAuth><StartupDashboard /></RequireAuth>} />
-            <Route path="/admin-dashboard" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
+            <Route path="/admin-dashboard" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
             <Route path="/investor-dashboard" element={<RequireAuth><InvestorDashboard /></RequireAuth>} />
             <Route path="/mentor-dashboard" element={<RequireAuth><MentorDashboard /></RequireAuth>} />
             <Route path="/user-dashboard" element={<RequireAuth><UserDashboard /></RequireAuth>} />
@@ -110,11 +115,13 @@ const App = () => (
             <Route path="/past-events" element={<RequireAuth><PastEvents /></RequireAuth>} />
             <Route path="/cloud-credits" element={<RequireAuth><CloudCredits /></RequireAuth>} />
             <Route path="/grants-funding" element={<RequireAuth><GrantsFunding /></RequireAuth>} />
+            <Route path="/hackathon-test" element={<RequireAuth><HackathonTest /></RequireAuth>} />
+            <Route path="/email-test" element={<RequireAuth><EmailTest /></RequireAuth>} />
 
-            {/* Catch-all */}
+            {/* 404 route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
+          </BrowserRouter>
         </AuthUIProvider>
       </AuthProvider>
     </TooltipProvider>

@@ -9,6 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthUI } from "@/context/AuthUIContext";
+import { Loader2 } from "lucide-react";
+import apiService from "@/services/apiService";
+import emailService from "@/services/emailService";
 
 interface HackathonRegistrationDialogProps {
   children: React.ReactNode;
@@ -17,8 +20,9 @@ interface HackathonRegistrationDialogProps {
 
 const HackathonRegistrationDialog = ({ children, hackathonTitle = "Upcoming Hackathon" }: HackathonRegistrationDialogProps) => {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { openLogin } = useAuthUI();
 
   const [formData, setFormData] = useState({
@@ -44,36 +48,142 @@ const HackathonRegistrationDialog = ({ children, hackathonTitle = "Upcoming Hack
     terms: false
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Registration Successful!",
-      description: "Your hackathon registration has been submitted. Check your email for confirmation.",
-    });
-    setOpen(false);
-    // Reset form
-    setFormData({
-      teamName: "",
-      teamLeader: "",
-      teamLeaderEmail: "",
-      teamLeaderPhone: "",
-      teamSize: "",
-      member2Name: "",
-      member2Email: "",
-      member3Name: "",
-      member3Email: "",
-      member4Name: "",
-      member4Email: "",
-      university: "",
-      experience: "",
-      track: "",
-      projectIdea: "",
-      technicalSkills: "",
-      previousHackathons: "",
-      dietaryRequirements: "",
-      accommodation: false,
-      terms: false
-    });
+    
+    if (!formData.terms) {
+      toast({
+        title: "Agreement Required",
+        description: "Please accept the terms and conditions",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check authentication first
+    if (!isAuthenticated || !user?.id) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to register for the hackathon",
+        variant: "destructive"
+      });
+      openLogin();
+      return;
+    }
+
+    // Validate required fields
+    const requiredFields = ['teamName', 'teamLeader', 'teamLeaderEmail', 'teamLeaderPhone', 'teamSize', 'track', 'technicalSkills'];
+    const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (missingFields.length > 0) {
+      toast({
+        title: "Missing Information",
+        description: `Please fill in all required fields: ${missingFields.join(', ')}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Ensure user profile exists
+      const profileResponse = await apiService.ensureUserProfile(user.id, formData.teamLeaderEmail);
+      if (!profileResponse.success) {
+        throw new Error('Failed to create user profile. Please try again.');
+      }
+
+      // Prepare registration data for Supabase
+      const registrationData = {
+        user_id: user.id,
+        full_name: formData.teamLeader,
+        email: formData.teamLeaderEmail,
+        phone: formData.teamLeaderPhone,
+        team_name: formData.teamName,
+        team_size: formData.teamSize,
+        university: formData.university || null,
+        experience: formData.experience || null,
+        track: formData.track,
+        project_idea: formData.projectIdea || null,
+        technical_skills: formData.technicalSkills,
+        previous_hackathons: formData.previousHackathons || null,
+        dietary_requirements: formData.dietaryRequirements || null,
+        accommodation: formData.accommodation,
+        agreements: formData.terms,
+        // Team members data
+        member2_name: formData.member2Name || null,
+        member2_email: formData.member2Email || null,
+        member3_name: formData.member3Name || null,
+        member3_email: formData.member3Email || null,
+        member4_name: formData.member4Name || null,
+        member4_email: formData.member4Email || null
+      };
+
+      // Submit registration using API service
+      const response = await apiService.registerForHackathon(registrationData);
+
+      if (response.success) {
+        // Send confirmation email
+        const emailResponse = await emailService.sendHackathonRegistrationEmail(
+          formData.teamLeaderEmail,
+          formData.teamLeader,
+          formData
+        );
+
+        if (emailResponse.success) {
+          toast({
+            title: "Registration Successful! 🚀",
+            description: "Your team is registered for the hackathon and confirmation email sent. Check your email for confirmation and further details.",
+          });
+        } else {
+          toast({
+            title: "Registration Successful! 🚀",
+            description: "Your team is registered for the hackathon. Check your email for confirmation and further details.",
+          });
+        }
+        
+        // Reset form
+        setFormData({
+          teamName: "",
+          teamLeader: "",
+          teamLeaderEmail: "",
+          teamLeaderPhone: "",
+          teamSize: "",
+          member2Name: "",
+          member2Email: "",
+          member3Name: "",
+          member3Email: "",
+          member4Name: "",
+          member4Email: "",
+          university: "",
+          experience: "",
+          track: "",
+          projectIdea: "",
+          technicalSkills: "",
+          previousHackathons: "",
+          dietaryRequirements: "",
+          accommodation: false,
+          terms: false
+        });
+        
+        setOpen(false);
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: response.message || "Failed to register for hackathon. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Registration Error",
+        description: "An unexpected error occurred. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleOpenChange = (next: boolean) => {
@@ -84,10 +194,24 @@ const HackathonRegistrationDialog = ({ children, hackathonTitle = "Upcoming Hack
     setOpen(next);
   };
 
+  // Pre-fill form with user data if available
+  const handleOpen = () => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        teamLeader: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName || "",
+        teamLeaderEmail: user.email || ""
+      }));
+    }
+    setOpen(true);
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        {children}
+        <div onClick={handleOpen}>
+          {children}
+        </div>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -342,11 +466,18 @@ const HackathonRegistrationDialog = ({ children, hackathonTitle = "Upcoming Hack
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!formData.terms}>
-              Register Team
+            <Button type="submit" disabled={!formData.terms || isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Registering...
+                </>
+              ) : (
+                "Register Team"
+              )}
             </Button>
           </DialogFooter>
         </form>

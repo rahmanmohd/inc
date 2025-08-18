@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ReactNode, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthUI } from "@/context/AuthUIContext";
+import apiService from "@/services/apiService";
+import emailService from "@/services/emailService";
 
 const consultationSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -30,8 +32,9 @@ interface ConsultationDialogProps {
 
 const ConsultationDialog = ({ children, title = "Schedule Consultation", description = "Book a consultation with our experts" }: ConsultationDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { openLogin } = useAuthUI();
   
   const form = useForm<z.infer<typeof consultationSchema>>({
@@ -45,16 +48,6 @@ const ConsultationDialog = ({ children, title = "Schedule Consultation", descrip
       message: "",
     },
   });
-
-  const onSubmit = (values: z.infer<typeof consultationSchema>) => {
-    console.log("Consultation request:", values);
-    toast({
-      title: "Consultation Scheduled!",
-      description: "We'll contact you within 24 hours to confirm your consultation.",
-    });
-    form.reset();
-    setIsOpen(false);
-  };
 
   const consultationTypes = [
     { value: "startup-evaluation", label: "Startup Evaluation" },
@@ -71,6 +64,83 @@ const ConsultationDialog = ({ children, title = "Schedule Consultation", descrip
       return;
     }
     setIsOpen(next);
+  };
+
+  const onSubmit = async (values: z.infer<typeof consultationSchema>) => {
+    // Check authentication first
+    if (!isAuthenticated || !user?.id) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to schedule a consultation",
+        variant: "destructive"
+      });
+      openLogin();
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Ensure user profile exists
+      const profileResponse = await apiService.ensureUserProfile(user.id, values.email);
+      if (!profileResponse.success) {
+        throw new Error('Failed to create user profile. Please try again.');
+      }
+
+      // Prepare consultation data for Supabase
+      const consultationData = {
+        user_id: user.id,
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        company: values.company,
+        consultation_type: values.consultationType,
+        description: values.message, // Map to description field
+        message: values.message,
+        status: 'pending'
+      };
+
+      // Submit consultation using API service
+      const response = await apiService.submitConsultation(consultationData);
+
+      if (response.success) {
+        // Send confirmation email
+        const emailResponse = await emailService.sendConsultationRequestEmail(
+          values.email,
+          values.name,
+          values
+        );
+
+        if (emailResponse.success) {
+          toast({
+            title: "Consultation Scheduled Successfully! 🚀",
+            description: "Your consultation request has been submitted and confirmation email sent. You can schedule additional consultations anytime. We'll contact you within 24 hours to confirm your consultation.",
+          });
+        } else {
+          toast({
+            title: "Consultation Scheduled Successfully! 🚀",
+            description: "Your consultation request has been submitted. You can schedule additional consultations anytime. We'll contact you within 24 hours to confirm your consultation.",
+          });
+        }
+        form.reset();
+        setIsOpen(false);
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: response.message || "Failed to schedule consultation. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Consultation submission error:', error);
+      toast({
+        title: "Submission Error",
+        description: "An unexpected error occurred. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -135,7 +205,7 @@ const ConsultationDialog = ({ children, title = "Schedule Consultation", descrip
                   <FormItem>
                     <FormLabel>Company</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your Startup" {...field} />
+                      <Input placeholder="Your Company" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -186,8 +256,8 @@ const ConsultationDialog = ({ children, title = "Schedule Consultation", descrip
               )}
             />
 
-            <Button type="submit" className="w-full">
-              Schedule Consultation
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Scheduling..." : "Schedule Consultation"}
             </Button>
           </form>
         </Form>
