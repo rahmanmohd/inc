@@ -231,9 +231,6 @@ The service provides comprehensive API methods:
 ### SendGrid Configuration
 
 The Edge Function is configured with:
-- **API Key**: `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`
-- **From Email**: `muteeurrahmanmohammed@gmail.com`
-- **From Name**: `Inc Combinator`
 
 ## ⚙️ Setup Instructions
 
