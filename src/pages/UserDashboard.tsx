@@ -24,9 +24,10 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { useAppState } from "@/context/AppStateContext";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import HackathonRegistrationDialog from "@/components/HackathonRegistrationDialog";
+import { HackathonRegistrationDialog } from "@/components/HackathonRegistrationDialog";
 import ApplicationDialog from "@/components/ApplicationDialog";
 import UserApplicationsHistory from "@/components/UserApplicationsHistory";
 import apiService from "@/services/apiService";
@@ -35,6 +36,13 @@ const UserDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { 
+    state: { dashboards, refreshTrigger }, 
+    setDashboardLoading, 
+    setDashboardRefreshed,
+    shouldRefreshDashboard 
+  } = useAppState();
+  
   const [applicationStats, setApplicationStats] = useState({
     total: 0,
     approved: 0,
@@ -42,7 +50,12 @@ const UserDashboard = () => {
     rejected: 0,
     submitted: 0
   });
-  const [loading, setLoading] = useState(true);
+  
+  // Hackathon registration dialog state
+  const [hackathonDialogOpen, setHackathonDialogOpen] = useState(false);
+  const [selectedHackathon, setSelectedHackathon] = useState(null);
+  
+  const loading = dashboards.user.isLoading;
   
   // Get user's full name from auth context, fallback to "User" if not available
   const getUserFullName = () => {
@@ -59,14 +72,14 @@ const UserDashboard = () => {
 
   // Load user application statistics
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && shouldRefreshDashboard('user')) {
       loadApplicationStats();
     }
-  }, [user?.id]);
+  }, [user?.id, refreshTrigger, shouldRefreshDashboard]);
 
   const loadApplicationStats = async () => {
     try {
-      setLoading(true);
+      setDashboardLoading('user', true);
       const response = await apiService.getUserApplicationCount(user!.id);
       if (response.success) {
         setApplicationStats(response.data);
@@ -74,8 +87,35 @@ const UserDashboard = () => {
     } catch (error) {
       console.error('Error loading application stats:', error);
     } finally {
-      setLoading(false);
+      setDashboardRefreshed('user');
     }
+  };
+
+  // Hackathon registration handlers
+  const handleHackathonRegister = (event: any) => {
+    // Create a mock hackathon object for the demo
+    const mockHackathon = {
+      id: event.id.toString(),
+      title: event.title,
+      subtitle: event.type,
+      description: `Join us for ${event.title} on ${event.date}`,
+      start_date: event.date,
+      end_date: event.date,
+      location: "Online",
+      prize_pool: "TBD",
+      expected_participants: 100
+    };
+    setSelectedHackathon(mockHackathon);
+    setHackathonDialogOpen(true);
+  };
+
+  const handleHackathonSuccess = () => {
+    setHackathonDialogOpen(false);
+    setSelectedHackathon(null);
+    toast({
+      title: "Success",
+      description: "Successfully registered for hackathon!"
+    });
   };
   
   const userProfile = {
@@ -89,7 +129,7 @@ const UserDashboard = () => {
   // Calculate analytics data
   const analyticsData = {
     applicationSuccessRate: applicationStats.total > 0 ? Math.round((applicationStats.approved / applicationStats.total) * 100) : 0,
-    averageResponseTime: "3-5 days",
+    averageResponseTime: "5-7 days",
     totalApplications: applicationStats.total,
     activeApplications: applicationStats.pending + applicationStats.submitted
   };
@@ -217,12 +257,10 @@ const UserDashboard = () => {
                     New Application
                   </Button>
               </ApplicationDialog>
-                <HackathonRegistrationDialog>
-                  <Button>
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Register for Hackathon
-                  </Button>
-                </HackathonRegistrationDialog>
+                <Button onClick={() => setHackathonDialogOpen(true)}>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Register for Hackathon
+                </Button>
               </div>
             </div>
             <UserApplicationsHistory />
@@ -395,12 +433,14 @@ const UserDashboard = () => {
                           <span className="text-sm font-medium">Successfully Registered</span>
                         </div>
                       ) : (
-                        <HackathonRegistrationDialog>
-                          <Button className="w-full" size="sm">
-                            <Calendar className="w-4 h-4 mr-2" />
-                            Register Now
-                          </Button>
-                        </HackathonRegistrationDialog>
+                        <Button 
+                          className="w-full" 
+                          size="sm"
+                          onClick={() => handleHackathonRegister(event)}
+                        >
+                          <Calendar className="w-4 h-4 mr-2" />
+                          Register Now
+                        </Button>
                       )}
                     </div>
                   </CardContent>
@@ -570,6 +610,16 @@ const UserDashboard = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Hackathon Registration Dialog */}
+      {selectedHackathon && (
+        <HackathonRegistrationDialog
+          open={hackathonDialogOpen}
+          onOpenChange={setHackathonDialogOpen}
+          hackathon={selectedHackathon}
+          onSuccess={handleHackathonSuccess}
+        />
+      )}
     </div>
   );
 };

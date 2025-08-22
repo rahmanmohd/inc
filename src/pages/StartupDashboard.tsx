@@ -7,19 +7,27 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { useAppState } from "@/context/AppStateContext";
 import { useToast } from "@/hooks/use-toast";
 import startupDashboardService from "@/services/startupDashboardService";
 import StartupOverview from "@/components/dashboard/StartupOverview";
 import ApplicationStatus from "@/components/dashboard/ApplicationStatus";
 import InvestmentTable from "@/components/dashboard/InvestmentTable";
 import CofounderPostDialog from "@/components/CofounderPostDialog";
+import StartupDashboardSkeleton from "@/components/dashboard/StartupDashboardSkeleton";
 
 const StartupDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { 
+    state: { dashboards, refreshTrigger }, 
+    setDashboardLoading, 
+    setDashboardRefreshed,
+    shouldRefreshDashboard 
+  } = useAppState();
   
-  const [isLoading, setIsLoading] = useState(true);
+  const isLoading = dashboards.startup.isLoading;
   const [applicationStatus, setApplicationStatus] = useState({
     stage: "Under Review",
     progress: 65,
@@ -67,8 +75,16 @@ const StartupDashboard = () => {
   const fetchDashboardData = async () => {
     if (!user?.id) return;
     
+    console.log('Fetching startup dashboard data for user:', user.id);
+    
+    // Add timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.warn('Startup dashboard fetch timeout - forcing refresh');
+      setDashboardRefreshed('startup');
+    }, 10000); // 10 second timeout
+    
     try {
-      setIsLoading(true);
+      setDashboardLoading('startup', true);
       
       // Fetch user applications
       const applicationsResponse = await startupDashboardService.getUserApplications(user.id);
@@ -142,7 +158,9 @@ const StartupDashboard = () => {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      clearTimeout(timeoutId);
+      console.log('Startup dashboard data fetch completed');
+      setDashboardRefreshed('startup');
     }
   };
 
@@ -197,22 +215,41 @@ const StartupDashboard = () => {
     }
   };
 
+  // Initial load and refresh logic
   useEffect(() => {
-    fetchDashboardData();
-  }, [user?.id]);
+    if (user?.id) {
+      // Always load on initial mount or when user changes
+      if (!dashboards.startup.lastRefreshed || shouldRefreshDashboard('startup')) {
+        fetchDashboardData();
+      }
+    }
+  }, [user?.id, refreshTrigger]);
+
+  // Debug logging and safety reset
+  useEffect(() => {
+    console.log('StartupDashboard state:', {
+      user: user?.id,
+      isLoading: dashboards.startup.isLoading,
+      lastRefreshed: dashboards.startup.lastRefreshed,
+      shouldRefresh: shouldRefreshDashboard('startup')
+    });
+
+    // Safety reset: if loading for more than 15 seconds, force reset
+    if (dashboards.startup.isLoading) {
+      const resetTimer = setTimeout(() => {
+        console.warn('Startup dashboard stuck in loading - forcing reset');
+        setDashboardRefreshed('startup');
+      }, 15000);
+
+      return () => clearTimeout(resetTimer);
+    }
+  }, [user?.id, dashboards.startup, shouldRefreshDashboard, setDashboardRefreshed]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 pt-20 pb-12">
-          <div className="flex items-center justify-center h-64">
-            <div className="flex items-center space-x-2">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              <span>Loading dashboard...</span>
-            </div>
-          </div>
-        </main>
+        <StartupDashboardSkeleton />
       </div>
     );
   }

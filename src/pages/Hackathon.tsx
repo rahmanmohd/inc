@@ -1,87 +1,17 @@
 import Navigation from "@/components/Navigation";
-import HackathonRegistrationForm from "@/components/HackathonRegistrationForm";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, MapPin, Trophy, Users, Code, Zap, Target } from "lucide-react";
+import { Code, Zap, Target, Users, Trophy } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import hackathonService from "@/services/hackathonService";
+import { DynamicHackathonCards } from "@/components/DynamicHackathonCards";
+import { HackathonRegistrationDialog } from "@/components/HackathonRegistrationDialog";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
 const Hackathon = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [hackathons, setHackathons] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  const upcomingHackathons = [
-    {
-      id: "1",
-      title: "AI Innovation Challenge 2025",
-      date: "Feb 15-17, 2025",
-      location: "Bangalore, India",
-      theme: "Artificial Intelligence & Machine Learning",
-      prizePool: "₹10 Lakhs",
-      participants: "500+",
-      status: "Registration Open",
-      description: "Build AI solutions for real-world problems in healthcare, education, and sustainability.",
-      registrationDeadline: "Feb 10, 2025"
-    },
-    {
-      id: "2",
-      title: "FinTech Revolution Hackathon",
-      date: "Mar 22-24, 2025",
-      location: "Mumbai, India",
-      theme: "Financial Technology",
-      prizePool: "₹8 Lakhs",
-      participants: "400+",
-      status: "Coming Soon",
-      description: "Create innovative fintech solutions for banking, payments, and financial inclusion.",
-      registrationDeadline: "Mar 15, 2025"
-    },
-    {
-      id: "3",
-      title: "Green Tech Challenge",
-      date: "Apr 5-7, 2025",
-      location: "Hyderabad, India",
-      theme: "Sustainability & Clean Technology",
-      prizePool: "₹12 Lakhs",
-      participants: "600+",
-      status: "Coming Soon",
-      description: "Develop solutions for environmental challenges and sustainable development.",
-      registrationDeadline: "Mar 30, 2025"
-    }
-  ];
-
-  // Fetch hackathons from Supabase
-  useEffect(() => {
-    const fetchHackathons = async () => {
-      try {
-        const response = await hackathonService.getHackathons();
-        if (response.success && response.data) {
-          setHackathons(response.data);
-        } else {
-          // Fallback to static data if API fails
-          setHackathons(upcomingHackathons);
-        }
-      } catch (error) {
-        console.error('Error fetching hackathons:', error);
-        // Fallback to static data
-        setHackathons(upcomingHackathons);
-        toast({
-          title: "Warning",
-          description: "Using cached hackathon data. Some features may be limited.",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHackathons();
-  }, [toast]);
 
   const tracks = [
     {
@@ -161,6 +91,64 @@ const Hackathon = () => {
     }
   ];
 
+  // Hackathon registration state
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [hackathonDialogOpen, setHackathonDialogOpen] = useState(false);
+  const [selectedHackathon, setSelectedHackathon] = useState(null);
+
+  const handleHackathonRegister = async () => {
+    try {
+      // Specifically target the "Tech Innovation Hackathon 2024"
+      const { data: hackathons, error } = await supabase
+        .from('hackathons')
+        .select('*')
+        .eq('title', 'Tech Innovation Hackathon 2024')
+        .eq('published', true)
+        .limit(1);
+
+      if (error) throw error;
+
+      if (hackathons && hackathons.length > 0) {
+        // Use the Tech Innovation Hackathon 2024
+        setSelectedHackathon(hackathons[0]);
+        setHackathonDialogOpen(true);
+      } else {
+        // Fallback to mock hackathon if the specific one is not found
+        const mockHackathon = {
+          id: "00000000-0000-0000-0000-000000000001", // Proper UUID format
+          title: "Tech Innovation Hackathon 2024",
+          subtitle: "Build the Future of Technology",
+          description: "Join us for an exciting 48-hour hackathon where you can showcase your skills, learn new technologies, and build innovative solutions.",
+          start_date: "2024-02-15",
+          end_date: "2024-02-17",
+          location: "Bangalore, India",
+          prize_pool: "₹50,000",
+          expected_participants: 200,
+          registration_count: 0
+        };
+        setSelectedHackathon(mockHackathon);
+        setHackathonDialogOpen(true);
+      }
+    } catch (error) {
+      console.error('Error fetching hackathon for registration:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load hackathon details. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleHackathonSuccess = () => {
+    setHackathonDialogOpen(false);
+    setSelectedHackathon(null);
+    toast({
+      title: "Success",
+      description: "Successfully registered for hackathon!"
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -174,14 +162,13 @@ const Hackathon = () => {
             Join India's most exciting hackathons where innovation meets opportunity. Code, compete, and create solutions that matter.
           </p>
           <div className="flex justify-center space-x-4">
-            <HackathonRegistrationForm 
-              hackathonId="1" 
-              hackathonTitle="AI Innovation Challenge 2025"
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow"
+              onClick={handleHackathonRegister}
             >
-              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-                Register for Next Hackathon
-              </Button>
-            </HackathonRegistrationForm>
+              Register for Next Hackathon
+            </Button>
             <Button variant="outline" size="lg" onClick={() => navigate("/past-events")}>
               View Past Events
             </Button>
@@ -234,73 +221,17 @@ const Hackathon = () => {
 
         {/* Upcoming Hackathons */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Upcoming Hackathons</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {hackathons.map((hackathon) => (
-              <Card key={hackathon.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <Badge variant={hackathon.status === "Registration Open" ? "default" : "secondary"}>
-                      {hackathon.status}
-                    </Badge>
-                    <div className="text-2xl">🏆</div>
-                  </div>
-                  <CardTitle className="text-xl">{hackathon.title}</CardTitle>
-                  <CardDescription className="text-sm font-medium text-primary">
-                    {hackathon.theme}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">{hackathon.description}</p>
-                  
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>{hackathon.date}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>{hackathon.location}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Trophy className="h-4 w-4 text-muted-foreground" />
-                      <span>Prize Pool: {hackathon.prizePool}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      <span>{hackathon.participants} participants expected</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span>Register by: {hackathon.registrationDeadline}</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 space-y-2">
-                    {hackathon.status === "Registration Open" ? (
-                      <HackathonRegistrationForm 
-                        hackathonId={hackathon.id} 
-                        hackathonTitle={hackathon.title}
-                      >
-                        <Button className="w-full">
-                          Register Now
-                        </Button>
-                      </HackathonRegistrationForm>
-                    ) : (
-                      <Button className="w-full" disabled>
-                        Registration Opens Soon
-                      </Button>
-                    )}
-                    <Link to={`/hackathon-detail/${hackathon.id}`}>
-                      <Button variant="outline" className="w-full">
-                        Learn More
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold">Upcoming Hackathons</h2>
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.reload()}
+              className="ml-4"
+            >
+              Refresh
+            </Button>
           </div>
+          <DynamicHackathonCards />
         </section>
 
         {/* Competition Tracks */}
@@ -395,14 +326,13 @@ const Hackathon = () => {
             Register now and be part of India's premier hackathon experience.
           </p>
           <div className="flex justify-center space-x-4">
-            <HackathonRegistrationForm 
-              hackathonId="1" 
-              hackathonTitle="AI Innovation Challenge 2025"
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow"
+              onClick={handleHackathonRegister}
             >
-              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-                Register Now
-              </Button>
-            </HackathonRegistrationForm>
+              Register Now
+            </Button>
             <Link to="/program-details">
               <Button variant="outline" size="lg">
                 Learn More
@@ -411,6 +341,17 @@ const Hackathon = () => {
           </div>
         </section>
       </main>
+
+      {/* Hackathon Registration Dialog */}
+      {selectedHackathon && (
+        <HackathonRegistrationDialog
+          open={hackathonDialogOpen}
+          onOpenChange={setHackathonDialogOpen}
+          hackathon={selectedHackathon}
+          onSuccess={handleHackathonSuccess}
+        />
+      )}
+
       <Footer />
     </div>
   );

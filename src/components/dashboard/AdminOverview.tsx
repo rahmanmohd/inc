@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, FileText, Users, DollarSign, TrendingUp, ChevronUp, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Building2, FileText, Users, DollarSign, TrendingUp, ChevronUp, Loader2, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import adminApiService, { type AdminStats, type ApplicationWithDetails } from "@/services/adminApiService";
+import ApplicationReviewDialog from "@/components/ApplicationReviewDialog";
 
 interface AdminOverviewProps {
   stats?: {
@@ -51,10 +53,10 @@ const AdminOverview = ({ stats: propStats, recentApplications: propRecentApplica
         setRealStats(statsResponse.data!);
       }
 
-      // Fetch real applications
-      const applicationsResponse = await adminApiService.getAllApplications();
+      // Fetch real recent applications
+      const applicationsResponse = await adminApiService.getRecentApplications();
       if (applicationsResponse.success) {
-        setRealApplications(applicationsResponse.data!.slice(0, 3)); // Get latest 3
+        setRealApplications(applicationsResponse.data!);
       }
     } catch (error) {
       console.error('Error fetching real data:', error);
@@ -66,6 +68,11 @@ const AdminOverview = ({ stats: propStats, recentApplications: propRecentApplica
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleApplicationStatusUpdate = () => {
+    // Refresh the applications list when status is updated
+    fetchRealData();
   };
 
   // Use real data if available, otherwise fall back to props
@@ -217,6 +224,15 @@ const AdminOverview = ({ stats: propStats, recentApplications: propRecentApplica
                 <div className="flex items-center space-x-3">
                   {getStatusBadge(app.status)}
                   <span className="text-xs text-muted-foreground">{app.date}</span>
+                  <ApplicationReviewDialog
+                    applicationId={app.id}
+                    applicationType={app.type || 'incubation'}
+                    onStatusUpdate={handleApplicationStatusUpdate}
+                  >
+                    <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </ApplicationReviewDialog>
                 </div>
               </div>
             ))}

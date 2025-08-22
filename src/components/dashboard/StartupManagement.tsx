@@ -3,24 +3,129 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Edit, Trash2, Search, Filter, Plus, ChevronUp, Building2 } from "lucide-react";
-import { useState } from "react";
+import { Eye, Edit, Trash2, Search, Filter, Plus, ChevronUp, Building2, Loader2, RefreshCw } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useAppState } from "@/context/AppStateContext";
+import adminApiService from "@/services/adminApiService";
+import AddStartupDialog from "./AddStartupDialog";
+import ViewStartupDialog from "./ViewStartupDialog";
+import EditStartupDialog from "./EditStartupDialog";
+import DeleteStartupDialog from "./DeleteStartupDialog";
 
-interface StartupManagementProps {
-  startups: Array<{
-    id: number;
-    name: string;
-    sector: string;
-    valuation: string;
-    growth: string;
-    status: string;
-  }>;
+interface StartupData {
+  id: string;
+  name: string;
+  sector: string;
+  valuation: string;
+  growth: string;
+  status: string;
+  founder_name: string;
+  email: string;
+  description?: string;
+  website?: string;
+  team_size?: number;
+  created_at: string;
 }
 
-const StartupManagement = ({ startups }: StartupManagementProps) => {
+interface StartupStats {
+  totalStartups: number;
+  active: number;
+  funded: number;
+  unicorns: number;
+}
+
+const StartupManagement = () => {
+  const { toast } = useToast();
+  const { state, triggerGlobalRefresh } = useAppState();
+  const [startups, setStartups] = useState<StartupData[]>([]);
+  const [stats, setStats] = useState<StartupStats>({
+    totalStartups: 0,
+    active: 0,
+    funded: 0,
+    unicorns: 0
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sectorFilter, setSectorFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  useEffect(() => {
+    fetchData();
+  }, [state.refreshTrigger]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('StartupManagement: Current startups count:', startups.length);
+    console.log('StartupManagement: Current stats:', stats);
+  }, [startups, stats]);
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      console.log('StartupManagement: Fetching startup data...');
+      
+      const [statsResponse, directoryResponse] = await Promise.all([
+        adminApiService.getStartupStats(),
+        adminApiService.getStartupDirectory()
+      ]);
+
+      console.log('StartupManagement: Stats response:', statsResponse);
+      console.log('StartupManagement: Directory response:', directoryResponse);
+
+      if (statsResponse.success) {
+        setStats(statsResponse.data);
+        console.log('StartupManagement: Updated stats:', statsResponse.data);
+      } else {
+        console.error('StartupManagement: Stats response failed:', statsResponse.error);
+      }
+
+      if (directoryResponse.success) {
+        setStartups(directoryResponse.data);
+        console.log('StartupManagement: Updated startups:', directoryResponse.data);
+      } else {
+        console.error('StartupManagement: Directory response failed:', directoryResponse.error);
+      }
+    } catch (error) {
+      console.error('Error fetching startup data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load startup data",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleStartupAdded = () => {
+    console.log('StartupManagement: Startup added, refreshing data...');
+    fetchData();
+    triggerGlobalRefresh();
+  };
+
+  const handleStartupUpdated = () => {
+    console.log('StartupManagement: Startup updated, refreshing data...');
+    fetchData();
+    triggerGlobalRefresh();
+  };
+
+  const handleStartupDeleted = () => {
+    console.log('StartupManagement: Startup deleted, refreshing data...');
+    fetchData();
+    triggerGlobalRefresh();
+  };
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchData();
+    setIsRefreshing(false);
+    toast({
+      title: "Success",
+      description: "Startup directory refreshed successfully",
+    });
+  };
 
   const filteredStartups = startups.filter(startup => {
     const matchesSearch = startup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -46,6 +151,25 @@ const StartupManagement = ({ startups }: StartupManagementProps) => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold">Startup Management</h2>
+            <p className="text-muted-foreground">Manage and oversee all registered startups</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Loading startup data...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -54,10 +178,18 @@ const StartupManagement = ({ startups }: StartupManagementProps) => {
           <h2 className="text-2xl font-bold">Startup Management</h2>
           <p className="text-muted-foreground">Manage and oversee all registered startups</p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add New Startup
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleManualRefresh}
+            disabled={isRefreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <AddStartupDialog onStartupAdded={handleStartupAdded} />
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -68,7 +200,7 @@ const StartupManagement = ({ startups }: StartupManagementProps) => {
               <Building2 className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm font-medium">Total Startups</p>
-                <p className="text-2xl font-bold">1,247</p>
+                <p className="text-2xl font-bold">{stats.totalStartups.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -79,7 +211,7 @@ const StartupManagement = ({ startups }: StartupManagementProps) => {
               <ChevronUp className="h-5 w-5 text-green-500" />
               <div>
                 <p className="text-sm font-medium">Active</p>
-                <p className="text-2xl font-bold text-green-600">892</p>
+                <p className="text-2xl font-bold text-green-600">{stats.active.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -90,7 +222,7 @@ const StartupManagement = ({ startups }: StartupManagementProps) => {
               <Filter className="h-5 w-5 text-blue-500" />
               <div>
                 <p className="text-sm font-medium">Funded</p>
-                <p className="text-2xl font-bold text-blue-600">234</p>
+                <p className="text-2xl font-bold text-blue-600">{stats.funded.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -101,7 +233,7 @@ const StartupManagement = ({ startups }: StartupManagementProps) => {
               <Eye className="h-5 w-5 text-purple-500" />
               <div>
                 <p className="text-sm font-medium">Unicorns</p>
-                <p className="text-2xl font-bold text-purple-600">12</p>
+                <p className="text-2xl font-bold text-purple-600">{stats.unicorns.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -111,7 +243,12 @@ const StartupManagement = ({ startups }: StartupManagementProps) => {
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle>Startup Directory</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>Startup Directory</CardTitle>
+            <div className="text-sm text-muted-foreground">
+              {filteredStartups.length} of {startups.length} startups
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -190,18 +327,28 @@ const StartupManagement = ({ startups }: StartupManagementProps) => {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-1" />
-                          View
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                          <Trash2 className="h-4 w-4 mr-1" />
-                          Remove
-                        </Button>
+                        <ViewStartupDialog startupId={startup.id}>
+                          <Button variant="outline" size="sm">
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                        </ViewStartupDialog>
+                        <EditStartupDialog startupId={startup.id} onStartupUpdated={handleStartupUpdated}>
+                          <Button variant="outline" size="sm">
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                        </EditStartupDialog>
+                        <DeleteStartupDialog 
+                          startupId={startup.id} 
+                          startupName={startup.name}
+                          onStartupDeleted={handleStartupDeleted}
+                        >
+                          <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Remove
+                          </Button>
+                        </DeleteStartupDialog>
                       </div>
                     </div>
                   </CardContent>

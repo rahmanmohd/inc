@@ -24,11 +24,17 @@ interface ApplicationManagementProps {
 
 const ApplicationManagement = ({ applications: propApplications }: ApplicationManagementProps) => {
   const [realApplications, setRealApplications] = useState<ApplicationWithDetails[]>([]);
+  const [applicationStats, setApplicationStats] = useState({
+    totalApplications: 0,
+    pending: 0,
+    approved: 0,
+    underReview: 0
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [stageFilter, setStageFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [selectedApplication, setSelectedApplication] = useState<ApplicationWithDetails | null>(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
@@ -45,14 +51,25 @@ const ApplicationManagement = ({ applications: propApplications }: ApplicationMa
   const fetchRealApplications = async () => {
     try {
       setIsLoading(true);
-      console.log('Fetching real applications...');
+      console.log('Fetching real applications and stats...');
       
-      const response = await adminApiService.getAllApplications();
-      if (response.success) {
-        setRealApplications(response.data!);
-        console.log(`Loaded ${response.data!.length} applications`);
+      const [applicationsResponse, statsResponse] = await Promise.all([
+        adminApiService.getApplications(),
+        adminApiService.getApplicationStats()
+      ]);
+
+      if (applicationsResponse.success) {
+        setRealApplications(applicationsResponse.data!);
+        console.log(`Loaded ${applicationsResponse.data!.length} applications`);
       } else {
-        throw new Error(response.error || 'Failed to fetch applications');
+        throw new Error(applicationsResponse.error || 'Failed to fetch applications');
+      }
+
+      if (statsResponse.success) {
+        setApplicationStats(statsResponse.data!);
+        console.log('Loaded application stats:', statsResponse.data);
+      } else {
+        console.error('Failed to load application stats:', statsResponse.error);
       }
     } catch (error) {
       console.error('Error fetching applications:', error);
@@ -81,12 +98,13 @@ const ApplicationManagement = ({ applications: propApplications }: ApplicationMa
   }));
 
   const filteredApplications = applications.filter(app => {
-    const matchesSearch = app.startup.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.founder.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
-    const matchesStage = stageFilter === "all" || app.stage === stageFilter;
+    const matchesSearch = app.startup?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         app.founder?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         app.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || app.status?.toLowerCase() === statusFilter.toLowerCase();
+    const matchesType = typeFilter === "all" || app.type === typeFilter;
     
-    return matchesSearch && matchesStatus && matchesStage;
+    return matchesSearch && matchesStatus && matchesType;
   });
 
   const getStatusBadge = (status: string) => {
@@ -144,9 +162,9 @@ const ApplicationManagement = ({ applications: propApplications }: ApplicationMa
 
       const response = await adminApiService.updateApplicationStatus(
         selectedApplication.id,
+        selectedApplication.type,
         newStatus,
-        adminNotes,
-        selectedApplication.type
+        adminNotes
       );
 
       if (response.success) {
@@ -229,7 +247,7 @@ const ApplicationManagement = ({ applications: propApplications }: ApplicationMa
               <FileText className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm font-medium">Total Applications</p>
-                <p className="text-2xl font-bold">{applications.length}</p>
+                <p className="text-2xl font-bold">{applicationStats.totalApplications.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -240,7 +258,7 @@ const ApplicationManagement = ({ applications: propApplications }: ApplicationMa
               <Clock className="h-5 w-5 text-yellow-500" />
               <div>
                 <p className="text-sm font-medium">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">{getStatusCount('Pending')}</p>
+                <p className="text-2xl font-bold text-yellow-600">{applicationStats.pending.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -251,7 +269,7 @@ const ApplicationManagement = ({ applications: propApplications }: ApplicationMa
               <CheckCircle className="h-5 w-5 text-green-500" />
               <div>
                 <p className="text-sm font-medium">Approved</p>
-                <p className="text-2xl font-bold text-green-600">{getStatusCount('Approved')}</p>
+                <p className="text-2xl font-bold text-green-600">{applicationStats.approved.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -259,10 +277,10 @@ const ApplicationManagement = ({ applications: propApplications }: ApplicationMa
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <AlertCircle className="h-5 w-5 text-orange-500" />
+              <AlertCircle className="h-5 w-5 text-blue-500" />
               <div>
                 <p className="text-sm font-medium">Under Review</p>
-                <p className="text-2xl font-bold text-orange-600">{getStatusCount('Under Review')}</p>
+                <p className="text-2xl font-bold text-blue-600">{applicationStats.underReview.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -299,16 +317,18 @@ const ApplicationManagement = ({ applications: propApplications }: ApplicationMa
                 <SelectItem value="Rejected">Rejected</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={stageFilter} onValueChange={setStageFilter}>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Filter by stage" />
+                <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Stages</SelectItem>
-                <SelectItem value="Pre-Seed">Pre-Seed</SelectItem>
-                <SelectItem value="Seed">Seed</SelectItem>
-                <SelectItem value="Series A">Series A</SelectItem>
-                <SelectItem value="Series B">Series B</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="incubation">Incubation</SelectItem>
+                <SelectItem value="investment">Investment</SelectItem>
+                <SelectItem value="program">Program</SelectItem>
+                <SelectItem value="mentor">Mentor</SelectItem>
+                <SelectItem value="grant">Grant</SelectItem>
+                <SelectItem value="partnership">Partnership</SelectItem>
               </SelectContent>
             </Select>
           </div>

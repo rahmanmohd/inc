@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
+import authService from '@/services/authService';
 
 // Initialize Supabase client with typed database
 const supabaseUrl = 'https://ysxtcljsclkoatngtihl.supabase.co';
@@ -943,6 +944,22 @@ class ApiService {
   
   async submitPartnershipRequest(request: PartnershipRequestInsert): Promise<ApiResponse<PartnershipRequest>> {
     try {
+      // Ensure this client has an authenticated session for RLS policies
+      const { data: sessionCheck } = await supabase.auth.getSession();
+      if (!sessionCheck?.session) {
+        const currentSession = await authService.getCurrentSession();
+        if (currentSession) {
+          try {
+            await supabase.auth.setSession({
+              access_token: currentSession.access_token,
+              refresh_token: currentSession.refresh_token
+            } as any);
+          } catch (e) {
+            console.warn('apiService: setSession failed, proceeding with insert; RLS may block if unauthenticated.', e);
+          }
+        }
+      }
+
       const { data, error } = await supabase
         .from('partnership_requests')
         .insert([request])
@@ -1398,84 +1415,11 @@ class ApiService {
     }
   }
 
-  // Admin: Update application status
-  async updateApplicationStatus(applicationId: string, status: string, notes?: string): Promise<ApiResponse<any>> {
-    try {
-      // Determine which table the application belongs to based on the ID format or type
-      // For now, we'll try to update all tables that might contain the application
-      const tables = [
-        'incubation_applications',
-        'investment_applications', 
-        'mentor_applications',
-        'program_applications',
-        'grant_applications',
-        'partnership_requests'
-      ];
 
-      let updated = false;
-      for (const table of tables) {
-        const { data, error } = await supabase
-          .from(table)
-          .update({ 
-            status: status,
-            admin_notes: notes,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', applicationId)
-          .select();
-
-        if (data && data.length > 0) {
-          updated = true;
-          break;
-        }
-      }
-
-      if (!updated) {
-        return {
-          success: false,
-          message: 'Application not found'
-        };
-      }
-
-      return {
-        success: true,
-        data: { status, notes }
-      };
-    } catch (error) {
-      console.error('Error updating application status:', error);
-      return {
-        success: false,
-        message: 'Failed to update application status',
-        error
-      };
-    }
-  }
 
   // ==================== STARTUP DASHBOARD API ====================
 
-  // Get cofounder posts
-  async getCofounderPosts(): Promise<ApiResponse<any[]>> {
-    try {
-      const { data, error } = await supabase
-        .from('cofounder_posts')
-        .select('*')
-        .order('created_at', { ascending: false });
 
-      if (error) throw error;
-
-      return {
-        success: true,
-        data: data || []
-      };
-    } catch (error) {
-      console.error('Error fetching cofounder posts:', error);
-      return {
-        success: false,
-        message: 'Failed to fetch cofounder posts',
-        error
-      };
-    }
-  }
 
   // Get user activity
   async getUserActivity(userId: string): Promise<ApiResponse<any[]>> {
@@ -1546,7 +1490,7 @@ class ApiService {
         dealsResponse
       ] = await Promise.all([
         this.getUserApplications(userId),
-        this.getCofounderPosts(),
+        this.getCofounderPosts(true),
         this.getUserDeals(userId)
       ]);
 

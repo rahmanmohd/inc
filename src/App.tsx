@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
+import { AppStateProvider } from "@/context/AppStateContext";
 import RequireAuth from "@/routes/RequireAuth";
 import RequireAdmin from "@/routes/RequireAdmin";
 import { AuthUIProvider } from "@/context/AuthUIContext";
@@ -55,6 +56,7 @@ import UserDashboard from "./pages/UserDashboard";
 import CofounderDashboard from "./pages/CofounderDashboard";
 import HackathonTest from "@/components/HackathonTest";
 import EmailTest from "@/components/EmailTest";
+import EmailTestHackathonPage from "./pages/EmailTestHackathonPage";
 
 const queryClient = new QueryClient();
 
@@ -62,11 +64,12 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <AuthUIProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <LoginDialog />
+        <AppStateProvider>
+          <AuthUIProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <LoginDialog />
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
@@ -117,15 +120,17 @@ const App = () => (
             <Route path="/grants-funding" element={<RequireAuth><GrantsFunding /></RequireAuth>} />
             <Route path="/hackathon-test" element={<RequireAuth><HackathonTest /></RequireAuth>} />
             <Route path="/email-test" element={<RequireAuth><EmailTest /></RequireAuth>} />
+            <Route path="/email-test-hackathon" element={<RequireAuth><EmailTestHackathonPage /></RequireAuth>} />
 
             {/* 404 route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          </BrowserRouter>
-        </AuthUIProvider>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+        </BrowserRouter>
+      </AuthUIProvider>
+        </AppStateProvider>
+    </AuthProvider>
+  </TooltipProvider>
+</QueryClientProvider>
 );
 
 export default App;

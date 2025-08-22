@@ -1,329 +1,845 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Edit, Plus, Search, DollarSign, Building, TrendingUp, Users } from "lucide-react";
-import { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
+import { useAppState } from '@/context/AppStateContext';
+import adminApiService from '@/services/adminApiService';
+import { 
+  Users, 
+  TrendingUp, 
+  Briefcase, 
+  BarChart3, 
+  Plus, 
+  Search, 
+  Eye, 
+  Edit, 
+  Trash2, 
+  RefreshCw,
+  Building2,
+  Mail,
+  Target,
+  Award,
+  Activity
+} from 'lucide-react';
 
-interface InvestorManagementProps {
-  investors: Array<{
-    id: number;
+interface InvestorData {
+  id: string;
     name: string;
     checkSize: string;
     portfolio: number;
     stage: string;
     status: string;
-  }>;
+  email?: string;
+  description?: string;
+  sectors: string[];
+  recent_investments: number;
+  success_rate: number;
+  portfolio_value: number;
+  created_at: string;
 }
 
-const InvestorManagement = ({ investors }: InvestorManagementProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [stageFilter, setStageFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
+interface InvestorStats {
+  totalInvestors: number;
+  active: number;
+  totalPortfolio: number;
+  avgPortfolio: number;
+}
 
+const InvestorManagement: React.FC = () => {
+  const [investorStats, setInvestorStats] = useState<InvestorStats>({
+    totalInvestors: 0,
+    active: 0,
+    totalPortfolio: 0,
+    avgPortfolio: 0
+  });
+  const [investors, setInvestors] = useState<InvestorData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sectorFilter, setSectorFilter] = useState('all');
+  const [selectedInvestor, setSelectedInvestor] = useState<InvestorData | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    email: '',
+    check_size: '',
+    investment_stage: '',
+    sectors: [] as string[],
+    portfolio_count: 0,
+    portfolio_value: 0,
+    recent_investments: 0,
+    success_rate: 0,
+    status: 'active'
+  });
+  const [sectorInput, setSectorInput] = useState('');
+
+  const { toast } = useToast();
+  const { state, triggerGlobalRefresh } = useAppState();
+
+  // Fetch data
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      console.log('=== Fetching Investor Data ===');
+      
+      console.log('Calling getInvestorStats...');
+      const statsResponse = await adminApiService.getInvestorStats();
+      console.log('Stats response:', statsResponse);
+      
+      console.log('Calling getInvestorDirectory...');
+      const directoryResponse = await adminApiService.getInvestorDirectory();
+      console.log('Directory response:', directoryResponse);
+
+      if (statsResponse.success) {
+        setInvestorStats(statsResponse.data);
+        console.log('Loaded investor stats:', statsResponse.data);
+      } else {
+        console.error('Failed to load investor stats:', statsResponse.error);
+      }
+
+      if (directoryResponse.success) {
+        setInvestors(directoryResponse.data);
+        console.log(`Loaded ${directoryResponse.data.length} investors`);
+      } else {
+        console.error('Failed to load investor directory:', directoryResponse.error);
+      }
+    } catch (error) {
+      console.error('Error fetching investor data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load investor data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [state.refreshTrigger]);
+
+  // Handle manual refresh
+  const handleManualRefresh = () => {
+    triggerGlobalRefresh();
+  };
+
+  // Filter investors
   const filteredInvestors = investors.filter(investor => {
-    const matchesSearch = investor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         investor.stage.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStage = stageFilter === "all" || investor.stage.includes(stageFilter);
-    const matchesStatus = statusFilter === "all" || investor.status === statusFilter;
+    const matchesSearch = investor.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         investor.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         investor.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || investor.status?.toLowerCase() === statusFilter.toLowerCase();
+    const matchesSector = sectorFilter === "all" || investor.sectors?.includes(sectorFilter);
     
-    return matchesSearch && matchesStage && matchesStatus;
+    return matchesSearch && matchesStatus && matchesSector;
   });
 
-  const getStatusBadge = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'active':
-        return <Badge className="bg-green-500 text-white hover:bg-green-600">Active</Badge>;
-      case 'inactive':
-        return <Badge className="bg-gray-500 text-white hover:bg-gray-600">Inactive</Badge>;
-      case 'pending':
-        return <Badge className="bg-yellow-500 text-white hover:bg-yellow-600">Pending</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const response = await adminApiService.addInvestor(formData);
+      
+      if (response.success) {
+        toast({
+          title: "Success",
+          description: "Investor added successfully!",
+        });
+        setIsAddDialogOpen(false);
+        resetForm();
+        triggerGlobalRefresh();
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error('Error adding investor:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to add investor. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
-  const getStageBadge = (stage: string) => {
-    if (stage.includes("Pre-Seed")) {
-      return <Badge variant="outline" className="border-purple-300 text-purple-700">Pre-Seed</Badge>;
-    } else if (stage.includes("Seed")) {
-      return <Badge variant="outline" className="border-blue-300 text-blue-700">Seed</Badge>;
-    } else if (stage.includes("Series A")) {
-      return <Badge variant="outline" className="border-green-300 text-green-700">Series A+</Badge>;
+  // Handle investor update
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!selectedInvestor) return;
+    
+    try {
+      const response = await adminApiService.updateInvestor({
+        id: selectedInvestor.id,
+        ...formData
+      });
+      
+      if (response.success) {
+        toast({
+          title: "Success",
+          description: "Investor updated successfully!",
+        });
+        setIsEditDialogOpen(false);
+        resetForm();
+        triggerGlobalRefresh();
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error('Error updating investor:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update investor. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle investor deletion
+  const handleDelete = async () => {
+    if (!selectedInvestor) return;
+    
+    try {
+      const response = await adminApiService.deleteInvestor(selectedInvestor.id);
+      
+      if (response.success) {
+        toast({
+          title: "Success",
+          description: "Investor deleted successfully!",
+        });
+        setIsDeleteDialogOpen(false);
+        triggerGlobalRefresh();
     } else {
-      return <Badge variant="outline">{stage}</Badge>;
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error('Error deleting investor:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete investor. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
-  const getStatusCount = (status: string) => {
-    return investors.filter(inv => inv.status.toLowerCase() === status.toLowerCase()).length;
+  // Reset form
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: '',
+      email: '',
+      check_size: '',
+      investment_stage: '',
+      sectors: [],
+      portfolio_count: 0,
+      portfolio_value: 0,
+      recent_investments: 0,
+      success_rate: 0,
+      status: 'active'
+    });
+    setSectorInput('');
   };
 
-  const getTotalPortfolio = () => {
-    return investors.reduce((sum, inv) => sum + inv.portfolio, 0);
+  // Add sector
+  const addSector = () => {
+    if (sectorInput.trim() && !formData.sectors.includes(sectorInput.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        sectors: [...prev.sectors, sectorInput.trim()]
+      }));
+      setSectorInput('');
+    }
   };
+
+  // Remove sector
+  const removeSector = (sector: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sectors: prev.sectors.filter(s => s !== sector)
+    }));
+  };
+
+  // Get all unique sectors
+  const allSectors = Array.from(new Set(investors.flatMap(investor => investor.sectors || [])));
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl font-bold tracking-tight">Investor Management</h2>
+          <Button disabled>
+            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+            Loading...
+          </Button>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Loading...</CardTitle>
+                <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold bg-gray-200 h-8 rounded animate-pulse" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Investor Management</h2>
-          <p className="text-muted-foreground">Manage and oversee all registered investors</p>
-        </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add New Investor
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">Investor Management</h2>
+        <Button onClick={handleManualRefresh}>
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Refresh
         </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <DollarSign className="h-5 w-5 text-primary" />
-              <div>
-                <p className="text-sm font-medium">Total Investors</p>
-                <p className="text-2xl font-bold">{investors.length}</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Investors</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold">{investorStats.totalInvestors.toLocaleString()}</p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="h-5 w-5 text-green-500" />
-              <div>
-                <p className="text-sm font-medium">Active</p>
-                <p className="text-2xl font-bold text-green-600">{getStatusCount('Active')}</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active</CardTitle>
+            <Activity className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-green-600">{investorStats.active.toLocaleString()}</p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Building className="h-5 w-5 text-blue-500" />
-              <div>
-                <p className="text-sm font-medium">Total Portfolio</p>
-                <p className="text-2xl font-bold text-blue-600">{getTotalPortfolio()}</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Portfolio</CardTitle>
+            <Briefcase className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-blue-600">₹{investorStats.totalPortfolio.toLocaleString()}Cr</p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Users className="h-5 w-5 text-purple-500" />
-              <div>
-                <p className="text-sm font-medium">Avg. Portfolio</p>
-                <p className="text-2xl font-bold text-purple-600">{Math.round(getTotalPortfolio() / investors.length)}</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avg. Portfolio</CardTitle>
+            <BarChart3 className="h-4 w-4 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-purple-600">₹{investorStats.avgPortfolio.toLocaleString()}Cr</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Investor List */}
+      {/* Controls */}
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div className="flex flex-col sm:flex-row gap-4 flex-1">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search investors..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8"
+                />
+              </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sectorFilter} onValueChange={setSectorFilter}>
+            <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectValue placeholder="Filter by sector" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Sectors</SelectItem>
+              {allSectors.map(sector => (
+                <SelectItem key={sector} value={sector}>{sector}</SelectItem>
+              ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Investor
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add New Investor</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="check_size">Check Size</Label>
+                  <Input
+                    id="check_size"
+                    value={formData.check_size}
+                    onChange={(e) => setFormData(prev => ({ ...prev, check_size: e.target.value }))}
+                    placeholder="e.g., ₹1-10Cr"
+                  />
+              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="investment_stage">Investment Stage</Label>
+                  <Input
+                    id="investment_stage"
+                    value={formData.investment_stage}
+                    onChange={(e) => setFormData(prev => ({ ...prev, investment_stage: e.target.value }))}
+                    placeholder="e.g., Seed-Series A"
+                  />
+                        </div>
+                <div className="space-y-2">
+                  <Label htmlFor="portfolio_count">Portfolio Count</Label>
+                  <Input
+                    id="portfolio_count"
+                    type="number"
+                    value={formData.portfolio_count}
+                    onChange={(e) => setFormData(prev => ({ ...prev, portfolio_count: parseInt(e.target.value) || 0 }))}
+                  />
+                          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="portfolio_value">Portfolio Value (Cr)</Label>
+                  <Input
+                    id="portfolio_value"
+                    type="number"
+                    step="0.01"
+                    value={formData.portfolio_value}
+                    onChange={(e) => setFormData(prev => ({ ...prev, portfolio_value: parseFloat(e.target.value) || 0 }))}
+                  />
+                          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="recent_investments">Recent Investments</Label>
+                  <Input
+                    id="recent_investments"
+                    type="number"
+                    value={formData.recent_investments}
+                    onChange={(e) => setFormData(prev => ({ ...prev, recent_investments: parseInt(e.target.value) || 0 }))}
+                  />
+                          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="success_rate">Success Rate (%)</Label>
+                  <Input
+                    id="success_rate"
+                    type="number"
+                    step="0.1"
+                    value={formData.success_rate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, success_rate: parseFloat(e.target.value) || 0 }))}
+                  />
+                          </div>
+                        </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Sectors</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={sectorInput}
+                    onChange={(e) => setSectorInput(e.target.value)}
+                    placeholder="Add sector"
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSector())}
+                  />
+                  <Button type="button" onClick={addSector} variant="outline">Add</Button>
+                      </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.sectors.map(sector => (
+                    <Badge key={sector} variant="secondary" className="cursor-pointer" onClick={() => removeSector(sector)}>
+                      {sector} ×
+                    </Badge>
+                  ))}
+                      </div>
+                    </div>
+
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Add Investor</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Investor Directory */}
       <Card>
         <CardHeader>
           <CardTitle>Investor Directory</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search investors..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+          {filteredInvestors.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No investors found
             </div>
-            <Select value={stageFilter} onValueChange={setStageFilter}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Filter by stage" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Stages</SelectItem>
-                <SelectItem value="Pre-Seed">Pre-Seed</SelectItem>
-                <SelectItem value="Seed">Seed</SelectItem>
-                <SelectItem value="Series A">Series A+</SelectItem>
-                <SelectItem value="Series B">Series B+</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="Active">Active</SelectItem>
-                <SelectItem value="Inactive">Inactive</SelectItem>
-                <SelectItem value="Pending">Pending</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-4">
-            {filteredInvestors.length === 0 ? (
-              <div className="text-center py-8">
-                <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No investors found</h3>
-                <p className="text-muted-foreground">
-                  Try adjusting your search or filters
-                </p>
-              </div>
-            ) : (
-              filteredInvestors.map((investor) => (
-                <Card key={investor.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filteredInvestors.map((investor) => (
+                <Card key={investor.id} className="relative">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <h3 className="font-semibold text-lg">{investor.name}</h3>
-                          {getStatusBadge(investor.status)}
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
-                          <div>
-                            <span className="font-medium">Check Size:</span> {investor.checkSize}
-                          </div>
-                          <div>
-                            <span className="font-medium">Portfolio:</span> {investor.portfolio} companies
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium">Stage Focus:</span> 
-                            {getStageBadge(investor.stage)}
-                          </div>
-                          <div>
-                            <span className="font-medium">Investment Type:</span> Equity
-                          </div>
-                        </div>
+                        <CardTitle className="text-lg">{investor.name}</CardTitle>
+                        <p className="text-sm text-muted-foreground">{investor.email}</p>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-1" />
-                          View Profile
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
-                        </Button>
-                      </div>
+                      <Badge variant={investor.status === 'active' ? 'default' : 'secondary'}>
+                        {investor.status}
+                      </Badge>
                     </div>
-
-                    {/* Additional Info */}
-                    <div className="mt-4 pt-4 border-t">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className="font-medium text-muted-foreground">Sector Focus:</span>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            <Badge variant="secondary" className="text-xs">FinTech</Badge>
-                            <Badge variant="secondary" className="text-xs">HealthTech</Badge>
-                            <Badge variant="secondary" className="text-xs">AI/ML</Badge>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Target className="h-4 w-4" />
+                      <span>{investor.checkSize}</span>
                           </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Briefcase className="h-4 w-4" />
+                      <span>{investor.portfolio} companies</span>
                         </div>
-                        <div>
-                          <span className="font-medium text-muted-foreground">Recent Investments:</span>
-                          <p className="text-sm mt-1">5 in last 6 months</p>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Award className="h-4 w-4" />
+                      <span>{investor.success_rate}% success rate</span>
                         </div>
-                        <div>
-                          <span className="font-medium text-muted-foreground">Success Rate:</span>
-                          <p className="text-sm mt-1 text-green-600 font-medium">78% portfolio success</p>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Building2 className="h-4 w-4" />
+                      <span>{investor.stage}</span>
                         </div>
+                    
+                    {investor.sectors && investor.sectors.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {investor.sectors.slice(0, 3).map(sector => (
+                          <Badge key={sector} variant="outline" className="text-xs">
+                            {sector}
+                          </Badge>
+                        ))}
+                        {investor.sectors.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{investor.sectors.length - 3} more
+                          </Badge>
+                        )}
                       </div>
+                    )}
+
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedInvestor(investor);
+                          setIsViewDialogOpen(true);
+                        }}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedInvestor(investor);
+                          setFormData({
+                            name: investor.name,
+                            description: investor.description || '',
+                            email: investor.email || '',
+                            check_size: investor.checkSize,
+                            investment_stage: investor.stage,
+                            sectors: investor.sectors || [],
+                            portfolio_count: investor.portfolio,
+                            portfolio_value: investor.portfolio_value,
+                            recent_investments: investor.recent_investments,
+                            success_rate: investor.success_rate,
+                            status: investor.status
+                          });
+                          setIsEditDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setSelectedInvestor(investor)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Investor</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{selectedInvestor?.name}"? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </CardContent>
                 </Card>
-              ))
+              ))}
+            </div>
             )}
-          </div>
         </CardContent>
       </Card>
 
-      {/* Investment Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Investment Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
+      {/* View Dialog */}
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Investor Details</DialogTitle>
+          </DialogHeader>
+          {selectedInvestor && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="font-medium">Sequoia Capital India</p>
-                  <p className="text-sm text-muted-foreground">Invested ₹25Cr in HealthTech startup</p>
+                  <Label className="font-semibold">Name</Label>
+                  <p>{selectedInvestor.name}</p>
                 </div>
-                <span className="text-xs text-muted-foreground">2 days ago</span>
+                <div>
+                  <Label className="font-semibold">Email</Label>
+                  <p>{selectedInvestor.email || 'N/A'}</p>
+                </div>
+                <div>
+                  <Label className="font-semibold">Check Size</Label>
+                  <p>{selectedInvestor.checkSize}</p>
+                </div>
+                <div>
+                  <Label className="font-semibold">Investment Stage</Label>
+                  <p>{selectedInvestor.stage}</p>
+                </div>
+                <div>
+                  <Label className="font-semibold">Portfolio Count</Label>
+                  <p>{selectedInvestor.portfolio}</p>
               </div>
-              <div className="flex items-center justify-between p-3 border rounded-lg">
                 <div>
-                  <p className="font-medium">Accel Partners</p>
-                  <p className="text-sm text-muted-foreground">Led Series A round of ₹15Cr</p>
+                  <Label className="font-semibold">Portfolio Value</Label>
+                  <p>₹{selectedInvestor.portfolio_value}Cr</p>
                 </div>
-                <span className="text-xs text-muted-foreground">1 week ago</span>
+                <div>
+                  <Label className="font-semibold">Recent Investments</Label>
+                  <p>{selectedInvestor.recent_investments}</p>
               </div>
-              <div className="flex items-center justify-between p-3 border rounded-lg">
                 <div>
-                  <p className="font-medium">Matrix Partners</p>
-                  <p className="text-sm text-muted-foreground">Participated in ₹8Cr seed round</p>
+                  <Label className="font-semibold">Success Rate</Label>
+                  <p>{selectedInvestor.success_rate}%</p>
                 </div>
-                <span className="text-xs text-muted-foreground">2 weeks ago</span>
+                <div>
+                  <Label className="font-semibold">Status</Label>
+                  <Badge variant={selectedInvestor.status === 'active' ? 'default' : 'secondary'}>
+                    {selectedInvestor.status}
+                  </Badge>
               </div>
             </div>
-          </CardContent>
-        </Card>
+              
+              {selectedInvestor.description && (
+                <div>
+                  <Label className="font-semibold">Description</Label>
+                  <p className="text-sm text-muted-foreground">{selectedInvestor.description}</p>
+                  </div>
+              )}
+              
+              {selectedInvestor.sectors && selectedInvestor.sectors.length > 0 && (
+                <div>
+                  <Label className="font-semibold">Sectors</Label>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {selectedInvestor.sectors.map(sector => (
+                      <Badge key={sector} variant="outline">
+                        {sector}
+                      </Badge>
+                    ))}
+                </div>
+              </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Investment Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>Pre-Seed</span>
-                <div className="flex items-center space-x-2">
-                  <div className="h-2 w-20 bg-muted rounded-full">
-                    <div className="h-2 w-6 bg-purple-500 rounded-full"></div>
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Investor</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdate} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-name">Name *</Label>
+                <Input
+                  id="edit-name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-email">Email</Label>
+                <Input
+                  id="edit-email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-check_size">Check Size</Label>
+                <Input
+                  id="edit-check_size"
+                  value={formData.check_size}
+                  onChange={(e) => setFormData(prev => ({ ...prev, check_size: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-investment_stage">Investment Stage</Label>
+                <Input
+                  id="edit-investment_stage"
+                  value={formData.investment_stage}
+                  onChange={(e) => setFormData(prev => ({ ...prev, investment_stage: e.target.value }))}
+                />
                   </div>
-                  <span className="text-sm">15%</span>
+              <div className="space-y-2">
+                <Label htmlFor="edit-portfolio_count">Portfolio Count</Label>
+                <Input
+                  id="edit-portfolio_count"
+                  type="number"
+                  value={formData.portfolio_count}
+                  onChange={(e) => setFormData(prev => ({ ...prev, portfolio_count: parseInt(e.target.value) || 0 }))}
+                />
+                </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-portfolio_value">Portfolio Value (Cr)</Label>
+                <Input
+                  id="edit-portfolio_value"
+                  type="number"
+                  step="0.01"
+                  value={formData.portfolio_value}
+                  onChange={(e) => setFormData(prev => ({ ...prev, portfolio_value: parseFloat(e.target.value) || 0 }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-recent_investments">Recent Investments</Label>
+                <Input
+                  id="edit-recent_investments"
+                  type="number"
+                  value={formData.recent_investments}
+                  onChange={(e) => setFormData(prev => ({ ...prev, recent_investments: parseInt(e.target.value) || 0 }))}
+                />
+                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-success_rate">Success Rate (%)</Label>
+                <Input
+                  id="edit-success_rate"
+                  type="number"
+                  step="0.1"
+                  value={formData.success_rate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, success_rate: parseFloat(e.target.value) || 0 }))}
+                />
                 </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span>Seed</span>
-                <div className="flex items-center space-x-2">
-                  <div className="h-2 w-20 bg-muted rounded-full">
-                    <div className="h-2 w-12 bg-blue-500 rounded-full"></div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Description</Label>
+              <Textarea
+                id="edit-description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                rows={3}
+              />
                   </div>
-                  <span className="text-sm">35%</span>
+
+            <div className="space-y-2">
+              <Label>Sectors</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={sectorInput}
+                  onChange={(e) => setSectorInput(e.target.value)}
+                  placeholder="Add sector"
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSector())}
+                />
+                <Button type="button" onClick={addSector} variant="outline">Add</Button>
                 </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Series A</span>
-                <div className="flex items-center space-x-2">
-                  <div className="h-2 w-20 bg-muted rounded-full">
-                    <div className="h-2 w-16 bg-green-500 rounded-full"></div>
-                  </div>
-                  <span className="text-sm">40%</span>
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Series B+</span>
-                <div className="flex items-center space-x-2">
-                  <div className="h-2 w-20 bg-muted rounded-full">
-                    <div className="h-2 w-4 bg-orange-500 rounded-full"></div>
-                  </div>
-                  <span className="text-sm">10%</span>
-                </div>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.sectors.map(sector => (
+                  <Badge key={sector} variant="secondary" className="cursor-pointer" onClick={() => removeSector(sector)}>
+                    {sector} ×
+                  </Badge>
+                ))}
               </div>
             </div>
-          </CardContent>
-        </Card>
+
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Update Investor</Button>
       </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

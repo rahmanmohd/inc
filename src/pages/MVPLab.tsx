@@ -1,7 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import IncubationApplicationForm from "@/components/IncubationApplicationForm";
+  import { IncubationApplicationForm } from "@/components/IncubationApplicationForm";
 import ConsultationDialog from "@/components/ConsultationDialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

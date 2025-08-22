@@ -464,6 +464,246 @@ const emailTemplates = {
         The Inc Combinator Team</p>
       </div>
     </div>
+  `,
+
+  // Status Update Email Templates
+  'incubation_status_update': (data) => `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px;">Application Status Update 📋</h1>
+      </div>
+      
+      <div style="padding: 30px; background: #fff;">
+        <h2>Hi ${data.applicationDetails?.founder_name || 'there'},</h2>
+        <p>Your incubation application has been reviewed and the status has been updated.</p>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3>Application Details:</h3>
+          <ul>
+            <li><strong>Startup Name:</strong> ${data.applicationDetails?.startup_name || 'N/A'}</li>
+            <li><strong>Founder Name:</strong> ${data.applicationDetails?.founder_name || 'N/A'}</li>
+            <li><strong>Email:</strong> ${data.applicationDetails?.email || 'N/A'}</li>
+            <li><strong>Previous Status:</strong> Pending</li>
+            <li><strong>New Status:</strong> <span style="color: ${data.status === 'approved' ? '#10b981' : data.status === 'rejected' ? '#ef4444' : '#f59e0b'}; font-weight: bold;">${data.status?.toUpperCase()}</span></li>
+            ${data.adminNotes ? `<li><strong>Admin Notes:</strong> ${data.adminNotes}</li>` : ''}
+          </ul>
+        </div>
+        
+        ${data.status === 'approved' ? `
+        <h3>🎉 Congratulations! Your application has been approved!</h3>
+        <ul>
+          <li>You now have access to our incubation resources</li>
+          <li>Join our exclusive founder community</li>
+          <li>Schedule your onboarding session</li>
+          <li>Access mentorship and networking opportunities</li>
+        </ul>
+        ` : data.status === 'rejected' ? `
+        <h3>Application Review Complete</h3>
+        <ul>
+          <li>We've carefully reviewed your application</li>
+          <li>You may reapply in the future with improvements</li>
+          <li>Consider joining our community programs</li>
+          <li>We're here to support your entrepreneurial journey</li>
+        </ul>
+        ` : `
+        <h3>Application Under Review</h3>
+        <ul>
+          <li>Your application is being carefully reviewed</li>
+          <li>We'll provide updates as the review progresses</li>
+          <li>Feel free to reach out with any questions</li>
+          <li>Thank you for your patience</li>
+        </ul>
+        `}
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://inc-combinator.com/dashboard" style="background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+            View Dashboard
+          </a>
+        </div>
+        
+        <p>Best regards,<br>
+        The Inc Combinator Team</p>
+      </div>
+    </div>
+  `,
+
+  'investment_status_update': (data) => `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px;">Investment Application Status Update 💰</h1>
+      </div>
+      
+      <div style="padding: 30px; background: #fff;">
+        <h2>Hi ${data.applicationDetails?.founder_name || 'there'},</h2>
+        <p>Your investment application has been reviewed and the status has been updated.</p>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3>Application Details:</h3>
+          <ul>
+            <li><strong>Startup Name:</strong> ${data.applicationDetails?.startup_name || 'N/A'}</li>
+            <li><strong>Founder Name:</strong> ${data.applicationDetails?.founder_name || 'N/A'}</li>
+            <li><strong>Email:</strong> ${data.applicationDetails?.email || 'N/A'}</li>
+            <li><strong>Previous Status:</strong> Pending</li>
+            <li><strong>New Status:</strong> <span style="color: ${data.status === 'approved' ? '#10b981' : data.status === 'rejected' ? '#ef4444' : '#f59e0b'}; font-weight: bold;">${data.status?.toUpperCase()}</span></li>
+            ${data.adminNotes ? `<li><strong>Admin Notes:</strong> ${data.adminNotes}</li>` : ''}
+          </ul>
+        </div>
+        
+        ${data.status === 'approved' ? `
+        <h3>🎉 Congratulations! Your investment application has been approved!</h3>
+        <ul>
+          <li>Our investment team will contact you for next steps</li>
+          <li>Prepare for due diligence process</li>
+          <li>Schedule pitch meetings with investors</li>
+          <li>Access our investor network</li>
+        </ul>
+        ` : data.status === 'rejected' ? `
+        <h3>Investment Application Review Complete</h3>
+        <ul>
+          <li>We've carefully reviewed your investment application</li>
+          <li>You may reapply in the future with improvements</li>
+          <li>Consider our other funding programs</li>
+          <li>We're here to support your growth journey</li>
+        </ul>
+        ` : `
+        <h3>Investment Application Under Review</h3>
+        <ul>
+          <li>Your investment application is being carefully reviewed</li>
+          <li>We'll provide updates as the review progresses</li>
+          <li>Feel free to reach out with any questions</li>
+          <li>Thank you for your patience</li>
+        </ul>
+        `}
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://inc-combinator.com/investor-centre" style="background: #f59e0b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+            View Investor Centre
+          </a>
+        </div>
+        
+        <p>Best regards,<br>
+        The Inc Combinator Team</p>
+      </div>
+    </div>
+  `,
+
+  'program_status_update': (data) => `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px;">Program Application Status Update 🎯</h1>
+      </div>
+      
+      <div style="padding: 30px; background: #fff;">
+        <h2>Hi ${data.applicationDetails?.founder_name || 'there'},</h2>
+        <p>Your program application has been reviewed and the status has been updated.</p>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3>Application Details:</h3>
+          <ul>
+            <li><strong>Founder Name:</strong> ${data.applicationDetails?.founder_name || 'N/A'}</li>
+            <li><strong>Email:</strong> ${data.applicationDetails?.email || 'N/A'}</li>
+            <li><strong>Previous Status:</strong> Pending</li>
+            <li><strong>New Status:</strong> <span style="color: ${data.status === 'approved' ? '#10b981' : data.status === 'rejected' ? '#ef4444' : '#f59e0b'}; font-weight: bold;">${data.status?.toUpperCase()}</span></li>
+            ${data.adminNotes ? `<li><strong>Admin Notes:</strong> ${data.adminNotes}</li>` : ''}
+          </ul>
+        </div>
+        
+        ${data.status === 'approved' ? `
+        <h3>🎉 Congratulations! Your program application has been approved!</h3>
+        <ul>
+          <li>You now have access to our program resources</li>
+          <li>Join our exclusive program community</li>
+          <li>Schedule your program orientation</li>
+          <li>Access mentorship and networking opportunities</li>
+        </ul>
+        ` : data.status === 'rejected' ? `
+        <h3>Program Application Review Complete</h3>
+        <ul>
+          <li>We've carefully reviewed your program application</li>
+          <li>You may reapply in the future with improvements</li>
+          <li>Consider joining our other programs</li>
+          <li>We're here to support your learning journey</li>
+        </ul>
+        ` : `
+        <h3>Program Application Under Review</h3>
+        <ul>
+          <li>Your program application is being carefully reviewed</li>
+          <li>We'll provide updates as the review progresses</li>
+          <li>Feel free to reach out with any questions</li>
+          <li>Thank you for your patience</li>
+        </ul>
+        `}
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://inc-combinator.com/programs" style="background: #8b5cf6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+            View Programs
+          </a>
+        </div>
+        
+        <p>Best regards,<br>
+        The Inc Combinator Team</p>
+      </div>
+    </div>
+  `,
+
+  'hackathon_status_update': (data) => `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px;">Hackathon Registration Status Update 🚀</h1>
+      </div>
+      
+      <div style="padding: 30px; background: #fff;">
+        <h2>Hi ${data.full_name || 'there'},</h2>
+        <p>Your hackathon registration has been reviewed and the status has been updated.</p>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3>Registration Details:</h3>
+          <ul>
+            <li><strong>Full Name:</strong> ${data.full_name || 'N/A'}</li>
+            <li><strong>Programming Languages:</strong> ${data.programming_languages || 'N/A'}</li>
+            <li><strong>Experience Level:</strong> ${data.experience || 'N/A'}</li>
+            <li><strong>Previous Status:</strong> Pending</li>
+            <li><strong>New Status:</strong> <span style="color: ${data.status === 'approved' ? '#10b981' : data.status === 'rejected' ? '#ef4444' : '#f59e0b'}; font-weight: bold;">${data.status?.toUpperCase()}</span></li>
+            ${data.admin_notes ? `<li><strong>Admin Notes:</strong> ${data.admin_notes}</li>` : ''}
+          </ul>
+        </div>
+        
+        ${data.status === 'approved' ? `
+        <h3>🎉 Congratulations! Your hackathon registration has been approved!</h3>
+        <ul>
+          <li>You're officially registered for the AI Innovation Challenge 2025</li>
+          <li>Join our Discord community for networking and team formation</li>
+          <li>Attend the pre-hackathon workshop sessions</li>
+          <li>Get ready to build something amazing and innovative!</li>
+        </ul>
+        ` : data.status === 'rejected' ? `
+        <h3>Hackathon Registration Review Complete</h3>
+        <ul>
+          <li>We've carefully reviewed your hackathon registration</li>
+          <li>You may reapply for future hackathons and events</li>
+          <li>Consider joining our other innovation programs</li>
+          <li>We're here to support your learning and development journey</li>
+        </ul>
+        ` : `
+        <h3>Hackathon Registration Under Review</h3>
+        <ul>
+          <li>Your hackathon registration is being carefully reviewed</li>
+          <li>We'll provide updates as the review progresses</li>
+          <li>Feel free to reach out with any questions</li>
+          <li>Thank you for your patience</li>
+        </ul>
+        `}
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://inc-combinator.com/hackathon" style="background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+            View Hackathon Details
+          </a>
+        </div>
+        
+        <p>Best regards,<br>
+        The Inc Combinator Team</p>
+      </div>
+    </div>
   `
 };
 

@@ -9,11 +9,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthUI } from "@/context/AuthUIContext";
+import { useAppState } from "@/context/AppStateContext";
 import apiService from "@/services/apiService";
 import emailService from "@/services/emailService";
+import { Loader2 } from "lucide-react";
 
 const consultationSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -32,10 +34,18 @@ interface ConsultationDialogProps {
 
 const ConsultationDialog = ({ children, title = "Schedule Consultation", description = "Book a consultation with our experts" }: ConsultationDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
   const { openLogin } = useAuthUI();
+  const {
+    state: { forms },
+    setFormSubmitting,
+    setFormSubmitted,
+    resetForm,
+    triggerGlobalRefresh
+  } = useAppState();
+
+  const isLoading = forms.consultation.isSubmitting;
   
   const form = useForm<z.infer<typeof consultationSchema>>({
     resolver: zodResolver(consultationSchema),
@@ -58,6 +68,14 @@ const ConsultationDialog = ({ children, title = "Schedule Consultation", descrip
     { value: "general", label: "General Consultation" },
   ];
 
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      resetForm('consultation');
+      form.reset();
+    }
+  }, [isOpen, resetForm, form]);
+
   const handleOpenChange = (next: boolean) => {
     if (next && !isAuthenticated) {
       openLogin();
@@ -78,7 +96,7 @@ const ConsultationDialog = ({ children, title = "Schedule Consultation", descrip
       return;
     }
 
-    setIsLoading(true);
+    setFormSubmitting('consultation', true);
 
     try {
       // Ensure user profile exists
@@ -100,46 +118,66 @@ const ConsultationDialog = ({ children, title = "Schedule Consultation", descrip
         status: 'pending'
       };
 
+      console.log('Submitting consultation data:', consultationData);
+
       // Submit consultation using API service
       const response = await apiService.submitConsultation(consultationData);
 
-      if (response.success) {
-        // Send confirmation email
-        const emailResponse = await emailService.sendConsultationRequestEmail(
-          values.email,
-          values.name,
-          values
-        );
+      if (!response.success) {
+        console.error('Consultation DB insert error:', response.error);
+        const errMessage = typeof response.error === 'string'
+          ? response.error
+          : (response.error && (response.error.message || response.error.details || response.error.hint))
+            || 'Failed to schedule consultation';
+        throw new Error(errMessage);
+      }
 
-        if (emailResponse.success) {
-          toast({
-            title: "Consultation Scheduled Successfully! 🚀",
-            description: "Your consultation request has been submitted and confirmation email sent. You can schedule additional consultations anytime. We'll contact you within 24 hours to confirm your consultation.",
-          });
-        } else {
-          toast({
-            title: "Consultation Scheduled Successfully! 🚀",
-            description: "Your consultation request has been submitted. You can schedule additional consultations anytime. We'll contact you within 24 hours to confirm your consultation.",
-          });
-        }
-        form.reset();
-        setIsOpen(false);
-      } else {
+      // Send confirmation email (best-effort)
+      console.log('Sending confirmation email...');
+      const emailResponse = await emailService.sendConsultationRequestEmail(
+        values.email,
+        values.name,
+        values
+      );
+
+      console.log('Email response:', emailResponse);
+
+      if (!emailResponse.success) {
+        console.warn('Email sending failed:', emailResponse.error);
+        // Show a warning toast about email failure
         toast({
-          title: "Submission Failed",
-          description: response.message || "Failed to schedule consultation. Please try again.",
-          variant: "destructive"
+          title: "Consultation Scheduled Successfully! 📅",
+          description: "Your consultation request has been submitted successfully! However, we couldn't send a confirmation email. Please check your spam folder or contact us if you don't receive a response within 24 hours.",
+          variant: "default"
+        });
+      } else {
+        console.log('Email sent successfully');
+        toast({
+          title: "Consultation Scheduled Successfully! 📅",
+          description: "Your consultation request has been submitted and confirmation email sent. We'll contact you within 24 hours to confirm your consultation.",
         });
       }
+
+      // Mark form as submitted and trigger global refresh
+      setFormSubmitted('consultation');
+      triggerGlobalRefresh();
+
+      // Reset form and close dialog
+      form.reset();
+      setIsOpen(false);
+
     } catch (error) {
       console.error('Consultation submission error:', error);
+      const message = (error instanceof Error && error.message)
+        || (typeof error === 'string' ? error : '')
+        || 'Failed to schedule consultation. Please try again.';
       toast({
-        title: "Submission Error",
-        description: "An unexpected error occurred. Please try again later.",
+        title: "Submission Failed",
+        description: message,
         variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
+      setFormSubmitting('consultation', false);
     }
   };
 
@@ -257,7 +295,14 @@ const ConsultationDialog = ({ children, title = "Schedule Consultation", descrip
             />
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Scheduling..." : "Schedule Consultation"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Scheduling...
+                </>
+              ) : (
+                "Schedule Consultation"
+              )}
             </Button>
           </form>
         </Form>

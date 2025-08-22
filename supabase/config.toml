@@ -256,3 +256,47 @@ url = ""
 # backend = "postgres"
 # Configure the analytics retention period.
 # retention_period = "90 days"
+
+[functions.application-management-api]
+enabled = true
+verify_jwt = true
+import_map = "./functions/application-management-api/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/application-management-api/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/application-management-api/*.html" ]
+
+[functions.investor-management-api]
+enabled = true
+verify_jwt = true
+import_map = "./functions/investor-management-api/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/investor-management-api/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/investor-management-api/*.html" ]
+
+[functions.deal-management-api]
+enabled = true
+verify_jwt = true
+import_map = "./functions/deal-management-api/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/deal-management-api/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/deal-management-api/*.html" ]
+
+[functions.analytics-management-api]
+enabled = true
+verify_jwt = true
+import_map = "./functions/analytics-management-api/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/analytics-management-api/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/analytics-management-api/*.html" ]

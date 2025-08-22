@@ -3,11 +3,8 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Handshake, Building, Users, Globe, TrendingUp, Award } from "lucide-react";
+import PartnershipFormDialog from "@/components/PartnershipFormDialog";
 
 const Partnership = () => {
   const partnershipTypes = [
@@ -169,99 +166,12 @@ const Partnership = () => {
               </p>
             </div>
 
-            <Card className="p-8 bg-card-gradient border-border">
-              <form className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="companyName">Company Name *</Label>
-                    <Input id="companyName" placeholder="Your company name" required />
-                  </div>
-                  <div>
-                    <Label htmlFor="industry">Industry *</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select industry" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="fintech">FinTech</SelectItem>
-                        <SelectItem value="healthcare">Healthcare</SelectItem>
-                        <SelectItem value="technology">Technology</SelectItem>
-                        <SelectItem value="retail">Retail</SelectItem>
-                        <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="contactName">Contact Person *</Label>
-                    <Input id="contactName" placeholder="Full name" required />
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Email *</Label>
-                    <Input id="email" type="email" placeholder="Business email" required />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" placeholder="Contact number" />
-                  </div>
-                  <div>
-                    <Label htmlFor="partnershipType">Partnership Type *</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="corporate">Corporate Innovation</SelectItem>
-                        <SelectItem value="venture">Venture Partnership</SelectItem>
-                        <SelectItem value="technology">Technology Integration</SelectItem>
-                        <SelectItem value="mentorship">Mentorship Program</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="companyDetails">Company Details *</Label>
-                  <Textarea
-                    id="companyDetails"
-                    placeholder="Brief description of your company, size, and key business areas"
-                    rows={3}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="partnershipGoals">Partnership Goals *</Label>
-                  <Textarea
-                    id="partnershipGoals"
-                    placeholder="What do you hope to achieve through this partnership? What value can you bring?"
-                    rows={4}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="timeline">Preferred Timeline</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="When would you like to start?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="immediate">Immediately</SelectItem>
-                      <SelectItem value="1month">Within 1 month</SelectItem>
-                      <SelectItem value="3months">Within 3 months</SelectItem>
-                      <SelectItem value="6months">Within 6 months</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex gap-4 pt-4">
-                  <Button type="submit" variant="hero" className="flex-1">
+            <PartnershipFormDialog>
+              <Button variant="hero" size="lg" className="w-full">
+                <Handshake className="mr-2 h-5 w-5" />
                     Submit Partnership Request
                   </Button>
-                </div>
-              </form>
-            </Card>
+            </PartnershipFormDialog>
           </div>
         </div>
       </section>

@@ -1,5 +1,6 @@
 import Navigation from "@/components/Navigation";
-import IncubationApplicationForm from "@/components/IncubationApplicationForm";
+import { IncubationApplicationForm } from "@/components/IncubationApplicationForm";
+import { DynamicIncubationPrograms } from "@/components/DynamicIncubationPrograms";
 import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ConsultationDialog from "@/components/ConsultationDialog";
@@ -8,40 +9,82 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, Users, TrendingUp, Lightbulb, Target, Award, Building } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 
 const Incubation = () => {
-  const programs = [
-    {
-      id: 1,
-      name: "Early Stage Incubation",
-      duration: "6 months",
-      stage: "Idea to MVP",
-      description: "Perfect for early-stage startups looking to validate their idea and build their first product.",
-      benefits: ["Seed funding up to ₹25L", "Weekly mentorship", "Product development support", "Market validation"],
-      nextCohort: "March 2025",
-      applications: "Open"
-    },
-    {
-      id: 2,
-      name: "Growth Acceleration",
-      duration: "12 months",
-      stage: "MVP to Scale",
-      description: "For startups with proven traction ready to scale their business and expand market reach.",
-      benefits: ["Growth funding up to ₹1Cr", "Go-to-market strategy", "Investor connections", "International expansion"],
-      nextCohort: "April 2025",
-      applications: "Open"
-    },
-    {
-      id: 3,
-      name: "Deep Tech Incubation",
-      duration: "18 months",
-      stage: "R&D to Market",
-      description: "Specialized program for deep tech startups working on breakthrough technologies.",
-      benefits: ["R&D funding up to ₹2Cr", "Technical mentorship", "Lab facilities", "Patent support"],
-      nextCohort: "May 2025",
-      applications: "Coming Soon"
+  const { toast } = useToast();
+  const [applicationDialogOpen, setApplicationDialogOpen] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState<any>(null);
+
+  const handleProgramApply = async (program: any) => {
+    // If it's the hero section button (no program ID), fetch the default program
+    if (!program.id) {
+      try {
+        const { data, error } = await supabase
+          .from('incubation_programs')
+          .select('*')
+          .eq('is_default', true)
+          .eq('published', true)
+          .single();
+        
+        if (error || !data) {
+          console.error('Error fetching default program:', error);
+          console.log('Query result:', { data, error });
+          
+          // Check if there are any published programs at all
+          const { data: allPrograms, error: allError } = await supabase
+            .from('incubation_programs')
+            .select('*')
+            .eq('published', true)
+            .limit(1);
+          
+          if (allPrograms && allPrograms.length > 0) {
+            // Use the first available published program
+            setSelectedProgram(allPrograms[0]);
+          } else {
+            toast({
+              title: "No Programs Available",
+              description: "No incubation programs are currently available. Please contact support or try again later.",
+              variant: "destructive"
+            })
+            return;
+          }
+        } else {
+          setSelectedProgram(data);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        toast({
+          title: "Error",
+          description: "Could not load the incubation program. Please try again later.",
+          variant: "destructive"
+        })
+        return;
+      }
+    } else {
+      setSelectedProgram(program);
     }
-  ];
+    setApplicationDialogOpen(true);
+  };
+
+  const handleApplicationSuccess = () => {
+    setApplicationDialogOpen(false);
+    setSelectedProgram(null);
+    
+    // Show success toast in parent component as well
+    toast({
+      title: "🎉 Application Submitted Successfully!",
+      description: "Your incubation application has been submitted. We'll review it and get back to you soon.",
+    });
+    
+    // Optional: Refresh the programs list to update application counts
+    // Remove the immediate reload to allow toast to be seen
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000); // Delay reload by 2 seconds to show toast
+  };
 
   const success_stories = [
     {
@@ -149,11 +192,16 @@ const Incubation = () => {
             designed to accelerate your startup journey from concept to market success.
           </p>
           <div className="flex justify-center space-x-4">
-            <IncubationApplicationForm>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-                Apply for Incubation
-              </Button>
-            </IncubationApplicationForm>
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow"
+              onClick={() => handleProgramApply({
+                title: "Tech Innovation Incubation Program 2024",
+                subtitle: "Transform Your Startup with Expert Mentorship & Resources"
+              })}
+            >
+              Apply for Incubation
+            </Button>
             <Link to="/program-details">
               <Button variant="outline" size="lg">
                 Program Details
@@ -206,69 +254,10 @@ const Incubation = () => {
           </Card>
         </div>
 
-        {/* Incubation Programs */}
+        {/* Dynamic Incubation Programs */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Incubation Programs</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {programs.map((program) => (
-              <Card key={program.id} className="hover:shadow-lg transition-all duration-300 hover:scale-105">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <Badge variant={program.applications === "Open" ? "default" : "secondary"}>
-                      {program.applications}
-                    </Badge>
-                    <div className="text-2xl">🚀</div>
-                  </div>
-                  <CardTitle className="text-xl">{program.name}</CardTitle>
-                  <CardDescription className="flex items-center space-x-4 text-sm">
-                    <span className="flex items-center space-x-1">
-                      <Clock className="h-3 w-3" />
-                      <span>{program.duration}</span>
-                    </span>
-                    <Badge variant="outline" className="text-xs">{program.stage}</Badge>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">{program.description}</p>
-                  
-                  <div>
-                    <p className="text-sm font-medium mb-2">Key Benefits:</p>
-                    <div className="space-y-1">
-                      {program.benefits.map((benefit, index) => (
-                        <div key={index} className="flex items-start space-x-2">
-                          <CheckCircle className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
-                          <span className="text-xs text-muted-foreground">{benefit}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="text-sm text-muted-foreground">
-                    <p><strong>Next Cohort:</strong> {program.nextCohort}</p>
-                  </div>
-
-                  <div className="pt-4 space-y-2">
-                    {program.applications === "Open" ? (
-                      <IncubationApplicationForm>
-                        <Button className="w-full">
-                          Apply Now
-                        </Button>
-                      </IncubationApplicationForm>
-                    ) : (
-                      <Button className="w-full" disabled>
-                        Applications Opening Soon
-                      </Button>
-                    )}
-                    <Link to="/program-details">
-                      <Button variant="outline" className="w-full">
-                        Learn More
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <h2 className="text-3xl font-bold text-center mb-8">Upcoming Incubation Programs</h2>
+          <DynamicIncubationPrograms onApply={handleProgramApply} />
         </section>
 
         {/* Benefits */}
@@ -351,11 +340,16 @@ const Incubation = () => {
             funding support, and access to a thriving ecosystem of entrepreneurs and investors.
           </p>
           <div className="flex justify-center space-x-4">
-            <IncubationApplicationForm>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow">
-                Apply Now
-              </Button>
-            </IncubationApplicationForm>
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-primary to-orange-400 hover:shadow-orange-glow"
+              onClick={() => handleProgramApply({
+                title: "Tech Innovation Incubation Program 2024",
+                subtitle: "Transform Your Startup with Expert Mentorship & Resources"
+              })}
+            >
+              Apply Now
+            </Button>
             <ConsultationDialog>
               <Button variant="outline" size="lg">
                 Schedule Consultation
@@ -365,6 +359,16 @@ const Incubation = () => {
         </section>
       </main>
       <Footer />
+
+      {/* Incubation Application Dialog */}
+      {applicationDialogOpen && selectedProgram && (
+        <IncubationApplicationForm
+          program={selectedProgram}
+          open={applicationDialogOpen}
+          onOpenChange={setApplicationDialogOpen}
+          onSuccess={handleApplicationSuccess}
+        />
+      )}
     </div>
   );
 };
