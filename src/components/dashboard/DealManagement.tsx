@@ -55,6 +55,11 @@ const DealManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [dealsPerPage] = useState(10);
+  const [totalDeals, setTotalDeals] = useState(0);
+  
   // Dialog states
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -94,6 +99,7 @@ const DealManagement = () => {
 
       if (directoryResponse.success) {
         setDeals(directoryResponse.data);
+        setTotalDeals(directoryResponse.data.length);
         console.log(`Loaded ${directoryResponse.data.length} deals`);
       } else {
         console.error('Failed to load deals:', directoryResponse.error);
@@ -134,6 +140,17 @@ const DealManagement = () => {
     }
 
     setFilteredDeals(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+
+  // Calculate pagination
+  const indexOfLastDeal = currentPage * dealsPerPage;
+  const indexOfFirstDeal = indexOfLastDeal - dealsPerPage;
+  const currentDeals = filteredDeals.slice(indexOfFirstDeal, indexOfLastDeal);
+  const totalPages = Math.ceil(filteredDeals.length / dealsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   const handleManualRefresh = () => {
@@ -328,13 +345,13 @@ const DealManagement = () => {
           <CardTitle>Deal Directory</CardTitle>
         </CardHeader>
         <CardContent>
-          {filteredDeals.length === 0 ? (
+          {currentDeals.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground">No deals found</p>
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredDeals.map((deal) => (
+              {currentDeals.map((deal) => (
                 <div
                   key={deal.id}
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
@@ -378,6 +395,48 @@ const DealManagement = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-6 pt-4 border-t">
+              <div className="text-sm text-muted-foreground">
+                Showing {indexOfFirstDeal + 1} to {Math.min(indexOfLastDeal, filteredDeals.length)} of {filteredDeals.length} deals
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(page)}
+                      className="w-8 h-8 p-0"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>

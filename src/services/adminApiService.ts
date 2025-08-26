@@ -1,10 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/supabase';
+import { supabase } from '@/lib/supabase';
 
-const supabaseUrl = 'https://ysxtcljsclkoatngtihl.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzeHRjbGpzY2xrb2F0bmd0aWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ3OTI2MzksImV4cCI6MjA1MDM2ODYzOX0.79r0jRRy_3iWQEI2qLKJiN6CjJgH0Bif5L7ReLUB8lE';
-
-const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+// Get Supabase URL from environment
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ysxtcljsclkoatngtihl.supabase.co';
 
 export interface ApiResponse<T> {
   success: boolean;

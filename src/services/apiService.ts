@@ -1,12 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/supabase';
 import authService from '@/services/authService';
-
-// Initialize Supabase client with typed database
-const supabaseUrl = 'https://ysxtcljsclkoatngtihl.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzeHRjbGpzY2xrb2F0bmd0aWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NDE5NjYsImV4cCI6MjA3MDQxNzk2Nn0.TLkkrBzwj6g6vQ-Hh52qBvRjYvAnHRTExf2CR2WqtIY';
-
-const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 // Type aliases for better readability
 type Profile = Database['public']['Tables']['profiles']['Row'];

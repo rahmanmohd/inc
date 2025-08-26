@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import apiService from "@/services/apiService";
-import { Calendar, FileText, Users, Target, MessageSquare, Code } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { Calendar, FileText, Users, Target, MessageSquare, Code, Zap, Bell } from "lucide-react";
 
 interface UserApplicationsHistoryProps {
   className?: string;
@@ -15,13 +16,20 @@ interface UserApplicationsHistoryProps {
 const UserApplicationsHistory = ({ className }: UserApplicationsHistoryProps) => {
   const [applications, setApplications] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isRealTimeConnected, setIsRealTimeConnected] = useState(false);
+  const [newApplicationsCount, setNewApplicationsCount] = useState(0);
   const { user } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
     if (user?.id) {
       loadUserApplications();
+      setupRealTimeSubscriptions();
     }
+
+    return () => {
+      cleanupSubscriptions();
+    };
   }, [user?.id]);
 
   const loadUserApplications = async () => {
@@ -47,6 +55,135 @@ const UserApplicationsHistory = ({ className }: UserApplicationsHistoryProps) =>
     } finally {
       setLoading(false);
     }
+  };
+
+  // Real-time subscription setup
+  const setupRealTimeSubscriptions = useCallback(() => {
+    if (!user?.id) return;
+
+    const subscriptions: any[] = [];
+
+    // Application tables configuration
+    const applicationTables = [
+      { table: 'incubation_applications', key: 'incubation', userField: 'applicant_id' },
+      { table: 'investment_applications', key: 'investment', userField: 'applicant_id' },
+      { table: 'program_applications', key: 'program', userField: 'applicant_id' },
+      { table: 'mentor_applications', key: 'mentor', userField: 'user_id' },
+      { table: 'consultations', key: 'consultations', userField: 'user_id' },
+      { table: 'hackathon_registrations', key: 'hackathon', userField: 'user_id' }
+    ];
+
+    // Subscribe to each application table
+    applicationTables.forEach(({ table, key, userField }) => {
+      const subscription = supabase
+        .channel(`user_applications_${table}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: table,
+            filter: `${userField}=eq.${user.id}`
+          },
+          (payload) => {
+            console.log(`Real-time update on ${table}:`, payload);
+            handleRealTimeUpdate(payload, key);
+          }
+        )
+        .subscribe((status) => {
+          console.log(`Subscription status for ${table}:`, status);
+          if (status === 'SUBSCRIBED') {
+            setIsRealTimeConnected(true);
+          }
+        });
+
+      subscriptions.push(subscription);
+    });
+
+    // Store subscriptions for cleanup
+    (window as any).applicationSubscriptions = subscriptions;
+
+    // Show connection status
+    toast({
+      title: "🔴 Live Updates Active",
+      description: "Your applications will update in real-time",
+      duration: 3000,
+    });
+  }, [user?.id, toast]);
+
+  // Handle real-time updates
+  const handleRealTimeUpdate = useCallback((payload: any, applicationKey: string) => {
+    const { eventType, new: newRecord, old: oldRecord } = payload;
+
+    setApplications((prev: any) => {
+      if (!prev) return prev;
+
+      const updated = { ...prev };
+
+      switch (eventType) {
+        case 'INSERT':
+          // New application submitted
+          updated[applicationKey] = [newRecord, ...updated[applicationKey]];
+          setNewApplicationsCount(count => count + 1);
+          
+          toast({
+            title: "📝 New Application Submitted",
+            description: `Your ${applicationKey} application has been submitted successfully`,
+            duration: 5000,
+          });
+          break;
+
+        case 'UPDATE':
+          // Application status changed
+          updated[applicationKey] = updated[applicationKey].map((app: any) =>
+            app.id === newRecord.id ? newRecord : app
+          );
+
+          // Check if status changed
+          if (oldRecord.status !== newRecord.status) {
+            const statusEmoji = {
+              'approved': '✅',
+              'rejected': '❌',
+              'pending': '⏳',
+              'under_review': '👀',
+              'submitted': '📋'
+            };
+
+            toast({
+              title: `${statusEmoji[newRecord.status as keyof typeof statusEmoji] || '📄'} Status Updated`,
+              description: `Your ${applicationKey} application is now ${newRecord.status}`,
+              duration: 5000,
+              variant: newRecord.status === 'approved' ? 'default' : 
+                       newRecord.status === 'rejected' ? 'destructive' : 'default'
+            });
+          }
+          break;
+
+        case 'DELETE':
+          // Application deleted (rare)
+          updated[applicationKey] = updated[applicationKey].filter((app: any) => app.id !== oldRecord.id);
+          break;
+      }
+
+      return updated;
+    });
+  }, [toast]);
+
+  // Cleanup subscriptions
+  const cleanupSubscriptions = useCallback(() => {
+    const subscriptions = (window as any).applicationSubscriptions;
+    if (subscriptions) {
+      subscriptions.forEach((sub: any) => {
+        sub.unsubscribe();
+      });
+      (window as any).applicationSubscriptions = null;
+    }
+    setIsRealTimeConnected(false);
+  }, []);
+
+  // Clear new applications count
+  const clearNewApplicationsCount = () => {
+    setNewApplicationsCount(0);
   };
 
   const getStatusColor = (status: string) => {
@@ -112,13 +249,51 @@ const UserApplicationsHistory = ({ className }: UserApplicationsHistoryProps) =>
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          My Applications
-        </CardTitle>
-        <CardDescription>
-          You have submitted {totalApplications} application{totalApplications !== 1 ? 's' : ''} in total
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              My Applications
+              {isRealTimeConnected && (
+                <div className="flex items-center gap-1 text-sm">
+                  <Zap className="h-4 w-4 text-green-500" />
+                  <span className="text-green-500 font-normal">Live</span>
+                </div>
+              )}
+              {newApplicationsCount > 0 && (
+                <Badge 
+                  variant="destructive" 
+                  className="animate-pulse"
+                  onClick={clearNewApplicationsCount}
+                >
+                  <Bell className="h-3 w-3 mr-1" />
+                  {newApplicationsCount} new
+                </Badge>
+              )}
+            </CardTitle>
+            <CardDescription>
+              You have submitted {totalApplications} application{totalApplications !== 1 ? 's' : ''} in total
+              {isRealTimeConnected && (
+                <span className="ml-2 text-green-600">• Updates in real-time</span>
+              )}
+            </CardDescription>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={loadUserApplications}
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+              ) : (
+                "Refresh"
+              )}
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="all" className="w-full">
@@ -248,6 +423,13 @@ const UserApplicationsHistory = ({ className }: UserApplicationsHistoryProps) =>
 
 // Application Card Component
 const ApplicationCard = ({ app, type }: { app: any; type: string }) => {
+  // Check if application was created in the last 5 minutes (consider it "new")
+  const isNew = new Date(app.created_at).getTime() > Date.now() - 5 * 60 * 1000;
+  
+  // Check if status was updated in the last 5 minutes
+  const isRecentlyUpdated = app.updated_at && 
+    new Date(app.updated_at).getTime() > Date.now() - 5 * 60 * 1000 &&
+    new Date(app.updated_at).getTime() > new Date(app.created_at).getTime() + 1000;
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'approved':
@@ -312,7 +494,11 @@ const ApplicationCard = ({ app, type }: { app: any; type: string }) => {
   };
 
   return (
-    <Card className="border-l-4 border-l-primary">
+    <Card className={`border-l-4 ${
+      isNew ? 'border-l-green-500 bg-green-50 animate-pulse' : 
+      isRecentlyUpdated ? 'border-l-orange-500 bg-orange-50' : 
+      'border-l-primary'
+    }`}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -322,6 +508,18 @@ const ApplicationCard = ({ app, type }: { app: any; type: string }) => {
               <Badge className={getStatusColor(app.status)}>
                 {app.status || 'Submitted'}
               </Badge>
+              {isNew && (
+                <Badge variant="secondary" className="text-green-700 bg-green-100">
+                  <Zap className="h-3 w-3 mr-1" />
+                  NEW
+                </Badge>
+              )}
+              {isRecentlyUpdated && !isNew && (
+                <Badge variant="secondary" className="text-orange-700 bg-orange-100">
+                  <Bell className="h-3 w-3 mr-1" />
+                  UPDATED
+                </Badge>
+              )}
             </div>
             
             <div className="text-sm text-muted-foreground space-y-1">

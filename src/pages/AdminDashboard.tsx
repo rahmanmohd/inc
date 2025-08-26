@@ -11,10 +11,10 @@ import AdminOverview from "@/components/dashboard/AdminOverview";
 import StartupManagement from "@/components/dashboard/StartupManagement";
 import ApplicationManagement from "@/components/dashboard/ApplicationManagement";
 import InvestorManagement from "@/components/dashboard/InvestorManagement";
+import InvestorDashboardManagement from "@/components/dashboard/InvestorDashboardManagement";
 import DealManagement from "@/components/dashboard/DealManagement";
 import AnalyticsManagement from "@/components/dashboard/AnalyticsManagement";
-import { HackathonManagement } from "@/components/dashboard/HackathonManagement";
-import { IncubationManagement } from "@/components/dashboard/IncubationManagement";
+import { ProgramsManagement } from "@/components/dashboard/ProgramsManagement";
 import { EmailLogsView } from "@/components/dashboard/EmailLogsView";
 import adminApiService, { type AdminStats, type StartupData, type InvestorData } from "@/services/adminApiService";
 
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [toast]);
 
   // Initial data fetch
   useEffect(() => {
@@ -224,18 +224,18 @@ const AdminDashboard = () => {
           </div>
         </div>
 
+        {/* Updated with Programs section */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="startups">Startups</TabsTrigger>
-            <TabsTrigger value="applications">Applications</TabsTrigger>
-            <TabsTrigger value="investors">Investors</TabsTrigger>
-            <TabsTrigger value="deals">Deals</TabsTrigger>
-            <TabsTrigger value="hackathons">Hackathons</TabsTrigger>
-            <TabsTrigger value="incubation">Incubation</TabsTrigger>
-            <TabsTrigger value="content">Content</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="emails">Emails</TabsTrigger>
+          <TabsList className="flex w-full flex-nowrap h-12">
+            <TabsTrigger value="overview" className="flex-1 basis-0 justify-center px-2 py-2 text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="startups" className="flex-1 basis-0 justify-center px-2 py-2 text-sm">Startups</TabsTrigger>
+            <TabsTrigger value="applications" className="flex-1 basis-0 justify-center px-2 py-2 text-sm">Applications</TabsTrigger>
+            <TabsTrigger value="investors" className="flex-1 basis-0 justify-center px-2 py-2 text-sm">Investors</TabsTrigger>
+            <TabsTrigger value="deals" className="flex-1 basis-0 justify-center px-2 py-2 text-sm">Deals</TabsTrigger>
+            <TabsTrigger value="programs" className="flex-1 basis-0 justify-center px-2 py-2 text-sm">Programs</TabsTrigger>
+            <TabsTrigger value="content" className="flex-1 basis-0 justify-center px-2 py-2 text-sm">Content</TabsTrigger>
+            <TabsTrigger value="analytics" className="flex-1 basis-0 justify-center px-2 py-2 text-sm">Analytics</TabsTrigger>
+            <TabsTrigger value="settings" className="flex-1 basis-0 justify-center px-2 py-2 text-sm">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -255,19 +255,28 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="investors" className="space-y-6">
-            <InvestorManagement />
+            <Tabs defaultValue="directory" className="space-y-4">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="directory">Investor Directory</TabsTrigger>
+                <TabsTrigger value="dashboards">Dashboard Management</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="directory">
+                <InvestorManagement />
+              </TabsContent>
+              
+              <TabsContent value="dashboards">
+                <InvestorDashboardManagement />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           <TabsContent value="deals" className="space-y-6">
             <DealManagement />
           </TabsContent>
 
-          <TabsContent value="hackathons" className="space-y-6">
-            <HackathonManagement />
-          </TabsContent>
-
-          <TabsContent value="incubation" className="space-y-6">
-            <IncubationManagement />
+          <TabsContent value="programs" className="space-y-6">
+            <ProgramsManagement />
           </TabsContent>
 
           <TabsContent value="content" className="space-y-6">
@@ -329,8 +338,52 @@ const AdminDashboard = () => {
             <AnalyticsManagement />
           </TabsContent>
 
-          <TabsContent value="emails" className="space-y-6">
-            <EmailLogsView />
+          <TabsContent value="settings" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Email System</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-primary mb-2">Active</div>
+                  <p className="text-sm text-muted-foreground">Email notifications running</p>
+                  <Button className="w-full mt-4" variant="outline" onClick={() => {
+                    toast({
+                      title: "Email Settings",
+                      description: "Opening email management interface...",
+                    });
+                  }}>Manage Emails</Button>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>System Settings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-primary mb-2">Config</div>
+                  <p className="text-sm text-muted-foreground">System configuration</p>
+                  <Button className="w-full mt-4" variant="outline">System Config</Button>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>User Management</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-primary mb-2">Users</div>
+                  <p className="text-sm text-muted-foreground">Manage admin users</p>
+                  <Button className="w-full mt-4" variant="outline">Manage Users</Button>
+                </CardContent>
+              </Card>
+            </div>
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Email Logs</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <EmailLogsView />
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </main>
